@@ -1,0 +1,13 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+E:\projects\stm32gps-stop-master\Project\stm32gps\MDK-ARM\stm32gps.uvproj
+Project File Date:  12/01/2014
+
+<h2>Output:</h2>
+Clean started: Project: 'stm32gps'
+   deleting intermediate output files for target 'Debug'
+   deleting intermediate output files for target 'Release'
+   deleting intermediate output files for target 'Factory'
