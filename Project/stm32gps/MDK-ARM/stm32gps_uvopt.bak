@@ -537,7 +537,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>56</TopLine>
+      <TopLine>57</TopLine>
       <CurrentLine>63</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\main.c</PathWithFileName>
@@ -930,14 +930,14 @@
     <cbSel>0</cbSel>
     <File>
       <GroupNumber>8</GroupNumber>
-      <FileNumber>27</FileNumber>
+      <FileNumber>26</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>25</TopLine>
-      <CurrentLine>33</CurrentLine>
+      <TopLine>0</TopLine>
+      <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\..\Utilities\SIM28M\gps.c</PathWithFileName>
       <FilenameWithoutPath>gps.c</FilenameWithoutPath>
@@ -951,7 +951,7 @@
     <cbSel>0</cbSel>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>28</FileNumber>
+      <FileNumber>27</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -975,7 +975,7 @@
         <Doc>
           <Name>..\main.c</Name>
           <ColumnNumber>0</ColumnNumber>
-          <TopLine>56</TopLine>
+          <TopLine>57</TopLine>
           <CurrentLine>63</CurrentLine>
         </Doc>
         <Doc>

@@ -23,7 +23,7 @@
 #define MAX_RESP_CMD_CPIN 10 // 5 sec
 #define MAX_RESP_CMD_CSQ  4
 #define MAX_RESP_CMD_CADC  4
-#define MAX_RESP_CMD_CREG 10
+#define MAX_RESP_CMD_CREG 40 // 20 sec
 #define MAX_RESP_CMD_GSN  10
 #define MAX_RESP_CMD_CIMI 40 // 20 sec, CIMI max is 20 sec
 #define MAX_RESP_CMD_CGATT 40 // 20 sec, CGATT max is 20 sec
@@ -70,6 +70,7 @@ const char AT_CIPMODE_GET[] = 	"AT+CIPMODE?\r";
 const char AT_CIPMODE_0[] = 	"AT+CIPMODE=0\r"; 
 const char AT_CIPSTART[]=		"AT+CIPSTART=\"%s\",\"%s\",%s\r";
 const char AT_CIPSEND[]=   	"AT+CIPSEND\r";
+const char AT_CIPSEND_SET[]=   	"AT+CIPSEND=%d\r";
 const char AT_CIPSTATUS[]= 	"AT+CIPSTATUS\r";
 const char AT_CIPCLOSE[]=		"AT+CIPCLOSE=1\r";
 const char AT_CIPSHUT[] =		"AT+CIPSHUT\r";

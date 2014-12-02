@@ -292,6 +292,11 @@ void GSM_ClearBuffer(void)
     memset(BackBuf, 0, USART_GSM_BUFSIZE);
 }
 
+void GSM_ClearSendBuffer(void)
+{
+    memset(sendBuf, 0, USART_GSM_BUFSIZE_SEND);
+}
+
 /**
   * @brief  发送一条AT指令
   * Output LOW to Turn Off VCC Power; HIGH to Turn On VCC Power.
@@ -632,6 +637,7 @@ void GSM_SetCIPMode(unsigned char mode)
 	unsigned char preMode = 0;
 	uint32_t errNum = 0;
 
+	GSM_ClearSendBuffer();
 	// get cpimode
 	GSM_QueryCIPMode(&preMode);
 	// Select TCPIP application mode is normal mode
@@ -839,6 +845,7 @@ void GSM_SetNetworkReg(uint8_t data)
     uint32_t cmdLen = 0;
 	uint32_t errNum = 0;
 
+	GSM_ClearSendBuffer();
     pcmdbuf = sendBuf;
     sprintf(pcmdbuf, AT_CREG_SET, data);
     cmdLen = strlen(pcmdbuf);
@@ -1066,21 +1073,8 @@ uint8_t GSM_StartTaskAndSetAPN(void)
 	uint8_t rst = USART_FAIL;
 	uint8_t rtn = RST_FAIL;
 	static char *pcmdbuf = NULL;
-	static char *pfeed = NULL;
-	char *pRecvBuf = NULL;
-    uint32_t recvLen = 0;
-/*
-    len = strlen(AT_CSTT);
-    GSM_ClearBuffer();
-	if(USART_SUCESS == GSM_SendAT_rsp((char *)AT_CSTT, (char *)AT_OK, len, &pRecvBuf, &recvLen, MAX_RESP_CMD_CSTT))
-	{
-		pfeed = strstr_len(pRecvBuf, (char *)"CMNET", recvLen);
-		if(NULL != pfeed)
-		{
-			return RST_OK;
-		}
-	}
-*/
+
+	GSM_ClearSendBuffer();
     pcmdbuf = sendBuf;
     sprintf(pcmdbuf, AT_CSTT_SET, "\"CMNET\"");
     len = strlen(pcmdbuf);
@@ -1216,6 +1210,7 @@ unsigned char GPRS_LinkServer(pST_NETWORKCONFIG pnetconfig)
 	char *pRecvBuf = NULL;
     uint32_t recvLen = 0;
 
+	GSM_ClearSendBuffer();
     pcmdbuf = sendBuf;
     if (pcmdbuf == NULL)
     {
@@ -1249,16 +1244,21 @@ unsigned char GPRS_LinkServer(pST_NETWORKCONFIG pnetconfig)
  ***************************************************************************/
 unsigned char GPRS_SendData(char *pString, unsigned int len)
 {
+	static char *pcmdbuf = NULL;
 	char *pBackBuf = BackBuf;
     unsigned int cmdLen;
 
-    cmdLen = strlen(AT_CIPSEND);
-    if (USART_SUCESS == GSM_SendAT((char *) AT_CIPSEND, (char *) '>', cmdLen, MAX_RESP_CMD_DEFAULT))
+	GSM_ClearSendBuffer();
+	pcmdbuf = sendBuf;
+	sprintf(pcmdbuf, AT_CIPSEND_SET, len);
+	cmdLen = strlen(pcmdbuf);
+    //cmdLen = strlen(AT_CIPSEND);
+    if (USART_SUCESS == GSM_SendAT((char *) pcmdbuf, (char *) '>', cmdLen, MAX_RESP_CMD_DEFAULT))
     {
-        cmdLen = sizeof(pString);
+        //cmdLen = sizeof(pString);
         usart_sendbuffer(STM32_SIM908_GSM_COM, pString, &len);
-        cmdLen = 1;
-        usart_sendbuffer(STM32_SIM908_GSM_COM, "\x1A", &cmdLen);
+        //cmdLen = 1;
+        //usart_sendbuffer(STM32_SIM908_GSM_COM, "\x1A", &cmdLen);
         //return USART_SUCESS;
     }
 
@@ -1322,16 +1322,22 @@ unsigned char GPRS_SendData(char *pString, unsigned int len)
   */
 unsigned char GPRS_SendData_rsp(char *pString, unsigned int len, char **ppRecvBuf, uint32_t *pRecvLen)
 {
+	static char *pcmdbuf = NULL;
 	char *pBackBuf = BackBuf;
     unsigned int cmdLen;
 
-    cmdLen = strlen(AT_CIPSEND);
-    if (USART_SUCESS == GSM_SendAT((char *) AT_CIPSEND, (char *) '>', cmdLen, MAX_RESP_CMD_DEFAULT))
+	GSM_ClearSendBuffer();
+	pcmdbuf = sendBuf;
+	sprintf(pcmdbuf, AT_CIPSEND_SET, len);
+	cmdLen = strlen(pcmdbuf);
+    //cmdLen = strlen(AT_CIPSEND);
+    if (USART_SUCESS == GSM_SendAT((char *) pcmdbuf, (char *) '>', cmdLen, MAX_RESP_CMD_DEFAULT))
     {
-        cmdLen = sizeof(pString);
+		
+        //cmdLen = sizeof(pString);
         usart_sendbuffer(STM32_SIM908_GSM_COM, pString, &len);
-        cmdLen = 1;
-        usart_sendbuffer(STM32_SIM908_GSM_COM, "\x1A", &cmdLen);
+        //cmdLen = 1;
+        //usart_sendbuffer(STM32_SIM908_GSM_COM, "\x1A", &cmdLen);
         //return USART_SUCESS;
     }
 
@@ -1361,7 +1367,7 @@ unsigned char GPRS_SendData_rsp(char *pString, unsigned int len, char **ppRecvBu
                     DEBUG("GPRS_SendData_rsp recv\r\n");
                     for (tmpIdx = 0; tmpIdx < len; tmpIdx ++)
                     {
-                        DEBUG("%c\r\n", pBackBuf[tmpIdx]);
+                        DEBUG("%c-", pBackBuf[tmpIdx]);
                         //DEBUG(" [%d] 0x%x-",tmpIdx, pBackBuf[tmpIdx]);
 						
                     }
@@ -1565,6 +1571,7 @@ unsigned char GSM_creg(void)
 
     char *pStr;
 
+	GSM_ClearSendBuffer();
     pcmdbuf = sendBuf;
     sprintf(pcmdbuf, AT_CREG_SET, 2);
     cmdLen = strlen(pcmdbuf);
@@ -1604,6 +1611,7 @@ unsigned char GSM_ceng(void)
     unsigned int cmdLen = 0;
 
     GSM_ClearBuffer();
+	GSM_ClearSendBuffer();
     pcmdbuf = sendBuf;
     if (pcmdbuf == NULL)
     {

@@ -1,0 +1,175 @@
+
+2014-12-03
+1. 修改GPRS发送操作为CIPSEND=length方式，防止在发送协议中出现0x1A（CTRL+Z）时而导致发送数据不完整。
+2. 修改AT指令函数，增加检查返回值的时间参数（不同的AT指令的最大响应时间不一样），而不是一概而论只使用同一个时间参数。
+3. 根据SIM800的手册要求，规范GPRS的操作流程，根据手册要求：增加检查上一次AT指令，当部分AT指令检查不通过时重启模块CIP连接。
+4. 整理代码，增加注释，删除多余空行、不使用的函数。
+5. 修改GPS的数据接收方式，使用查询方式接收（放弃中断方式接收），只在需要的时候接收GPS数据。
+
+待完成工作
+1. 实现舒宇的新协议，并测试
+2. 讨论工厂测试的端口和实现方式，并实现+测试
+
+
+1. printf重定向
+Ref: http://blog.csdn.net/wdscq1234/article/details/7944036
+D:\GitHub\stm32gprs\Project\STM32F10x_StdPeriph_Template\stm32_sim908_cfg.c
+
+2.  硬件改版建议
+1. 串口1连接gps，串口2连接gsm，串口3作为调试串口，与开发板一致，方便对比测试。
+2. 设计好调试接口和指示灯（不要使用JTAG的复用管脚），方便程序调试和烧写，最好是标准接口。
+3.
+
+主函数
+main()
+{
+	初始化IO
+	关闭GPS、GSM电源
+    初始化按钮（干簧管）
+	初始化时钟、中断、定时器、Systick等
+	初始化串口（包括GPS、GSM）
+	初始化全局变量
+	
+// 主循环
+	while(1)
+	{
+		if(干簧管有效 || 报警标志有效)
+		{
+			打开GPS电源
+			while(1)
+			{
+				延时2s
+				读取GPS数据
+				if(数据有效)
+				{
+					break;
+				}
+				if(GPS接收次数 > n次)
+				{
+					break;
+				}
+				设置RTC ALARM为10s
+				进入STOP模式
+				配置SYSCLK
+			}
+			打开GSM电源
+			while(1)
+			{
+				初始化GSM、检查SIM卡、检查是否联网
+				连接服务器
+				获取IMEI
+				发送登陆数据包、获取设置睡眠间隔的值
+				if(发送错误次数 > 10)
+				{
+					break;
+				}
+				
+				读取GPS数据
+				读取GSM相关数据（基站、IMSI等）
+				if(干簧管无效 && 报警标志有效)
+				{
+					发送ALARM数据包
+					设置g_alarmPacketFlag有效
+				}
+				else
+				{
+					发送GPS数据包
+					设置g_alarmPacketFlag无效
+				}
+				if(发送错误次数 > 5)
+				{
+					关闭网络连接
+					break;
+				}
+				if(发送成功次数 > 1)
+				{
+					if(报警标志有效 && g_alarmPacketFlag有效)
+					{
+						设置报警标志无效
+					}
+					else
+					{
+						设置报警标志有效
+					}
+					break;
+				}
+				序列号++
+				延时1s
+			}
+		}
+	
+		关闭GSM模块
+		关闭GPS、GSM电源
+		设置RTC ALARM为睡眠间隔
+		进入Standby模式
+		配置SYSCLK
+	}
+}
+
+
+
+
+伪代码如下
+主函数
+main()
+{
+	初始化IO
+	关闭GPS、GSM电源
+	初始化时钟、中断、定时器等
+	初始化串口
+	打开定时器（定时器时间为2 min）
+	初始化全局变量
+	打开GPS电源
+	while(1)
+	{
+		读取GPS数据
+		if(数据有效)
+		{
+			break;
+		}
+		if(GPS接收次数 > 5)
+		{
+			break;
+		}
+		设置RTC ALARM为10s
+		进入STOP模式
+		设置RCC
+	}
+	打开GSM电源
+	while(1)
+	{
+		初始化GSM、检查SIM卡、检查是否联网
+		连接服务器
+		获取IMEI
+		发送登陆数据包
+		while(1)
+		{
+			读取GPS数据
+			读取GSM相关数据（基站、IMSI等）
+			发送GPS数据包
+			if(发送错误次数 > 10)
+			{
+				break;
+			}
+			if(发送成功次数 > 6)
+			{
+				break;
+			}
+		}
+		if(发送成功次数 > 6)
+			{
+				break;
+			}
+	}
+	关闭GPS、GSM电源
+	设置RTC ALARM为2 min
+	进入Standby模式
+}
+定时器中断
+TIM2_IRQHandler()
+{
+	关闭GPS、GSM电源
+	设置RTC ALARM为30 sec
+	进入Standby模式
+}
+

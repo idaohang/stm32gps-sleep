@@ -3,10 +3,404 @@
 <pre>
 <h1>µVision Build Log</h1>
 <h2>Project:</h2>
-E:\projects\stm32gps-stop-master\Project\stm32gps\MDK-ARM\stm32gps.uvproj
+D:\GitHub\stm32gps-sleep\Project\stm32gps\MDK-ARM\stm32gps.uvproj
 Project File Date:  12/01/2014
 
 <h2>Output:</h2>
+Build target 'Debug'
+compiling main.c...
+..\main.c(139): error:  #20: identifier "g_successNum" is undefined
+..\main.c(141): error:  #20: identifier "g_gpsLocationStatus" is undefined
+..\main.c(164): error:  #20: identifier "gpsMsg" is undefined
+..\main.c(457): warning:  #167-D: argument of type "int8_t *" is incompatible with parameter of type "char *"
+..\main.c(576): warning:  #128-D: loop is not reachable from preceding code
+..\main.c(181): warning:  #177-D: variable "i" was declared but never referenced
+compiling stm32f10x_it.c...
+compiling stm32gps_config.c...
+..\stm32gps_config.c(208): warning:  #550-D: variable "PrescalerValue" was set but never used
+compiling gpio.c...
+compiling misc.c...
+compiling stm32f10x_bkp.c...
+compiling stm32f10x_exti.c...
+compiling stm32f10x_flash.c...
+compiling stm32f10x_fsmc.c...
+compiling stm32f10x_gpio.c...
+compiling stm32f10x_iwdg.c...
+compiling stm32f10x_pwr.c...
+compiling stm32f10x_rcc.c...
+compiling stm32f10x_rtc.c...
+compiling stm32f10x_sdio.c...
+compiling stm32f10x_spi.c...
+compiling stm32f10x_tim.c...
+compiling stm32f10x_usart.c...
+compiling stm32f10x_wwdg.c...
+compiling core_cm3.c...
+compiling system_stm32f10x.c...
+compiling stm32gps_board.c...
+..\..\..\Utilities\STM32_GPS\STM32_GPS_BOARD_VB/stm32_gps_board.c(345): warning:  #550-D: variable "data" was set but never used
+assembling startup_stm32f10x_hd.s...
+compiling usart.c...
+compiling gps.c...
+..\..\..\Utilities\SIM28M\gps.c(381): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+..\..\..\Utilities\SIM28M\gps.c(390): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+compiling GSM_App.c...
+..\..\..\Utilities\SIM800L\GSM_App.c(1069): warning:  #177-D: variable "pfeed" was declared but never referenced
+..\..\..\Utilities\SIM800L\GSM_App.c(1070): warning:  #177-D: variable "pRecvBuf" was declared but never referenced
+..\..\..\Utilities\SIM800L\GSM_App.c(1071): warning:  #177-D: variable "recvLen" was declared but never referenced
+..\..\..\Utilities\SIM800L\GSM_App.c(1284): warning:  #177-D: variable "tmpStart" was declared but never referenced
+..\..\..\Utilities\SIM800L\GSM_App.c(1357): warning:  #177-D: variable "tmpStart" was declared but never referenced
+..\..\..\Utilities\SIM800L\GSM_App.c(1470): warning:  #550-D: variable "pfeed" was set but never used
+..\..\..\Utilities\SIM800L\GSM_App.c(1546): warning:  #177-D: variable "pcmdbuf" was declared but never referenced
+Target not created
+Build target 'Debug'
+compiling main.c...
+..\main.c(576): warning:  #128-D: loop is not reachable from preceding code
+..\main.c(181): warning:  #177-D: variable "i" was declared but never referenced
+compiling GSM_App.c...
+..\..\..\Utilities\SIM800L\GSM_App.c(1270): warning:  #177-D: variable "tmpStart" was declared but never referenced
+..\..\..\Utilities\SIM800L\GSM_App.c(1343): warning:  #177-D: variable "tmpStart" was declared but never referenced
+..\..\..\Utilities\SIM800L\GSM_App.c(1456): warning:  #550-D: variable "pfeed" was set but never used
+..\..\..\Utilities\SIM800L\GSM_App.c(1532): warning:  #177-D: variable "pcmdbuf" was declared but never referenced
+linking...
+Program Size: Code=26228 RO-data=1212 RW-data=244 ZI-data=7580  
+FromELF: creating hex file...
+".\STM32GPS\stm32gps.axf" - 0 Error(s), 6 Warning(s).
+Load "D:\\GitHub\\stm32gps-sleep\\Project\\stm32gps\\MDK-ARM\\STM32GPS\\stm32gps.AXF" 
+* JLink Info: Device "STM32F103RC" selected (256 KB flash, 48 KB RAM).
+Set JLink Project File to "D:\GitHub\stm32gps-sleep\Project\stm32gps\MDK-ARM\JLinkSettings.ini"
+ 
+JLink info:
+------------
+DLL: V4.90d, compiled Aug 29 2014 14:49:16
+Firmware: J-Link ARM V8 compiled Jul 17 2014 12:31:18
+Hardware: V8.00
+S/N : 286370559 
+Feature(s) : RDI,FlashDL,FlashBP,JFlash 
+ 
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: Found Cortex-M3 r1p1, Little endian.
+* JLink Info: FPUnit: 6 code (BP) slots and 2 literal slots
+* JLink Info: TPIU fitted.
+* JLink Info: ETM fitted.
+ROMTableAddr = 0xE00FF003
+ 
+Target info:
+------------
+Device: STM32F103RC
+VTarget = 3.435V
+State of Pins: 
+TCK: 0, TDI: 0, TDO: 0, TMS: 1, TRES: 1, TRST: 1
+Hardware-Breakpoints: 6
+Software-Breakpoints: 8192
+Watchpoints:          4
+JTAG speed: 2000 kHz
+ 
+Erase Done.
+Programming Done.
+Verify OK.
+Build target 'Debug'
+compiling GSM_App.c...
+..\..\..\Utilities\SIM800L\GSM_App.c(1270): warning:  #177-D: variable "tmpStart" was declared but never referenced
+..\..\..\Utilities\SIM800L\GSM_App.c(1343): warning:  #177-D: variable "tmpStart" was declared but never referenced
+..\..\..\Utilities\SIM800L\GSM_App.c(1456): warning:  #550-D: variable "pfeed" was set but never used
+..\..\..\Utilities\SIM800L\GSM_App.c(1532): warning:  #177-D: variable "pcmdbuf" was declared but never referenced
+linking...
+Program Size: Code=26228 RO-data=1212 RW-data=244 ZI-data=7580  
+FromELF: creating hex file...
+".\STM32GPS\stm32gps.axf" - 0 Error(s), 4 Warning(s).
+Build target 'Debug'
+compiling main.c...
+..\main.c(576): warning:  #128-D: loop is not reachable from preceding code
+..\main.c(181): warning:  #177-D: variable "i" was declared but never referenced
+..\main.c(946): error:  #20: identifier "imeiBuf" is undefined
+Target not created
+Build target 'Debug'
+compiling main.c...
+..\main.c(576): warning:  #128-D: loop is not reachable from preceding code
+..\main.c(181): warning:  #177-D: variable "i" was declared but never referenced
+linking...
+Program Size: Code=26224 RO-data=1212 RW-data=244 ZI-data=7564  
+FromELF: creating hex file...
+".\STM32GPS\stm32gps.axf" - 0 Error(s), 2 Warning(s).
+Build target 'Debug'
+compiling GSM_App.c...
+..\..\..\Utilities\SIM800L\GSM_App.c(1270): warning:  #177-D: variable "tmpStart" was declared but never referenced
+..\..\..\Utilities\SIM800L\GSM_App.c(1343): warning:  #177-D: variable "tmpStart" was declared but never referenced
+..\..\..\Utilities\SIM800L\GSM_App.c(1456): warning:  #550-D: variable "pfeed" was set but never used
+..\..\..\Utilities\SIM800L\GSM_App.c(1532): warning:  #177-D: variable "pcmdbuf" was declared but never referenced
+linking...
+Program Size: Code=26220 RO-data=1212 RW-data=244 ZI-data=7564  
+FromELF: creating hex file...
+".\STM32GPS\stm32gps.axf" - 0 Error(s), 4 Warning(s).
+Load "D:\\GitHub\\stm32gps-sleep\\Project\\stm32gps\\MDK-ARM\\STM32GPS\\stm32gps.AXF" 
+* JLink Info: Device "STM32F103RC" selected (256 KB flash, 48 KB RAM).
+Set JLink Project File to "D:\GitHub\stm32gps-sleep\Project\stm32gps\MDK-ARM\JLinkSettings.ini"
+ 
+JLink info:
+------------
+DLL: V4.90d, compiled Aug 29 2014 14:49:16
+Firmware: J-Link ARM V8 compiled Jul 17 2014 12:31:18
+Hardware: V8.00
+S/N : 286370559 
+Feature(s) : RDI,FlashDL,FlashBP,JFlash 
+ 
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: Found Cortex-M3 r1p1, Little endian.
+* JLink Info: FPUnit: 6 code (BP) slots and 2 literal slots
+* JLink Info: TPIU fitted.
+* JLink Info: ETM fitted.
+ROMTableAddr = 0xE00FF003
+ 
+Target info:
+------------
+Device: STM32F103RC
+VTarget = 3.390V
+State of Pins: 
+TCK: 0, TDI: 0, TDO: 0, TMS: 1, TRES: 1, TRST: 1
+Hardware-Breakpoints: 6
+Software-Breakpoints: 8192
+Watchpoints:          4
+JTAG speed: 2000 kHz
+ 
+Erase Done.
+Programming Done.
+Verify OK.
+Build target 'Debug'
+compiling main.c...
+..\main.c(575): warning:  #128-D: loop is not reachable from preceding code
+..\main.c(180): warning:  #177-D: variable "i" was declared but never referenced
+linking...
+Program Size: Code=26236 RO-data=1212 RW-data=244 ZI-data=7564  
+FromELF: creating hex file...
+".\STM32GPS\stm32gps.axf" - 0 Error(s), 2 Warning(s).
+Build target 'Debug'
+compiling main.c...
+..\main.c(587): warning:  #128-D: loop is not reachable from preceding code
+..\main.c(180): warning:  #177-D: variable "i" was declared but never referenced
+linking...
+Program Size: Code=26272 RO-data=1212 RW-data=244 ZI-data=7564  
+FromELF: creating hex file...
+".\STM32GPS\stm32gps.axf" - 0 Error(s), 2 Warning(s).
+Build target 'Debug'
+compiling main.c...
+..\main.c(599): warning:  #128-D: loop is not reachable from preceding code
+..\main.c(180): warning:  #177-D: variable "i" was declared but never referenced
+linking...
+Program Size: Code=26404 RO-data=1212 RW-data=244 ZI-data=7564  
+FromELF: creating hex file...
+".\STM32GPS\stm32gps.axf" - 0 Error(s), 2 Warning(s).
+Load "D:\\GitHub\\stm32gps-sleep\\Project\\stm32gps\\MDK-ARM\\STM32GPS\\stm32gps.AXF" 
+* JLink Info: Device "STM32F103RC" selected (256 KB flash, 48 KB RAM).
+Set JLink Project File to "D:\GitHub\stm32gps-sleep\Project\stm32gps\MDK-ARM\JLinkSettings.ini"
+ 
+JLink info:
+------------
+DLL: V4.90d, compiled Aug 29 2014 14:49:16
+Firmware: J-Link ARM V8 compiled Jul 17 2014 12:31:18
+Hardware: V8.00
+S/N : 286370559 
+Feature(s) : RDI,FlashDL,FlashBP,JFlash 
+ 
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: Found Cortex-M3 r1p1, Little endian.
+* JLink Info: FPUnit: 6 code (BP) slots and 2 literal slots
+* JLink Info: TPIU fitted.
+* JLink Info: ETM fitted.
+ROMTableAddr = 0xE00FF003
+ 
+Target info:
+------------
+Device: STM32F103RC
+VTarget = 3.416V
+State of Pins: 
+TCK: 0, TDI: 0, TDO: 0, TMS: 1, TRES: 1, TRST: 1
+Hardware-Breakpoints: 6
+Software-Breakpoints: 8192
+Watchpoints:          4
+JTAG speed: 2000 kHz
+ 
+Erase Done.
+Programming Done.
+Verify OK.
+Build target 'Debug'
+compiling main.c...
+..\main.c(601): warning:  #128-D: loop is not reachable from preceding code
+..\main.c(180): warning:  #177-D: variable "i" was declared but never referenced
+linking...
+Program Size: Code=26412 RO-data=1212 RW-data=244 ZI-data=7564  
+FromELF: creating hex file...
+".\STM32GPS\stm32gps.axf" - 0 Error(s), 2 Warning(s).
+Build target 'Debug'
+compiling GSM_App.c...
+..\..\..\Utilities\SIM800L\GSM_App.c(1274): warning:  #177-D: variable "tmpStart" was declared but never referenced
+..\..\..\Utilities\SIM800L\GSM_App.c(1352): warning:  #177-D: variable "tmpStart" was declared but never referenced
+..\..\..\Utilities\SIM800L\GSM_App.c(1465): warning:  #550-D: variable "pfeed" was set but never used
+..\..\..\Utilities\SIM800L\GSM_App.c(1541): warning:  #177-D: variable "pcmdbuf" was declared but never referenced
+linking...
+Program Size: Code=26420 RO-data=1228 RW-data=252 ZI-data=7564  
+FromELF: creating hex file...
+".\STM32GPS\stm32gps.axf" - 0 Error(s), 4 Warning(s).
+Load "D:\\GitHub\\stm32gps-sleep\\Project\\stm32gps\\MDK-ARM\\STM32GPS\\stm32gps.AXF" 
+* JLink Info: Device "STM32F103RC" selected (256 KB flash, 48 KB RAM).
+Set JLink Project File to "D:\GitHub\stm32gps-sleep\Project\stm32gps\MDK-ARM\JLinkSettings.ini"
+ 
+JLink info:
+------------
+DLL: V4.90d, compiled Aug 29 2014 14:49:16
+Firmware: J-Link ARM V8 compiled Jul 17 2014 12:31:18
+Hardware: V8.00
+S/N : 286370559 
+Feature(s) : RDI,FlashDL,FlashBP,JFlash 
+ 
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: Found Cortex-M3 r1p1, Little endian.
+* JLink Info: FPUnit: 6 code (BP) slots and 2 literal slots
+* JLink Info: TPIU fitted.
+* JLink Info: ETM fitted.
+ROMTableAddr = 0xE00FF003
+ 
+Target info:
+------------
+Device: STM32F103RC
+VTarget = 3.384V
+State of Pins: 
+TCK: 0, TDI: 0, TDO: 0, TMS: 1, TRES: 1, TRST: 1
+Hardware-Breakpoints: 6
+Software-Breakpoints: 8192
+Watchpoints:          4
+JTAG speed: 2000 kHz
+ 
+Erase Done.
+Programming Done.
+Verify OK.
+Build target 'Debug'
+compiling main.c...
+..\main.c(601): warning:  #128-D: loop is not reachable from preceding code
+..\main.c(180): warning:  #177-D: variable "i" was declared but never referenced
+compiling stm32f10x_it.c...
+compiling stm32gps_config.c...
+..\stm32gps_config.c(208): warning:  #550-D: variable "PrescalerValue" was set but never used
+compiling usart.c...
+compiling gps.c...
+..\..\..\Utilities\SIM28M\gps.c(381): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+..\..\..\Utilities\SIM28M\gps.c(390): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+compiling GSM_App.c...
+..\..\..\Utilities\SIM800L\GSM_App.c(1284): warning:  #177-D: variable "tmpStart" was declared but never referenced
+..\..\..\Utilities\SIM800L\GSM_App.c(1363): warning:  #177-D: variable "tmpStart" was declared but never referenced
+..\..\..\Utilities\SIM800L\GSM_App.c(1476): warning:  #550-D: variable "pfeed" was set but never used
+..\..\..\Utilities\SIM800L\GSM_App.c(1552): warning:  #177-D: variable "pcmdbuf" was declared but never referenced
+linking...
+Program Size: Code=26476 RO-data=1228 RW-data=252 ZI-data=5772  
+FromELF: creating hex file...
+".\STM32GPS\stm32gps.axf" - 0 Error(s), 9 Warning(s).
+Build target 'Debug'
+compiling main.c...
+..\main.c(601): warning:  #128-D: loop is not reachable from preceding code
+linking...
+Program Size: Code=26476 RO-data=1228 RW-data=252 ZI-data=5772  
+FromELF: creating hex file...
+".\STM32GPS\stm32gps.axf" - 0 Error(s), 1 Warning(s).
+Load "D:\\GitHub\\stm32gps-sleep\\Project\\stm32gps\\MDK-ARM\\STM32GPS\\stm32gps.AXF" 
+* JLink Info: Device "STM32F103RC" selected (256 KB flash, 48 KB RAM).
+Set JLink Project File to "D:\GitHub\stm32gps-sleep\Project\stm32gps\MDK-ARM\JLinkSettings.ini"
+ 
+JLink info:
+------------
+DLL: V4.90d, compiled Aug 29 2014 14:49:16
+Firmware: J-Link ARM V8 compiled Jul 17 2014 12:31:18
+Hardware: V8.00
+S/N : 286370559 
+Feature(s) : RDI,FlashDL,FlashBP,JFlash 
+ 
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: Found Cortex-M3 r1p1, Little endian.
+* JLink Info: FPUnit: 6 code (BP) slots and 2 literal slots
+* JLink Info: TPIU fitted.
+* JLink Info: ETM fitted.
+ROMTableAddr = 0xE00FF003
+ 
+Target info:
+------------
+Device: STM32F103RC
+VTarget = 3.384V
+State of Pins: 
+TCK: 0, TDI: 0, TDO: 0, TMS: 1, TRES: 1, TRST: 1
+Hardware-Breakpoints: 6
+Software-Breakpoints: 8192
+Watchpoints:          4
+JTAG speed: 2000 kHz
+ 
+Erase Done.
+Programming Done.
+Verify OK.
+Build target 'Debug'
+compiling main.c...
+..\main.c(64): error:  #20: identifier "ST_GPSDATA" is undefined
+..\main.c(601): warning:  #128-D: loop is not reachable from preceding code
+compiling stm32f10x_it.c...
+Target not created
+Build target 'Debug'
+compiling main.c...
+..\main.c(166): error:  #20: identifier "g_gpsData" is undefined
+..\main.c(601): warning:  #128-D: loop is not reachable from preceding code
+Target not created
+Build target 'Debug'
+compiling main.c...
+..\main.c(601): warning:  #128-D: loop is not reachable from preceding code
+linking...
+Program Size: Code=26460 RO-data=1228 RW-data=252 ZI-data=5748  
+FromELF: creating hex file...
+".\STM32GPS\stm32gps.axf" - 0 Error(s), 1 Warning(s).
+Build target 'Debug'
+linking...
+Program Size: Code=26460 RO-data=1228 RW-data=252 ZI-data=5748  
+FromELF: creating hex file...
+".\STM32GPS\stm32gps.axf" - 0 Error(s), 0 Warning(s).
+Build target 'Debug'
+compiling main.c...
+..\main.c(601): warning:  #128-D: loop is not reachable from preceding code
+compiling stm32f10x_it.c...
+compiling stm32gps_config.c...
+..\stm32gps_config.c(208): warning:  #550-D: variable "PrescalerValue" was set but never used
+compiling gpio.c...
+compiling misc.c...
+compiling stm32f10x_bkp.c...
+compiling stm32f10x_exti.c...
+compiling stm32f10x_flash.c...
+compiling stm32f10x_fsmc.c...
+compiling stm32f10x_gpio.c...
+compiling stm32f10x_iwdg.c...
+compiling stm32f10x_pwr.c...
+compiling stm32f10x_rcc.c...
+compiling stm32f10x_rtc.c...
+compiling stm32f10x_sdio.c...
+compiling stm32f10x_spi.c...
+compiling stm32f10x_tim.c...
+compiling stm32f10x_usart.c...
+compiling stm32f10x_wwdg.c...
+compiling core_cm3.c...
+compiling system_stm32f10x.c...
+compiling stm32gps_board.c...
+..\..\..\Utilities\STM32_GPS\STM32_GPS_BOARD_VB/stm32_gps_board.c(345): warning:  #550-D: variable "data" was set but never used
+assembling startup_stm32f10x_hd.s...
+compiling usart.c...
+compiling gps.c...
+..\..\..\Utilities\SIM28M\gps.c(381): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+..\..\..\Utilities\SIM28M\gps.c(390): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+compiling GSM_App.c...
+..\..\..\Utilities\SIM800L\GSM_App.c(1284): warning:  #177-D: variable "tmpStart" was declared but never referenced
+..\..\..\Utilities\SIM800L\GSM_App.c(1363): warning:  #177-D: variable "tmpStart" was declared but never referenced
+..\..\..\Utilities\SIM800L\GSM_App.c(1476): warning:  #550-D: variable "pfeed" was set but never used
+..\..\..\Utilities\SIM800L\GSM_App.c(1552): warning:  #177-D: variable "pcmdbuf" was declared but never referenced
+linking...
+Program Size: Code=26460 RO-data=1228 RW-data=252 ZI-data=5748  
+FromELF: creating hex file...
+".\STM32GPS\stm32gps.axf" - 0 Error(s), 9 Warning(s).
 Clean started: Project: 'stm32gps'
    deleting intermediate output files for target 'Debug'
    deleting intermediate output files for target 'Release'

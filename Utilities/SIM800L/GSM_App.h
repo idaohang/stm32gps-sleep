@@ -92,6 +92,7 @@ void GSM_PowerOn(void);
 void GSM_PowerOff(void);
 void GSM_TurnOnOff(void);
 void GSM_ClearBuffer(void);
+void GSM_ClearSendBuffer(void);
 unsigned char GSM_SendAT(char *pCMD, char *pCMDBack, uint32_t CMDLen, uint8_t Count);
 unsigned char GSM_SendAT_rsp(char *pCMD, char *pCMDBack,
         uint32_t CMDLen, char **ppRecvBuf, uint32_t *pRecvLen, uint8_t Count);

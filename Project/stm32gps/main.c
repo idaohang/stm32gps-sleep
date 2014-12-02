@@ -28,7 +28,7 @@
 #include <string.h>
 #include "usart.h"
 #include "GSM_App.h"
-#include "GPS_App.h"
+//#include "GPS_App.h"
 #include "eelink.h"
 #include "gpio.h"
 #include "gps.h"
@@ -50,18 +50,18 @@ typedef struct
 __IO uint32_t LsiFreq = 40000;
 
 // imei information buffer
-uint8_t imeiBuf[IMEI_BUF_LEN];
+//uint8_t imeiBuf[IMEI_BUF_LEN];
 uint8_t g_IMSIBuf[IMSI_INFO_LEN];
 uint8_t g_phoneNum[PHONE_NUMBER_LEN];
 
 // packet message
-EELINK_SIM_PACKET_LOGIN loginMsg;
-char loginBuf[PROTO_LOGIN_BUF];
-EELINK_PACKET_GPS gpsMsg;
+EELINK_SIM_PACKET_LOGIN stLoginMsg;
+char cLoginBuf[PROTO_LOGIN_BUF];
+//EELINK_PACKET_GPS gpsMsg;
 static char gpsBuf[PROTO_GPS_BUF];
 
 ST_SIMDATA g_simData;
-ST_GPSDATA g_gpsData;
+//ST_GPSDATA g_gpsData;
 ST_DEVICEDATA g_deviceData;
 ST_IMSIINFO g_imsiInfo;
 
@@ -73,23 +73,20 @@ uint8_t ucIMEIBuf[IMEI_BUF_LEN];
 uint8_t ucSignalQuality;
 
 
-uint16_t g_sequenceNum;  // GPRS packet's sequence number
-uint16_t g_successNum;   // GPRS Send Success number
+uint16_t g_usSequenceNum;  // GPRS packet's sequence number
 
 uint8_t ucGPSStatus;    // GPS status 0x55 - error; 0xaa - ok
-uint8_t g_gpsLocationStatus;  // GPS location status 0x55 - error; 0xaa - ok
 
-uint32_t g_setSleepSec;  // Server setting sleep seconds
+uint32_t g_uiSetSleepSec;  // Server setting sleep seconds
 
-uint32_t g_alarmFlag;  // 报警标志 SET-valid; RESET-invalid
-uint32_t g_alarmPacketFlag; // 报警数据包标志 SET - alarm packet; RESET - not alarm packet
+uint32_t g_uiAlarmFlag;  // 报警标志 SET-valid; RESET-invalid
+uint32_t g_uiAlarmPacketFlag; // 报警数据包标志 SET - alarm packet; RESET - not alarm packet
 
 
 /* Private function prototypes -----------------------------------------------*/
 uint8_t ProcessIMEI(uint8_t *pImei, uint8_t *pRst, int32_t imeilen, int32_t rstlen);
 void loadLoginMsg(uint8_t *imei, uint16_t sequence);
 void PackLoginMsg(void);
-void LoadGpsMsg(uint16_t sequence);
 void PackGpsMsg(void);
 void PackAlarmMsg(void);
 void PackFactoryMsg(void);
@@ -103,14 +100,14 @@ void ShowLoginMsg(void)
     DEBUG("IMEI:");
     for(i = 0; i < IMEI_BUF_LEN; i++)
     {
-        DEBUG("%c-", imeiBuf[i]);
+        DEBUG("%c-", ucIMEIBuf[i]);
     }
     DEBUG("\r\n");
     // login msg
     DEBUG("LOGIN MSG:");
     for(i = 0; i < PROTO_LOGIN_BUF; i++)
     {
-        DEBUG("0x%x-", loginBuf[i]);
+        DEBUG("0x%x-", cLoginBuf[i]);
     }
     DEBUG("\r\n");
 }
@@ -137,36 +134,36 @@ void InitVariables(void)
 {
     uint32_t i;
 
-    g_sequenceNum = 1;
-    g_successNum = 0;
+    g_usSequenceNum = 1;
+//    g_successNum = 0;
     ucGPSStatus = GPS_DEVICE_ERR;
-	g_gpsLocationStatus = 0x55;
-    g_setSleepSec = SLEEP_NORMAL_SEC;
-    g_alarmFlag = RESET;
-	g_alarmPacketFlag = RESET;
+//	g_gpsLocationStatus = 0x55;
+    g_uiSetSleepSec = SLEEP_NORMAL_SEC;
+    g_uiAlarmFlag = RESET;
+	g_uiAlarmPacketFlag = RESET;
 
-    memset(imeiBuf, IMEI_BUF_LEN, 0);
+    memset(g_IMSIBuf, IMSI_INFO_LEN, 0);
     for(i = 0; i < PROTO_LOGIN_BUF; i++)
     {
-        loginBuf[i] = 0;
+        cLoginBuf[i] = 0;
     }
     for(i = 0; i < PROTO_GPS_BUF; i++)
     {
         gpsBuf[i] = 0;
     }
 
-    memset(g_IMSIBuf, IMSI_INFO_LEN, 0);
+    memset(ucIMEIBuf, IMEI_BUF_LEN, 0);
 
     for(i = 0; i < PHONE_NUMBER_LEN; i++)
     {
         g_phoneNum[i] = 0x30;
     }
 
-    memset(&loginMsg, sizeof(loginMsg), 0);
-    memset(&gpsMsg, sizeof(gpsMsg), 0);
+    memset(&stLoginMsg, sizeof(stLoginMsg), 0);
+//    memset(&gpsMsg, sizeof(gpsMsg), 0);
 
     memset(&g_simData, sizeof(g_simData), 0);
-    memset(&g_gpsData, sizeof(g_gpsData), 0);
+//    memset(&g_gpsData, sizeof(g_gpsData), 0);
     memset(&g_deviceData, sizeof(g_deviceData), 0);
 
 }
@@ -180,17 +177,16 @@ void InitVariables(void)
  */
 int main(void)
 {
-    int i = 0;
+//    int i = 0;
 	uint32_t errNum = 0;
-    uint8_t gpsRecvTimes = 0;  // GPS Information Received Times
+    uint8_t gpsRecvTimes = 0;  // GPS Received Times
     uint8_t gsmRetyTimes = 0;  // GSM Retry Times
-    uint8_t gprsRetyTimes = 0;
+    uint8_t gprsRetyTimes = 0; // GPRS Retry Times
 
+	uint8_t gpsRtn = RST_FAIL;    // GPS function return result
 	uint8_t gsmRtn = RST_FAIL;
 	uint8_t gprsRtn = RST_FAIL;
-
-	
-    uint8_t rst = GPS_FAIL;    // GPS function return result
+    uint8_t gprsSendFlag = RST_FAIL; // GPRS Send Status Flag
 //    ST_GPSRMCINFO rmc;         // GPS RMC packet information
 //    unsigned char gprsSendErrNum = 0;  // GPRS send error number
 //    uint16_t removeNum = 0;    // Remove detect counter
@@ -198,11 +194,12 @@ int main(void)
     uint32_t sleepSec = 0;
 	uint32_t alarmStickFlag = 0;    // 是否有移开的动作 1- 有 0-无
 
-    // Used for parse GPRS Received Data
+    // Used for parse GPRS Received Data Analysis
     char *pRecvBuf = NULL;     // GPRS Received buffer
     uint32_t recvLen = 0;      // GPRS Received length
     char *pfeed = NULL;        // Used for parse
 
+	// Used for CheckLinkStatus
 	uint8_t status = 0;
 
     /////////////////////////////////////////////////////////////////
@@ -279,43 +276,6 @@ int main(void)
     // Init Variables
     /////////////////////////////////////////////////////////////////
     InitVariables();
-/*
-//GPSPowerOn();
-//delay_10ms(200);
-//TIM2_Start();
-
-GSM_PowerOn();
-delay_10ms(200);
-GSM_Init();
-GSM_CheckSIMCard();
-GSM_CheckNetworkReg();
-GSM_CheckGPRSService();
-//GSM_SetNetworkReg();
-GSM_SetCIPMode(0);
-GSM_StartTaskAndSetAPN();
-GSM_BringUpConnect();
-GSM_GetLocalIP();
-while(1)
-{
-	
-	//uint8_t rst = RST_FAIL;
-	GSM_ceng();
-	
-	
-	
-	//ShowLongitude();
-	//ShowLatitude();
-	//ShowGPSTime();
-	//delay_10ms(500);
-	//if(i > 10)
-	//{
-	//	GPSPowerOff();
-	//}
-	//i++;
-	STM_EVAL_LEDToggle(LED1);
-	delay_10ms(500);
-}
-*/
 
     /////////////////////////////////////////////////////////////////
     // Main LOOP
@@ -323,10 +283,14 @@ while(1)
     while(1)
     {
 	    delay_10ms(STICK_ON_SEC);
+		gpsRtn = RST_FAIL;
+		gsmRtn = RST_FAIL;
+		gprsRtn = RST_FAIL;
+		gprsSendFlag = RST_FAIL;
 
         // If Stick On Car or sth
         if(((uint32_t)Bit_RESET == STM_EVAL_PBGetState(BUTTON_KEY))
-                || (SET == g_alarmFlag))
+                || (SET == g_uiAlarmFlag))
         {
 			/////////////////////////////////////////////////////////////////
             // Check Stick Action and set flag
@@ -343,7 +307,7 @@ while(1)
             // First Power ON GPS
             /////////////////////////////////////////////////////////////////
             GPSPowerOn();
-			DEBUG("GPSPowerOn\n");
+			DEBUG("\r\n GPSPowerOn \r\n");
 			delay_10ms(200);
 			/////////////////////////////////////////////////////////////////
             // Receive GPS Data and Parse, If Recv Success then break
@@ -352,10 +316,10 @@ while(1)
 			{
 				gpsRecvTimes++;
 				TIM2_Start();
-				rst = GetGPSData();
+				gpsRtn = GetGPSData();
 				TIM2_Stop();
 				
-				if(RST_OK == rst)
+				if(RST_OK == gpsRtn)
 				{
 					ucGPSStatus = GPS_DEVICE_OK;
 					ParseGPSData(&stGPSData);
@@ -412,18 +376,19 @@ while(1)
 				{
 					continue;
 				}
+				
 				gsmRtn = GSM_QuerySignal(&ucSignalQuality);
 				if(RST_FAIL == gsmRtn)
 				{
 					continue;
 				}
 
-				gsmRtn = GSM_QueryBatVoltage(&stBATInfo);
+				
+				gsmRtn = GSM_CheckNetworkReg();
 				if(RST_FAIL == gsmRtn)
 				{
-					// clear battery info
+					continue;
 				}
-
 
 				GSM_SetNetworkReg(2);
 				if(USART_FAIL == GSM_QueryCreg(&stCREGInfo))
@@ -443,10 +408,18 @@ while(1)
 					// clear imsi info
 				}
 
+				GSM_SetCIPMode(0);
+
 				gsmRtn = GSM_CheckGPRSService();
 				if(RST_FAIL == gsmRtn)
 				{
 					continue;
+				}
+
+				gsmRtn = GSM_QueryBatVoltage(&stBATInfo);
+				if(RST_FAIL == gsmRtn)
+				{
+					// clear battery info
 				}
 
 				while(gprsRetyTimes < GPRS_RETRY_TIMES)
@@ -478,15 +451,15 @@ GPRS_CheckLinkStatus(&status);
 						continue;
 					}
 GPRS_CheckLinkStatus(&status);
-					g_sequenceNum = 1; // Init packet sequence to 1
+					g_usSequenceNum = 1; // Init packet sequence to 1
 					errNum = 0;
-		            loadLoginMsg(imeiBuf, g_sequenceNum);
+		            loadLoginMsg(ucIMEIBuf, g_usSequenceNum);
 		            PackLoginMsg();
 ShowLoginMsg();
 					while(errNum < 5)
 					{
 						errNum++;
-						gprsRtn = GPRS_SendData_rsp(loginBuf, EELINK_LOGIN_MSGLEN, &pRecvBuf, &recvLen);
+						gprsRtn = GPRS_SendData_rsp(cLoginBuf, EELINK_LOGIN_MSGLEN, &pRecvBuf, &recvLen);
 						if(USART_SUCESS == gprsRtn)
 						{
 							// parse response data, pp is 0x70 0x70
@@ -501,10 +474,10 @@ ShowLoginMsg();
 				                // Check sleep time setting value
 				                if((sleepSec > SLEEP_TIME_MIN) && (sleepSec < SLEEP_TIME_MAX))
 				                {
-				                    g_setSleepSec = sleepSec;
+				                    g_uiSetSleepSec = sleepSec;
 									
 				                }
-								DEBUG("g_setSleepSec = %d\n", g_setSleepSec);
+								DEBUG("g_uiSetSleepSec = %d\n", g_uiSetSleepSec);
 				            }
 				            else
 				            {
@@ -520,22 +493,25 @@ ShowLoginMsg();
 #endif // DBG_ENABLE_MACRO
 						}
 					}
-
-					g_sequenceNum++;
+					
 					errNum = 0;
+					g_usSequenceNum++;
 
+					// detect remove action and alarm flag is setted then send alarm msg
 					if((1 == alarmStickFlag)
-                        && (SET == g_alarmFlag))
+                        && (SET == g_uiAlarmFlag))
 	                {
 	                    PackAlarmMsg();
 	                    sendLen = EELINK_ALARM_MSGLEN;
-						g_alarmPacketFlag = SET;
+						g_uiAlarmPacketFlag = SET;
+						DEBUG("PackAlarmMsg\r\n");
 	                }
 	                else
 	                {
 	                    PackGpsMsg();
 	                    sendLen = EELINK_GPS_MSGLEN;
-						g_alarmPacketFlag = RESET;
+						g_uiAlarmPacketFlag = RESET;
+						DEBUG("PackGpsMsg\r\n");
 	                }
 ShowGpsMsg();
 					while(errNum < 5)
@@ -544,21 +520,40 @@ ShowGpsMsg();
 						gprsRtn = GPRS_SendData(gpsBuf, sendLen);
 						if(USART_SUCESS == gprsRtn)
 						{
+							gprsSendFlag = RST_OK;
+							DEBUG("send_ok alarmflag = %d; g_alarmPacketFlag = %d\n", g_uiAlarmFlag, g_uiAlarmPacketFlag);
+		                    // Toggle alarm flag
+		                    if((SET == g_uiAlarmFlag) && (SET == g_uiAlarmPacketFlag))
+		                    {
+		                        g_uiAlarmFlag = RESET;
+		                    }
+		                    else
+		                    {
+		                        g_uiAlarmFlag = SET;
+		                    }
+		                    DEBUG("send_ok alarmflag = %d\n", g_uiAlarmFlag);
 							break;
 						}
 					}
+					errNum = 0;
 
 					// break gprs send process
-					if(USART_SUCESS == gprsRtn)
+					if(RST_OK == gprsSendFlag)
 					{
 						break;
 					}
 				
 				}
+				gprsRetyTimes = 0;
+				// break gprs send process
+				if(RST_OK == gprsSendFlag)
+				{
+					break;
+				}
 
 			}
+			gsmRetyTimes = 0;
 
- 
         }
 
         /////////////////////////////////////////////////////////////////
@@ -579,7 +574,7 @@ ShowGpsMsg();
 
 		// NOT Stick and Alarm Flag Valid, Then Sleep Less
 		if(((uint32_t)Bit_SET == STM_EVAL_PBGetState(BUTTON_KEY))
-                        && (SET == g_alarmFlag))
+                        && (SET == g_uiAlarmFlag))
 		{
 			RTC_SetAlarm(RTC_GetCounter() + SLEEP_ALARM_SEC);
 			DEBUG("alarmmode sleep\n");
@@ -587,13 +582,13 @@ ShowGpsMsg();
 		else
 		{
 
-        	RTC_SetAlarm(RTC_GetCounter() + g_setSleepSec);
-			DEBUG("normalmode sleep %d\n", g_setSleepSec);
+        	RTC_SetAlarm(RTC_GetCounter() + g_uiSetSleepSec);
+			DEBUG("normalmode sleep %d\n", g_uiSetSleepSec);
 		}
 
         /* Wait until last write operation on RTC registers has finished */
         RTC_WaitForLastTask();
-        DEBUG("GOING INTO STOPMODE %d sec\n", g_setSleepSec);
+        DEBUG("GOING INTO STOPMODE %d sec\n", g_uiSetSleepSec);
         /* Request to enter STOP mode with regulator in low power mode*/
         PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
 
@@ -637,31 +632,31 @@ uint8_t ProcessIMEI(uint8_t *pImei, uint8_t *pRst, int32_t imeilen, int32_t rstl
 }
 
 /**
-  * @brief  Load IMEI to loginMsg structure
+  * @brief  Load IMEI to stLoginMsg structure
   * @param  None
   * @retval None
   */
 void loadLoginMsg(uint8_t *imei, uint16_t sequence)
 {
-    loginMsg.hdr.header[0] = PROTO_EELINK_HEADER;
-    loginMsg.hdr.header[1] = PROTO_EELINK_HEADER;
-    loginMsg.hdr.type = PACKET_EELINK_LOGIN;
-    loginMsg.hdr.len[0] = 0x00;
-    loginMsg.hdr.len[1] = 0x0C;
-    loginMsg.hdr.seq[0] = (uint8_t)((sequence >> 8) & 0x00FF);
-    loginMsg.hdr.seq[1] = (uint8_t)((sequence) & 0x00FF);
-    if(RST_FAIL == ProcessIMEI(imei, loginMsg.imei, IMEI_BUF_LEN, 8))
+    stLoginMsg.hdr.header[0] = PROTO_EELINK_HEADER;
+    stLoginMsg.hdr.header[1] = PROTO_EELINK_HEADER;
+    stLoginMsg.hdr.type = PACKET_EELINK_LOGIN;
+    stLoginMsg.hdr.len[0] = 0x00;
+    stLoginMsg.hdr.len[1] = 0x0C;
+    stLoginMsg.hdr.seq[0] = (uint8_t)((sequence >> 8) & 0x00FF);
+    stLoginMsg.hdr.seq[1] = (uint8_t)((sequence) & 0x00FF);
+    if(RST_FAIL == ProcessIMEI(imei, stLoginMsg.imei, IMEI_BUF_LEN, 8))
     {
         // re-init imei buffer
-        memset(loginMsg.imei, sizeof(loginMsg.imei), 0);
+        memset(stLoginMsg.imei, sizeof(stLoginMsg.imei), 0);
         DEBUG("IMEI process ERROR!\n");
     }
-    loginMsg.lang = EELINK_LANG; // english
-    loginMsg.zone = EELINK_ZONE; // east 8
+    stLoginMsg.lang = EELINK_LANG; // english
+    stLoginMsg.zone = EELINK_ZONE; // east 8
 }
 
 /**
-  * @brief  Load loginMsg structure to send buffer
+  * @brief  Load stLoginMsg structure to send buffer
   * @param  None
   * @retval None
   */
@@ -672,29 +667,29 @@ void PackLoginMsg(void)
     offset = 0;
     for(i = 0; i < 2; i++)
     {
-        loginBuf[offset] = loginMsg.hdr.header[i];
+        cLoginBuf[offset] = stLoginMsg.hdr.header[i];
         offset++;
     }
-    loginBuf[offset] = loginMsg.hdr.type;
+    cLoginBuf[offset] = stLoginMsg.hdr.type;
     offset++;
     for(i = 0; i < 2; i++)
     {
-        loginBuf[offset] = loginMsg.hdr.len[i];
+        cLoginBuf[offset] = stLoginMsg.hdr.len[i];
         offset++;
     }
     for(i = 0; i < 2; i++)
     {
-        loginBuf[offset] = loginMsg.hdr.seq[i];
+        cLoginBuf[offset] = stLoginMsg.hdr.seq[i];
         offset++;
     }
     for(i = 0; i < 8; i++)
     {
-        loginBuf[offset] = loginMsg.imei[i];
+        cLoginBuf[offset] = stLoginMsg.imei[i];
         offset++;
     }
-    loginBuf[offset] = loginMsg.lang;
+    cLoginBuf[offset] = stLoginMsg.lang;
     offset++;
-    loginBuf[offset] = loginMsg.zone;
+    cLoginBuf[offset] = stLoginMsg.zone;
     offset++;
     if(offset != (EELINK_LOGIN_MSGLEN))
     {
@@ -702,76 +697,6 @@ void PackLoginMsg(void)
     }
 }
 
-/**
-  * @brief  Load GPS information to gpsMsg structure
-  * @param  None
-  * @retval None
-  */
-void LoadGpsMsg(uint16_t sequence)
-{
-    uint32_t i;
-    gpsMsg.hdr.header[0] = PROTO_EELINK_HEADER;
-    gpsMsg.hdr.header[1] = PROTO_EELINK_HEADER;
-    gpsMsg.hdr.type = PACKET_EELINK_GPS;
-    gpsMsg.hdr.len[0] = 0x00;
-    gpsMsg.hdr.len[1] = (EELINK_GPS_MSGLEN - 5);  // 37
-    gpsMsg.hdr.seq[0] = (uint8_t)((sequence >> 8) & 0x00FF);
-    gpsMsg.hdr.seq[1] = (uint8_t)((sequence) & 0x00FF);
-
-    for(i = 0; i < 4; i++)
-    {
-        gpsMsg.utctime[i] = g_gpsData.utc.s[3 - i];
-    }
-
-    for(i = 0; i < 4; i++)
-    {
-        gpsMsg.lati[i] = g_gpsData.latitude.s[3 - i];
-    }
-
-    for(i = 0; i < 4; i++)
-    {
-        gpsMsg.longi[i] = g_gpsData.longitude.s[3 - i];
-    }
-
-    gpsMsg.speed = g_gpsData.speed;
-
-    for(i = 0; i < 2; i++)
-    {
-        gpsMsg.course[i] = g_gpsData.course.s[1 - i];
-    }
-
-    for(i = 0; i < 9; i++)
-    {
-        gpsMsg.basestation[i] = g_simData.Station[i];
-    }
-
-    gpsMsg.gps_valid = g_gpsData.status;
-
-    for(i = 0; i < 2; i++)
-    {
-        gpsMsg.dev_status[i] = g_deviceData.status[i];
-    }
-
-    for(i = 0; i < 2; i++)
-    {
-        gpsMsg.battery_voltage[i] = g_simData.Battery[i];
-    }
-
-    for(i = 0; i < 2; i++)
-    {
-        gpsMsg.signal_strength[i] = g_simData.Signal[i];
-    }
-
-    for(i = 0; i < 2; i++)
-    {
-        gpsMsg.analog_input1[i] = g_deviceData.analog1[i];
-    }
-
-    for(i = 0; i < 2; i++)
-    {
-        gpsMsg.analog_input2[i] = g_deviceData.analog2[i];
-    }
-}
 
 /**
   * @brief  Load gpsMsg structure to send buffer
@@ -785,43 +710,47 @@ void PackGpsMsg(void)
     offset = 0;
     for(i = 0; i < 2; i++)
     {
-        gpsBuf[offset] = gpsMsg.hdr.header[i];
+        gpsBuf[offset] = PROTO_EELINK_HEADER;
         offset++;
     }
-    gpsBuf[offset] = gpsMsg.hdr.type;
+    gpsBuf[offset] = PACKET_EELINK_GPS;
     offset++;
-    for(i = 0; i < 2; i++)
-    {
-        gpsBuf[offset] = gpsMsg.hdr.len[i];
-        offset++;
-    }
-    for(i = 0; i < 2; i++)
-    {
-        gpsBuf[offset] = gpsMsg.hdr.seq[i];
-        offset++;
-    }
+	gpsBuf[offset] = 0x00;
+    offset++;
+	gpsBuf[offset] = (EELINK_GPS_MSGLEN - 5); // 37
+    offset++;
+	gpsBuf[offset] = (uint8_t)((g_usSequenceNum >> 8) & 0x00FF);
+    offset++;
+	gpsBuf[offset] = (uint8_t)((g_usSequenceNum) & 0x00FF);
+	offset++;
+	// UTC日期时间
     for(i = 0; i < 4; i++)
     {
         gpsBuf[offset] = stGPSData.utc.s[3 - i];
         offset++;
     }
+	// 纬度
     for(i = 0; i < 4; i++)
     {
         gpsBuf[offset] = stGPSData.latitude.s[3 - i];
         offset++;
     }
+	// 经度
     for(i = 0; i < 4; i++)
     {
         gpsBuf[offset] = stGPSData.longitude.s[3 - i];
         offset++;
     }
+	// 速度
     gpsBuf[offset] = stGPSData.speed;
     offset++;
+	// 航向
     for(i = 0; i < 2; i++)
     {
         gpsBuf[offset] = stGPSData.course.s[1 - i];
         offset++;
     }
+	// 基站 9 bytes
 	for(i = 0; i < 2; i++)
     {
         gpsBuf[offset] = stIMSIInfo.Mcc[i];
@@ -844,28 +773,35 @@ void PackGpsMsg(void)
         gpsBuf[offset] = stCREGInfo.Ci[i];
         offset++;
     }
-	
+	// 定位状态
     gpsBuf[offset] = stGPSData.status;
     offset++;
+	// 设备状态
+	gpsBuf[offset] = 0x00;  // 补零
+    offset++;
+	gpsBuf[offset] = stGPSData.status;
+    offset++;
+	// 电池电压
     for(i = 0; i < 2; i++)
     {
-        gpsBuf[offset] = stBATInfo.BatVoltage.s[i];
+        gpsBuf[offset] = stBATInfo.BatVoltage.s[1 - i];
         offset++;
     }
-
+	// 信号强度
 	gpsBuf[offset] = 0;  // 补零
     offset++;
-	gpsBuf[offset] = ucSignalQuality;  // 补零
+	gpsBuf[offset] = ucSignalQuality;
     offset++;
-   
+    // 模拟输入1
     for(i = 0; i < 2; i++)
     {
-        gpsBuf[offset] = gpsMsg.analog_input1[i];
+        gpsBuf[offset] = g_deviceData.analog1[i];
         offset++;
     }
+	// 模拟输入2
     for(i = 0; i < 2; i++)
     {
-        gpsBuf[offset] = gpsMsg.analog_input2[i];
+        gpsBuf[offset] = g_deviceData.analog2[i];
         offset++;
     }
 
@@ -887,7 +823,7 @@ void PackAlarmMsg(void)
     offset = 0;
     for(i = 0; i < 2; i++)
     {
-        gpsBuf[offset] = gpsMsg.hdr.header[i];
+        gpsBuf[offset] = PROTO_EELINK_HEADER;
         offset++;
     }
     gpsBuf[offset] = PACKET_EELINK_WARNING; //gpsMsg.hdr.type;
@@ -896,39 +832,56 @@ void PackAlarmMsg(void)
     offset++;
     gpsBuf[offset] = (EELINK_ALARM_MSGLEN - 5); // header len
     offset++;
-    for(i = 0; i < 2; i++)
+	gpsBuf[offset] = (uint8_t)((g_usSequenceNum >> 8) & 0x00FF);
+    offset++;
+	gpsBuf[offset] = (uint8_t)((g_usSequenceNum) & 0x00FF);
+	offset++;
+    
+    for(i = 0; i < 4; i++)
     {
-        gpsBuf[offset] = gpsMsg.hdr.seq[i];
+        gpsBuf[offset] = stGPSData.utc.s[3 - i];
         offset++;
     }
     for(i = 0; i < 4; i++)
     {
-        gpsBuf[offset] = gpsMsg.utctime[i];
+        gpsBuf[offset] = stGPSData.latitude.s[3 - i];
         offset++;
     }
     for(i = 0; i < 4; i++)
     {
-        gpsBuf[offset] = gpsMsg.lati[i];
+        gpsBuf[offset] = stGPSData.longitude.s[3 - i];
         offset++;
     }
-    for(i = 0; i < 4; i++)
-    {
-        gpsBuf[offset] = gpsMsg.longi[i];
-        offset++;
-    }
-    gpsBuf[offset] = gpsMsg.speed;
+    gpsBuf[offset] = stGPSData.speed;
     offset++;
     for(i = 0; i < 2; i++)
     {
-        gpsBuf[offset] = gpsMsg.course[i];
+        gpsBuf[offset] = stGPSData.course.s[1 - i];
         offset++;
     }
-    for(i = 0; i < 9; i++)
+    for(i = 0; i < 2; i++)
     {
-        gpsBuf[offset] = gpsMsg.basestation[i];
+        gpsBuf[offset] = stIMSIInfo.Mcc[i];
         offset++;
     }
-    gpsBuf[offset] = gpsMsg.gps_valid;
+	for(i = 0; i < 2; i++)
+    {
+        gpsBuf[offset] = stIMSIInfo.Mnc[i];
+        offset++;
+    }
+	for(i = 0; i < 2; i++)
+    {
+        gpsBuf[offset] = stCREGInfo.Lac[i];
+        offset++;
+    }
+	gpsBuf[offset] = 0;  // 补零
+    offset++;
+	for(i = 0; i < 2; i++)
+    {
+        gpsBuf[offset] = stCREGInfo.Ci[i];
+        offset++;
+    }
+    gpsBuf[offset] = stGPSData.status;
     offset++;
     gpsBuf[offset] = 0x71;  // remove alarm flag
     offset++;
@@ -940,7 +893,7 @@ void PackAlarmMsg(void)
 }
 
 /**
-  * @brief  Load gpsMsg and loginMsg structure to factory send buffer
+  * @brief  Load gpsMsg and stLoginMsg structure to factory send buffer
   * @param  None
   * @retval None
   */
@@ -960,39 +913,57 @@ void PackFactoryMsg(void)
     offset++;
     gpsBuf[offset] = (FACTORY_REPORT_MSGLEN - 5); // header len
     offset++;
-    for(i = 0; i < 2; i++)
-    {
-        gpsBuf[offset] = gpsMsg.hdr.seq[i];
-        offset++;
-    }
-    for(i = 0; i < 4; i++)
-    {
-        gpsBuf[offset] = gpsMsg.utctime[i];
-        offset++;
-    }
-    for(i = 0; i < 4; i++)
-    {
-        gpsBuf[offset] = gpsMsg.lati[i];
-        offset++;
-    }
-    for(i = 0; i < 4; i++)
-    {
-        gpsBuf[offset] = gpsMsg.longi[i];
-        offset++;
-    }
-    gpsBuf[offset] = gpsMsg.speed;
+    gpsBuf[offset] = (uint8_t)((g_usSequenceNum >> 8) & 0x00FF);
     offset++;
+	gpsBuf[offset] = (uint8_t)((g_usSequenceNum) & 0x00FF);
+	offset++;
+	for(i = 0; i < 4; i++)
+    {
+        gpsBuf[offset] = stGPSData.utc.s[3 - i];
+        offset++;
+    }
+    for(i = 0; i < 4; i++)
+    {
+        gpsBuf[offset] = stGPSData.latitude.s[3 - i];
+        offset++;
+    }
+    for(i = 0; i < 4; i++)
+    {
+        gpsBuf[offset] = stGPSData.longitude.s[3 - i];
+        offset++;
+    }
+    gpsBuf[offset] = stGPSData.speed;
+    offset++;
+
+    
     for(i = 0; i < 2; i++)
     {
-        gpsBuf[offset] = gpsMsg.course[i];
+        gpsBuf[offset] = stGPSData.course.s[1 - i];
         offset++;
     }
-    for(i = 0; i < 9; i++)
+    for(i = 0; i < 2; i++)
     {
-        gpsBuf[offset] = gpsMsg.basestation[i];
+        gpsBuf[offset] = stIMSIInfo.Mcc[i];
         offset++;
     }
-    gpsBuf[offset] = gpsMsg.gps_valid;
+	for(i = 0; i < 2; i++)
+    {
+        gpsBuf[offset] = stIMSIInfo.Mnc[i];
+        offset++;
+    }
+	for(i = 0; i < 2; i++)
+    {
+        gpsBuf[offset] = stCREGInfo.Lac[i];
+        offset++;
+    }
+	gpsBuf[offset] = 0;  // 补零
+    offset++;
+	for(i = 0; i < 2; i++)
+    {
+        gpsBuf[offset] = stCREGInfo.Ci[i];
+        offset++;
+    }
+    gpsBuf[offset] = stGPSData.status;
     offset++;
     gpsBuf[offset] = 0;  // device status
     offset++;
@@ -1000,17 +971,17 @@ void PackFactoryMsg(void)
     offset++;
     for(i = 0; i < 2; i++)
     {
-        gpsBuf[offset] = gpsMsg.battery_voltage[i];
+        gpsBuf[offset] = stBATInfo.BatVoltage.s[1 - i];
         offset++;
     }
-    for(i = 0; i < 2; i++)
-    {
-        gpsBuf[offset] = gpsMsg.signal_strength[i];
-        offset++;
-    }
+
+	gpsBuf[offset] = 0;  // 补零
+    offset++;
+	gpsBuf[offset] = ucSignalQuality; 
+    offset++;
     for(i = 0; i < IMEI_BUF_LEN; i++)
     {
-        gpsBuf[offset] = imeiBuf[i];
+        gpsBuf[offset] = ucIMEIBuf[i];
         offset++;
     }
 
@@ -1026,7 +997,7 @@ void PackFactoryMsg(void)
     }
     gpsBuf[offset] = ucGPSStatus;  // gps status
     offset++;
-    gpsBuf[offset] = 0x01;  // software version v1.0
+    gpsBuf[offset] = 0x02;  // software version v2.0
     offset++;
     gpsBuf[offset] = 0x00;
     offset++;

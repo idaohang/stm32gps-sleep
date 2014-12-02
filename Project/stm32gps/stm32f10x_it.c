@@ -29,7 +29,7 @@
 #include "stm32gps_board.h"
 #include "usart.h"
 #include "GSM_App.h"
-#include "GPS_App.h"
+//#include "GPS_App.h"
 #include "gps.h"
 
 
