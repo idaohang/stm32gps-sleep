@@ -56,22 +56,21 @@ uint8_t g_phoneNum[PHONE_NUMBER_LEN];
 
 // packet message
 EELINK_SIM_PACKET_LOGIN stLoginMsg;
-char cLoginBuf[PROTO_LOGIN_BUF];
-//EELINK_PACKET_GPS gpsMsg;
-static char gpsBuf[PROTO_GPS_BUF];
+static char LoginBuf[PROTO_LOGIN_BUF_LEN];
+static char gpsBuf[PROTO_GPS_BUF_LEN];
+static char stationBuf[PROTO_STATION_BUF_LEN];
 
-ST_SIMDATA g_simData;
-//ST_GPSDATA g_gpsData;
+
 ST_DEVICEDATA g_deviceData;
-ST_IMSIINFO g_imsiInfo;
 
 ST_BATVOLTAGESTATUS stBATInfo;
 ST_CREGINFO stCREGInfo;
 ST_IMSIINFO stIMSIInfo;
 stru_GPSDATA stGPSData;
+ST_PACKET_BASESTATION stStationInfo;
+
 uint8_t ucIMEIBuf[IMEI_BUF_LEN];
 uint8_t ucSignalQuality;
-
 
 uint16_t g_usSequenceNum;  // GPRS packet's sequence number
 
@@ -89,6 +88,7 @@ void loadLoginMsg(uint8_t *imei, uint16_t sequence);
 void PackLoginMsg(void);
 void PackGpsMsg(void);
 void PackAlarmMsg(void);
+void PackStationMsg(void);
 void PackFactoryMsg(void);
 /* Private functions ---------------------------------------------------------*/
 
@@ -104,10 +104,10 @@ void ShowLoginMsg(void)
     }
     DEBUG("\r\n");
     // login msg
-    DEBUG("LOGIN MSG:");
-    for(i = 0; i < PROTO_LOGIN_BUF; i++)
+    DEBUG("\r\nLOGIN MSG:");
+    for(i = 0; i < PROTO_LOGIN_BUF_LEN; i++)
     {
-        DEBUG("0x%x-", cLoginBuf[i]);
+        DEBUG("0x%x-", LoginBuf[i]);
     }
     DEBUG("\r\n");
 }
@@ -116,10 +116,22 @@ void ShowGpsMsg(void)
 {
     uint32_t i;
     // gps msg
-    DEBUG("GPS MSG:");
-    for(i = 0; i < PROTO_GPS_BUF; i++)
+    DEBUG("\r\nGPS MSG:");
+    for(i = 0; i < PROTO_GPS_BUF_LEN; i++)
     {
         DEBUG("0x%x-", gpsBuf[i]);
+    }
+    DEBUG("\r\n");
+}
+
+void ShowStationMsg(void)
+{
+    uint32_t i;
+    // gps msg
+    DEBUG("\r\nSTATION MSG:");
+    for(i = 0; i < (8+stStationInfo.num*11); i++)
+    {
+        DEBUG("0x%x-", stationBuf[i]);
     }
     DEBUG("\r\n");
 }
@@ -143,11 +155,11 @@ void InitVariables(void)
 	g_uiAlarmPacketFlag = RESET;
 
     memset(g_IMSIBuf, IMSI_INFO_LEN, 0);
-    for(i = 0; i < PROTO_LOGIN_BUF; i++)
+    for(i = 0; i < PROTO_LOGIN_BUF_LEN; i++)
     {
-        cLoginBuf[i] = 0;
+        LoginBuf[i] = 0;
     }
-    for(i = 0; i < PROTO_GPS_BUF; i++)
+    for(i = 0; i < PROTO_GPS_BUF_LEN; i++)
     {
         gpsBuf[i] = 0;
     }
@@ -162,9 +174,10 @@ void InitVariables(void)
     memset(&stLoginMsg, sizeof(stLoginMsg), 0);
 //    memset(&gpsMsg, sizeof(gpsMsg), 0);
 
-    memset(&g_simData, sizeof(g_simData), 0);
+//    memset(&g_simData, sizeof(g_simData), 0);
 //    memset(&g_gpsData, sizeof(g_gpsData), 0);
     memset(&g_deviceData, sizeof(g_deviceData), 0);
+	memset(&stStationInfo, sizeof(stStationInfo), 0);
 
 }
 
@@ -422,6 +435,12 @@ int main(void)
 					// clear battery info
 				}
 
+				gsmRtn = GSM_ceng(&stStationInfo);
+				if(RST_FAIL == gsmRtn)
+				{
+					// clear battery info
+				}
+
 				while(gprsRetyTimes < GPRS_RETRY_TIMES)
 				{
 					gprsRetyTimes++;
@@ -459,7 +478,7 @@ ShowLoginMsg();
 					while(errNum < 5)
 					{
 						errNum++;
-						gprsRtn = GPRS_SendData_rsp(cLoginBuf, EELINK_LOGIN_MSGLEN, &pRecvBuf, &recvLen);
+						gprsRtn = GPRS_SendData_rsp(LoginBuf, EELINK_LOGIN_MSGLEN, &pRecvBuf, &recvLen);
 						if(USART_SUCESS == gprsRtn)
 						{
 							// parse response data, pp is 0x70 0x70
@@ -493,10 +512,29 @@ ShowLoginMsg();
 #endif // DBG_ENABLE_MACRO
 						}
 					}
-					
+
+#if 0					
 					errNum = 0;
 					g_usSequenceNum++;
 
+					PackStationMsg();
+#ifdef DBG_ENABLE_MACRO
+ShowStationMsg();
+#endif
+					sendLen = 8+stStationInfo.num*11;
+					while(errNum < 5)
+					{
+						errNum++;
+						gprsRtn = GPRS_SendData(stationBuf, sendLen);
+						if(USART_SUCESS == gprsRtn)
+						{
+							break;
+						}
+					}
+
+#endif
+					errNum = 0;
+					g_usSequenceNum++;
 					// detect remove action and alarm flag is setted then send alarm msg
 					if((1 == alarmStickFlag)
                         && (SET == g_uiAlarmFlag))
@@ -667,29 +705,29 @@ void PackLoginMsg(void)
     offset = 0;
     for(i = 0; i < 2; i++)
     {
-        cLoginBuf[offset] = stLoginMsg.hdr.header[i];
+        LoginBuf[offset] = stLoginMsg.hdr.header[i];
         offset++;
     }
-    cLoginBuf[offset] = stLoginMsg.hdr.type;
+    LoginBuf[offset] = stLoginMsg.hdr.type;
     offset++;
     for(i = 0; i < 2; i++)
     {
-        cLoginBuf[offset] = stLoginMsg.hdr.len[i];
+        LoginBuf[offset] = stLoginMsg.hdr.len[i];
         offset++;
     }
     for(i = 0; i < 2; i++)
     {
-        cLoginBuf[offset] = stLoginMsg.hdr.seq[i];
+        LoginBuf[offset] = stLoginMsg.hdr.seq[i];
         offset++;
     }
     for(i = 0; i < 8; i++)
     {
-        cLoginBuf[offset] = stLoginMsg.imei[i];
+        LoginBuf[offset] = stLoginMsg.imei[i];
         offset++;
     }
-    cLoginBuf[offset] = stLoginMsg.lang;
+    LoginBuf[offset] = stLoginMsg.lang;
     offset++;
-    cLoginBuf[offset] = stLoginMsg.zone;
+    LoginBuf[offset] = stLoginMsg.zone;
     offset++;
     if(offset != (EELINK_LOGIN_MSGLEN))
     {
@@ -889,6 +927,70 @@ void PackAlarmMsg(void)
     if(offset != (EELINK_ALARM_MSGLEN))
     {
         DEBUG("PackAlarmMsg ERROR!\n");
+    }
+}
+
+/**
+  * @brief  Load station structure to station buffer
+  * @param  None
+  * @retval None
+  */
+void PackStationMsg(void)
+{
+    uint32_t i = 0;
+	uint32_t j = 0;
+    uint32_t offset = 0;
+    offset = 0;
+    for(i = 0; i < 2; i++)
+    {
+        stationBuf[offset] = PROTO_EELINK_HEADER;
+        offset++;
+    }
+    stationBuf[offset] = PACKET_EELINK_STATION; //gpsMsg.hdr.type;
+    offset++;
+    stationBuf[offset] = 0; // header len
+    offset++;
+    stationBuf[offset] = (3 + (stStationInfo.num*11)); // header len = 7+1+num*11-5
+    offset++;
+	stationBuf[offset] = (uint8_t)((g_usSequenceNum >> 8) & 0x00FF);
+    offset++;
+	stationBuf[offset] = (uint8_t)((g_usSequenceNum) & 0x00FF);
+	offset++;
+
+	stationBuf[offset] = stStationInfo.num;
+    offset++;
+    
+    for(i = 0; i < stStationInfo.num; i++)
+    {
+		for(j = 0; j < 2; j++)
+		{
+	        stationBuf[offset] = stStationInfo.stStation[i].mcc.s[1 - j];
+	        offset++;
+		}
+		for(j = 0; j < 2; j++)
+		{
+	        stationBuf[offset] = stStationInfo.stStation[i].mnc.s[1 - j];
+	        offset++;
+		}
+		for(j = 0; j < 2; j++)
+		{
+	        stationBuf[offset] = stStationInfo.stStation[i].lac.s[1 - j];
+	        offset++;
+		}
+		for(j = 0; j < 3; j++)
+		{
+	        stationBuf[offset] = stStationInfo.stStation[i].ci.s[2 - j];
+	        offset++;
+		}
+		stationBuf[offset] = stStationInfo.stStation[i].rxl;
+	    offset++;
+		stationBuf[offset] = stStationInfo.stStation[i].rxq;
+	    offset++;
+    }
+
+    if(offset != (8+stStationInfo.num*11))
+    {
+        DEBUG("PackStationMsg ERROR!\n");
     }
 }
 

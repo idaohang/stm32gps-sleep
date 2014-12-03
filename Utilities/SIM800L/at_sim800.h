@@ -1,11 +1,11 @@
 #ifndef __AT_SIM908_H_
 #define __AT_SIM908_H_
 
-
+#define RETRY_TIMES_CMD_DEFAULT 5
 #define RETRY_TIMES_CMD_AT     15
 #define RETRY_TIMES_CMD_ATE0   5
 #define RETRY_TIMES_CMD_CPIN   6
-#define RETRY_TIMES_CMD_CSQ    10
+#define RETRY_TIMES_CMD_CSQ    20
 #define RETRY_TIMES_CMD_CADC   4
 #define RETRY_TIMES_CMD_CREG   10
 #define RETRY_TIMES_CMD_GSN    4
@@ -21,7 +21,7 @@
 #define MAX_RESP_CMD_AT   4  // 2 sec
 #define MAX_RESP_CMD_ATE0 4
 #define MAX_RESP_CMD_CPIN 10 // 5 sec
-#define MAX_RESP_CMD_CSQ  4
+#define MAX_RESP_CMD_CSQ  10
 #define MAX_RESP_CMD_CADC  4
 #define MAX_RESP_CMD_CREG 40 // 20 sec
 #define MAX_RESP_CMD_GSN  10
@@ -83,7 +83,7 @@ const char AT_CBC[] 	=		"AT+CBC\r";
 const char AT_CADC[] 	=		"AT+CADC?\r";
 const char AT_CIMI[]    = "AT+CIMI\r";
 const char AT_CSCLK_SET[]   = "AT+CSCLK=%d\r";
-const char AT_CENG_SET[] = "AT+CENG=%d\r";
+const char AT_CENG_SET[] = "AT+CENG=%d,%d\r";
 const char AT_CENG[] = "AT+CENG?\r";
 const char AT_CNUM[]     =   "AT+CNUM\r";
 const char AT_CPOWD[]     =   "AT+CPOWD=1\r";

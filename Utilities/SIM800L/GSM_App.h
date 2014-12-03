@@ -82,6 +82,37 @@ typedef struct
 	char i;
 }stru_GSMDATA;
 
+typedef struct
+{
+	union 
+	{
+		char s[2];
+		uint16_t i;
+	} mcc;
+	union 
+	{
+		char s[2];
+		uint16_t i;
+	} mnc;
+	union 
+	{
+		char s[2];
+		uint16_t i;
+	} lac;
+	union 
+	{
+		char s[3];
+		uint16_t i;
+	} ci;
+	char rxl;
+	char rxq;
+}ST_BASESTATION;
+
+typedef struct
+{
+	char num;
+	ST_BASESTATION stStation[7];
+}ST_PACKET_BASESTATION, *pST_PACKET_BASESTATION;
 
 
 char *strstr_len(char *str, char *subStr, uint32_t strlenth);
@@ -135,7 +166,7 @@ unsigned char GPRS_SendData_rsp(char *pString, unsigned int len, char **ppRecvBu
 uint8_t GSM_QueryBatVoltage(pST_BATVOLTAGESTATUS pSig);
 
 unsigned char GPRS_CheckLinkStatus(unsigned char *pStatus);
-unsigned char GSM_ceng(void);
+uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation);
 
 
 #endif

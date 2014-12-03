@@ -683,7 +683,7 @@ uint8_t GSM_Init(void)
 			break;
 		}
 		i++;
-		if(i > 2)
+		//if(i > 2)
 		{
 			GSM_TurnOnOff();
 			i = 0;
@@ -781,8 +781,12 @@ uint8_t GSM_QuerySignal(uint8_t *pSig)
 	        {
 	            *pSig = (pfeed[0] - 0x30) * 10 + (pfeed[1] - 0x30);
 	        }
-			rtn = RST_OK;
-			break;
+
+			if(*pSig > 2)
+			{
+				rtn = RST_OK;
+				break;
+			}
 		}
 
 		delay_10ms(20);
@@ -1571,6 +1575,7 @@ unsigned char GSM_creg(void)
 
     char *pStr;
 
+	GSM_ClearBuffer();
 	GSM_ClearSendBuffer();
     pcmdbuf = sendBuf;
     sprintf(pcmdbuf, AT_CREG_SET, 2);
@@ -1604,33 +1609,162 @@ unsigned char GSM_creg(void)
 
 
 
-unsigned char GSM_ceng(void)
+uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
 {
-    //char *pRecvBuf = NULL;
+	uint32_t len = 0;
+	uint32_t errNum = 0;
+	uint8_t rst = USART_FAIL;
+	uint8_t rtn = RST_FAIL;
+	static char *pfeed = NULL;
+	char *pRecvBuf = NULL;
+    uint32_t recvLen = 0;
     static char *pcmdbuf = NULL;
-    unsigned int cmdLen = 0;
 
-    GSM_ClearBuffer();
+	int idx = 0;
+	int result = 0;
+	char *ptmp = NULL;
+	char *ptmp2 = NULL;
+	
+	char *endptr;
+
 	GSM_ClearSendBuffer();
     pcmdbuf = sendBuf;
     if (pcmdbuf == NULL)
     {
-        return USART_FAIL;
+        return RST_FAIL;
     }
 
 	pcmdbuf = sendBuf;
-    sprintf(pcmdbuf, AT_CENG_SET, 1);
-    cmdLen = strlen(pcmdbuf);
-    GSM_SendAT((char *) pcmdbuf, (char *) AT_OK, cmdLen, MAX_RESP_CMD_DEFAULT);
+    sprintf(pcmdbuf, AT_CENG_SET, 1, 1);
+    len = strlen(pcmdbuf);
+	GSM_ClearBuffer();
+	while(errNum < RETRY_TIMES_CMD_DEFAULT)
+	{
+		errNum++;
+		rst = GSM_SendAT((char *) pcmdbuf, (char *) AT_OK, len, MAX_RESP_CMD_DEFAULT);
+		if(USART_SUCESS == rst)
+		{
+			break;
+		}
+		delay_10ms(20);
+	}
+	errNum = 0;
+	len = strlen(AT_CENG);
+	GSM_ClearBuffer();
+	while(errNum < RETRY_TIMES_CMD_DEFAULT)
+	{
+		pStation->num = 0;
+		rst = GSM_SendAT_rsp((char *) AT_CENG, (char *) AT_OK, len, &pRecvBuf, &recvLen, MAX_RESP_CMD_DEFAULT);
+		if(USART_SUCESS == rst)
+		{
+			// analyze CENG rsp
+			// ¼ì²éÊÇ·ñÓÐCENG×Ö¶Î
+			ptmp = strstr_len(pRecvBuf, "+CENG", recvLen);
+			if(NULL == ptmp)
+			{
+				continue;
+			}
+			
+			// The serving Cell
+			ptmp = strnchr_len(pRecvBuf, '"', 1 , recvLen);
+			if((NULL != ptmp) && (NULL != strnchr_len(pRecvBuf, '+', 2 , recvLen)))
+			{
+				ptmp2 = strnchr_len(ptmp, ',', 1 , 40);
+				if(NULL != ptmp2)
+				{
+					result = strtol((ptmp2+1), &endptr, 16);
+					DEBUG("0: rxl = 0x%x\n", result);
+					pStation->stStation[0].rxl = result;
+				}
+				ptmp2 = strnchr_len(ptmp, ',', 2 , 40);
+				if(NULL != ptmp2)
+				{
+					result = strtol((ptmp2+1), &endptr, 16);
+					DEBUG("0: rxq = 0x%x\n", result);
+					pStation->stStation[0].rxq = result;
+				}
+				ptmp2 = strnchr_len(ptmp, ',', 3 , 40);
+				if(NULL != ptmp2)
+				{
+					result = strtol((ptmp2+1), &endptr, 16);
+					DEBUG("0: mcc = 0x%x\n", result);
+					pStation->stStation[0].mcc.i = result;
+				}
+				ptmp2 = strnchr_len(ptmp, ',', 4 , 40);
+				if(NULL != ptmp2)
+				{
+					result = strtol((ptmp2+1), &endptr, 16);
+					DEBUG("0: mnc = 0x%x\n", result);
+					pStation->stStation[0].mnc.i = result;
+				}
+				ptmp2 = strnchr_len(ptmp, ',', 6 , 40);
+				if(NULL != ptmp2)
+				{
+					result = strtol((ptmp2+1), &endptr, 16);
+					DEBUG("0: ci = 0x%x\n", result);
+					pStation->stStation[0].ci.i = result;
+				}
+				ptmp2 = strnchr_len(ptmp, ',', 9 , 40);
+				if(NULL != ptmp2)
+				{
+					result = strtol((ptmp2+1), &endptr, 16);
+					DEBUG("0: lac = 0x%x\n", result);
+					pStation->stStation[0].lac.i = result;
+				}
+				pStation->num = 1;
+			}
+			
+			// Neighboring Cell
+			for(idx = 1; idx < 7; idx++)
+			{
+				ptmp = strnchr_len(pRecvBuf, '"', (idx*2+1) , recvLen);
+				if((NULL != ptmp) && (NULL != strnchr_len(pRecvBuf, '+', (idx+2) , recvLen)))
+				{
+					ptmp2 = strnchr_len(ptmp, ',', 1 , 29);
+					if(NULL != ptmp2)
+					{
+						result = strtol((ptmp2+1), &endptr, 16);
+						DEBUG("%d: rxl = 0x%x\n", idx, result);
+						pStation->stStation[idx].rxl = result;
+					}
+					ptmp2 = strnchr_len(ptmp, ',', 3 , 29);
+					if(NULL != ptmp2)
+					{
+						result = strtol((ptmp2+1), &endptr, 16);
+						DEBUG("%d: ci = 0x%x\n", idx, result);
+						pStation->stStation[idx].rxq = result;
+					}
+					ptmp2 = strnchr_len(ptmp, ',', 4 , 29);
+					if(NULL != ptmp2)
+					{
+						result = strtol((ptmp2+1), &endptr, 16);
+						DEBUG("%d: mcc = 0x%x\n", idx, result);
+						pStation->stStation[idx].mcc.i = result;
+					}
+					ptmp2 = strnchr_len(ptmp, ',', 5 , 29);
+					if(NULL != ptmp2)
+					{
+						result = strtol((ptmp2+1), &endptr, 16);
+						DEBUG("%d: mnc = 0x%x\n", idx, result);
+						pStation->stStation[idx].mnc.i = result;
+					}
+					ptmp2 = strnchr_len(ptmp, ',', 6 , 29);
+					if(NULL != ptmp2)
+					{
+						result = strtol((ptmp2+1), &endptr, 16);
+						DEBUG("%d: lac = 0x%x\n", idx, result);
+						pStation->stStation[idx].lac.i = result;
+					}
+					pStation->num = idx+1;
+				}
+			}
+	
+			rtn = RST_OK;
+			break;
+		}
+	}
 
-
-    while (USART_SUCESS != GSM_SendAT((char *) AT_CENG,
-            (char *) AT_OK, sizeof(AT_CENG), MAX_RESP_CMD_DEFAULT));
-
-    // analyze CGATT rsp
-
-
-    return USART_SUCESS;
+    return rtn;
 }
 
 

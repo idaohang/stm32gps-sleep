@@ -535,10 +535,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>2</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>159</TopLine>
-      <CurrentLine>166</CurrentLine>
+      <TopLine>928</TopLine>
+      <CurrentLine>935</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\main.c</PathWithFileName>
       <FilenameWithoutPath>main.c</FilenameWithoutPath>
@@ -957,8 +957,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1487</TopLine>
-      <CurrentLine>1487</CurrentLine>
+      <TopLine>1602</TopLine>
+      <CurrentLine>1608</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\..\Utilities\SIM800L\GSM_App.c</PathWithFileName>
       <FilenameWithoutPath>GSM_App.c</FilenameWithoutPath>
@@ -970,25 +970,19 @@
     <ActiveMDIGroup>0</ActiveMDIGroup>
     <MDIGroup>
       <Size>100</Size>
-      <ActiveTab>2</ActiveTab>
+      <ActiveTab>0</ActiveTab>
       <Documents>
         <Doc>
           <Name>..\main.c</Name>
-          <ColumnNumber>2</ColumnNumber>
-          <TopLine>159</TopLine>
-          <CurrentLine>166</CurrentLine>
-        </Doc>
-        <Doc>
-          <Name>..\stm32gps_config.c</Name>
           <ColumnNumber>0</ColumnNumber>
-          <TopLine>216</TopLine>
-          <CurrentLine>216</CurrentLine>
+          <TopLine>928</TopLine>
+          <CurrentLine>935</CurrentLine>
         </Doc>
         <Doc>
           <Name>..\..\..\Utilities\SIM800L\GSM_App.c</Name>
           <ColumnNumber>0</ColumnNumber>
-          <TopLine>1487</TopLine>
-          <CurrentLine>1487</CurrentLine>
+          <TopLine>1602</TopLine>
+          <CurrentLine>1608</CurrentLine>
         </Doc>
       </Documents>
     </MDIGroup>

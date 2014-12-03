@@ -8,20 +8,18 @@
 
 #include "stm32f10x.h"
 
-#define PROTO_EELINK_PACKETLEN_MAX 255u
 
 #define PROTO_EELINK_HEADER 0x70      // normal protocal header
-#define PROTO_EELINK_HEADER_SIM 0x68
-#define PROTO_EELINK_BUF_MAX 256
+#define PROTO_FACTORY_HEADER   0x72    // factory test header
  
-#define PROTO_LOGIN_BUF 17           // login buffer length
-#define PROTO_GPS_BUF  128            // gps buffer length
+#define PROTO_LOGIN_BUF_LEN 17           // login buffer length
+#define PROTO_GPS_BUF_LEN  128           // gps buffer length
+#define PROTO_STATION_BUF_LEN 256        // base station buffer length
+
 #define IMEI_BUF_LEN 15             // imei buffer length
 #define IMSI_INFO_LEN 15             // imsi buffer length
 #define PHONE_NUMBER_LEN 15          // phone number buffer length
 #define GSMBASESTATION_INFO_LEN 9
-
-#define PROTO_FACTORY_HEADER   0x72    // factory test header
 
 
 typedef enum protoEelinkPacketType
@@ -41,6 +39,7 @@ typedef enum protoEelinkPacketType
     PACKET_EELINK_OBDDATA = 0x07,
     PACKET_EELINK_OBDERR = 0x08,
     PACKET_FACTORY_REPORT = 0x77,
+    PACKET_EELINK_STATION = 0xA0,
 } PROTO_EELINK_PACKET_TYPE;
 
 typedef struct eelink_packet_header
