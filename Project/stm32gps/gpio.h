@@ -2,8 +2,8 @@
   ******************************************************************************
   * File Name          : gpio.h
   * Date               : 10/11/2014 21:37:12
-  * Description        : This file contains all the functions prototypes for 
-  *                      the gpio  
+  * Description        : This file contains all the functions prototypes for
+  *                      the gpio
   ******************************************************************************
   *
   * COPYRIGHT(c) 2014 STMicroelectronics
@@ -36,15 +36,15 @@
 #ifndef __gpio_H
 #define __gpio_H
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
-/* Includes ------------------------------------------------------------------*/
+    /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
 #include "stm32f10x_gpio.h"
 #include "stm32f10x_rcc.h"
-void MX_GPIO_Init(void);
-void MX_GPIO_DeInit(void);
+    void MX_GPIO_Init(void);
+    void MX_GPIO_DeInit(void);
 #ifdef __cplusplus
 }
 #endif

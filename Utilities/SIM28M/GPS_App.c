@@ -37,7 +37,7 @@
 #define INT_MAX ((int)0x7FFFFFFF)
 #define INT_MIN ((int)0x80000000)
 
-static int my_atoi_len(const char * str, const int len);
+static int my_atoi_len(const char *str, const int len);
 
 char GPSBuffer[USART_GPS_BUFSIZE];
 
@@ -62,43 +62,43 @@ char GPSBuffer[USART_GPS_BUFSIZE];
  ** Returned value:      转换得到的数字值
  ** Example: my_atoi_len("12345", 2) 将得到数字 12
  *********************************************************************************************************/
-static int my_atoi_len(const char * str, const int len)
+static int my_atoi_len(const char *str, const int len)
 {
-    int minus=0;
-    long long result=0;
-	int rst = 0;
-	int valid;
-    
-    if(str==NULL)
+    int minus = 0;
+    long long result = 0;
+    int rst = 0;
+    int valid;
+
+    if(str == NULL)
         return 0;
-    while(*str==' ')
+    while(*str == ' ')
         str++;
-    if(*str=='-')
+    if(*str == '-')
     {
-        minus=1;
+        minus = 1;
         str++;
     }
-    else if(*str=='+')
+    else if(*str == '+')
         str++;
-    if(*str<'0'||*str>'9')
+    if(*str < '0' || *str > '9')
         return 0;
 
-    valid=1;
-    while((*str>='0' && *str<='9') && (rst < len))
+    valid = 1;
+    while((*str >= '0' && *str <= '9') && (rst < len))
     {
-        result=result*10+*str-'0';
-        if((minus && result>INT_MAX + 1LL) || (!minus && result>INT_MAX))
+        result = result * 10 + *str - '0';
+        if((minus && result > INT_MAX + 1LL) || (!minus && result > INT_MAX))
         {
-            valid=0;
+            valid = 0;
             return 0;
         }
 
         str++;
-		rst++;
+        rst++;
     }
 
     if(minus)
-        result*=-1;
+        result *= -1;
     return (int)result;
 }
 
@@ -110,8 +110,8 @@ static int my_atoi_len(const char * str, const int len)
   */
 void GPSPowerOn(void)
 {
-	GPIO_ResetBits(GPS_PWR_CTRL_PORT, GPS_PWR_CTRL_PIN);
-	
+    GPIO_ResetBits(GPS_PWR_CTRL_PORT, GPS_PWR_CTRL_PIN);
+
 }
 
 /**
@@ -122,7 +122,7 @@ void GPSPowerOn(void)
   */
 void GPSPowerOff(void)
 {
-	GPIO_SetBits(GPS_PWR_CTRL_PORT, GPS_PWR_CTRL_PIN);
+    GPIO_SetBits(GPS_PWR_CTRL_PORT, GPS_PWR_CTRL_PIN);
 }
 
 void GPSClearBuffer(void)
@@ -147,7 +147,7 @@ unsigned char GPSInfoAnalyze(pST_GPSRMCINFO pRmcInfo)
 
 
     if (USART_ENPROCESS
-        != usart_readbuffer(STM32_SIM908_GPS_COM, GPSBuffer, &uLen))
+            != usart_readbuffer(STM32_SIM908_GPS_COM, GPSBuffer, &uLen))
     {
         return GPS_FAIL;
     }
@@ -177,17 +177,17 @@ unsigned char GPSInfoAnalyze(pST_GPSRMCINFO pRmcInfo)
             psearch = strnchr(phead, ',', 2);
             if (NULL != psearch)
             {
-				psearch++;
-				if((*psearch == 'A') || (*psearch == 'a'))
-				{
-					pRmcInfo->status = 1;
-				}
-				else
-				{
-					pRmcInfo->status = 0;
-					return GPS_INVALID;
-				}
-                
+                psearch++;
+                if((*psearch == 'A') || (*psearch == 'a'))
+                {
+                    pRmcInfo->status = 1;
+                }
+                else
+                {
+                    pRmcInfo->status = 0;
+                    return GPS_INVALID;
+                }
+
             }
             /* 解析时间 */
             psearch = NULL;
@@ -201,7 +201,7 @@ unsigned char GPSInfoAnalyze(pST_GPSRMCINFO pRmcInfo)
                 }
             }
 
-			/* 解析纬度 */
+            /* 解析纬度 */
             psearch = NULL;
             psearch = strnchr(phead, ',', 3);
             if (NULL != psearch)
@@ -213,19 +213,19 @@ unsigned char GPSInfoAnalyze(pST_GPSRMCINFO pRmcInfo)
                 }
             }
 
-			/* 解析纬度指示 */
+            /* 解析纬度指示 */
             psearch = NULL;
             psearch = strnchr(phead, ',', 4);
             if (NULL != psearch)
             {
                 psearch++;
-				if(*psearch != ',')
-				{
-					pRmcInfo->ns_indic = *psearch;
-				}
+                if(*psearch != ',')
+                {
+                    pRmcInfo->ns_indic = *psearch;
+                }
             }
 
-			/* 解析经度 */
+            /* 解析经度 */
             psearch = NULL;
             psearch = strnchr(phead, ',', 5);
             if (NULL != psearch)
@@ -237,19 +237,19 @@ unsigned char GPSInfoAnalyze(pST_GPSRMCINFO pRmcInfo)
                 }
             }
 
-			/* 解析经度指示 */
+            /* 解析经度指示 */
             psearch = NULL;
             psearch = strnchr(phead, ',', 6);
             if (NULL != psearch)
             {
                 psearch++;
-				if(*psearch != ',')
-				{
-					pRmcInfo->ew_indic = *psearch;
-				}
+                if(*psearch != ',')
+                {
+                    pRmcInfo->ew_indic = *psearch;
+                }
             }
 
-			/* 解析速度 */
+            /* 解析速度 */
             psearch = NULL;
             psearch = strnchr(phead, ',', 7);
             if (NULL != psearch)
@@ -259,10 +259,10 @@ unsigned char GPSInfoAnalyze(pST_GPSRMCINFO pRmcInfo)
                 {
                     pRmcInfo->speed[i] = *(psearch++);
                 }
-				pRmcInfo->speed[i] = '\0';
+                pRmcInfo->speed[i] = '\0';
             }
 
-			/* 解析航向 */
+            /* 解析航向 */
             psearch = NULL;
             psearch = strnchr(phead, ',', 8);
             if (NULL != psearch)
@@ -272,10 +272,10 @@ unsigned char GPSInfoAnalyze(pST_GPSRMCINFO pRmcInfo)
                 {
                     pRmcInfo->course[i] = *(psearch++);
                 }
-				pRmcInfo->course[i] = '\0';
+                pRmcInfo->course[i] = '\0';
             }
 
-			/* 解析日期 */
+            /* 解析日期 */
             psearch = NULL;
             psearch = strnchr(phead, ',', 9);
             if (NULL != psearch)
@@ -287,111 +287,111 @@ unsigned char GPSInfoAnalyze(pST_GPSRMCINFO pRmcInfo)
                 }
             }
         }
-		else
-		{
-			return GPS_ERROR;
-		}
+        else
+        {
+            return GPS_ERROR;
+        }
 
-		// clear GPSBuffer
+        // clear GPSBuffer
         memset(GPSBuffer, 0, uLen);
     }
 
-	return GPS_SUCCESS;
+    return GPS_SUCCESS;
 }
 
 
 void ParseGPSInfo(ST_GPSRMCINFO rmcInfo, pST_GPSDATA pGpsData)
 {
-	uint32_t i;
-	struct tm t;
-	int valid;
+    uint32_t i;
+    struct tm t;
+    int valid;
 
-	t.tm_sec = my_atoi_len(rmcInfo.time + 4, 2);
-	t.tm_min = my_atoi_len(rmcInfo.time + 2, 2);
-	t.tm_hour = my_atoi_len(rmcInfo.time + 0, 2);
-	t.tm_mday = my_atoi_len(rmcInfo.date + 0, 2);
-	t.tm_mon = my_atoi_len(rmcInfo.date + 2, 2);
-	t.tm_year = my_atoi_len(rmcInfo.date + 4, 2) + 100;
-	t.tm_isdst = 0;
+    t.tm_sec = my_atoi_len(rmcInfo.time + 4, 2);
+    t.tm_min = my_atoi_len(rmcInfo.time + 2, 2);
+    t.tm_hour = my_atoi_len(rmcInfo.time + 0, 2);
+    t.tm_mday = my_atoi_len(rmcInfo.date + 0, 2);
+    t.tm_mon = my_atoi_len(rmcInfo.date + 2, 2);
+    t.tm_year = my_atoi_len(rmcInfo.date + 4, 2) + 100;
+    t.tm_isdst = 0;
 
-	pGpsData->utc.i = mktime(&t);
+    pGpsData->utc.i = mktime(&t);
 #ifdef DBG_ENABLE_MACRO
-	DEBUG("UTC:");
-	for(i = 0; i < 4; i++)
-	{
-		DEBUG("0x%x-", pGpsData->utc.s[i]);
-	}
-	DEBUG("\n");
+    DEBUG("UTC:");
+    for(i = 0; i < 4; i++)
+    {
+        DEBUG("0x%x-", pGpsData->utc.s[i]);
+    }
+    DEBUG("\n");
 #endif
 
-	// latitude
-	if(rmcInfo.ns_indic == 'N')
-	{
-		pGpsData->latitude.i = (((my_atoi_len(rmcInfo.latitude, 2))*60 
-						+ my_atoi_len(rmcInfo.latitude + 2, 2))*30000 
-						+ (my_atoi_len(rmcInfo.latitude + 5, 1))*3000 + (my_atoi_len(rmcInfo.latitude + 6, 1))*300 
-						+ (my_atoi_len(rmcInfo.latitude + 7, 1))*30 + (my_atoi_len(rmcInfo.latitude + 8, 1))*3);
-	}
-	else if(rmcInfo.ns_indic == 'S')
-	{
-		pGpsData->latitude.i = -(((my_atoi_len(rmcInfo.latitude, 2))*60 
-						+ my_atoi_len(rmcInfo.latitude + 2, 2))*30000 
-						+ (my_atoi_len(rmcInfo.latitude + 5, 1))*3000 + (my_atoi_len(rmcInfo.latitude + 6, 1))*300 
-						+ (my_atoi_len(rmcInfo.latitude + 7, 1))*30 + (my_atoi_len(rmcInfo.latitude + 8, 1))*3);
-	}
+    // latitude
+    if(rmcInfo.ns_indic == 'N')
+    {
+        pGpsData->latitude.i = (((my_atoi_len(rmcInfo.latitude, 2)) * 60
+                                 + my_atoi_len(rmcInfo.latitude + 2, 2)) * 30000
+                                + (my_atoi_len(rmcInfo.latitude + 5, 1)) * 3000 + (my_atoi_len(rmcInfo.latitude + 6, 1)) * 300
+                                + (my_atoi_len(rmcInfo.latitude + 7, 1)) * 30 + (my_atoi_len(rmcInfo.latitude + 8, 1)) * 3);
+    }
+    else if(rmcInfo.ns_indic == 'S')
+    {
+        pGpsData->latitude.i = -(((my_atoi_len(rmcInfo.latitude, 2)) * 60
+                                  + my_atoi_len(rmcInfo.latitude + 2, 2)) * 30000
+                                 + (my_atoi_len(rmcInfo.latitude + 5, 1)) * 3000 + (my_atoi_len(rmcInfo.latitude + 6, 1)) * 300
+                                 + (my_atoi_len(rmcInfo.latitude + 7, 1)) * 30 + (my_atoi_len(rmcInfo.latitude + 8, 1)) * 3);
+    }
 
 #ifdef DBG_ENABLE_MACRO
-	DEBUG("LATI:");
-	for(i = 0; i < 4; i++)
-	{
-		DEBUG("0x%x-", pGpsData->latitude.s[i]);
-	}
-	DEBUG("\n");
+    DEBUG("LATI:");
+    for(i = 0; i < 4; i++)
+    {
+        DEBUG("0x%x-", pGpsData->latitude.s[i]);
+    }
+    DEBUG("\n");
 #endif
 
-	// longitude
-	if(rmcInfo.ew_indic == 'E')
-	{
-		pGpsData->longitude.i = ((my_atoi_len(rmcInfo.longitude, 3)*60 
-						+ my_atoi_len(rmcInfo.longitude + 3, 2))*30000 
-						+ my_atoi_len(rmcInfo.longitude + 6, 1)*3000 + my_atoi_len(rmcInfo.longitude + 7, 1)*300 
-						+ my_atoi_len(rmcInfo.longitude + 8, 1)*30 + my_atoi_len(rmcInfo.longitude + 9, 1)*3);
-	}
-	else if(rmcInfo.ew_indic == 'W')
-	{
-		pGpsData->longitude.i = -((my_atoi_len(rmcInfo.longitude, 3)*60 
-						+ my_atoi_len(rmcInfo.longitude + 3, 2))*30000 
-						+ my_atoi_len(rmcInfo.longitude + 6, 1)*3000 + my_atoi_len(rmcInfo.longitude + 7, 1)*300 
-						+ my_atoi_len(rmcInfo.longitude + 8, 1)*30 + my_atoi_len(rmcInfo.longitude + 9, 1)*3);
-	}
+    // longitude
+    if(rmcInfo.ew_indic == 'E')
+    {
+        pGpsData->longitude.i = ((my_atoi_len(rmcInfo.longitude, 3) * 60
+                                  + my_atoi_len(rmcInfo.longitude + 3, 2)) * 30000
+                                 + my_atoi_len(rmcInfo.longitude + 6, 1) * 3000 + my_atoi_len(rmcInfo.longitude + 7, 1) * 300
+                                 + my_atoi_len(rmcInfo.longitude + 8, 1) * 30 + my_atoi_len(rmcInfo.longitude + 9, 1) * 3);
+    }
+    else if(rmcInfo.ew_indic == 'W')
+    {
+        pGpsData->longitude.i = -((my_atoi_len(rmcInfo.longitude, 3) * 60
+                                   + my_atoi_len(rmcInfo.longitude + 3, 2)) * 30000
+                                  + my_atoi_len(rmcInfo.longitude + 6, 1) * 3000 + my_atoi_len(rmcInfo.longitude + 7, 1) * 300
+                                  + my_atoi_len(rmcInfo.longitude + 8, 1) * 30 + my_atoi_len(rmcInfo.longitude + 9, 1) * 3);
+    }
 
 #ifdef DBG_ENABLE_MACRO
-	DEBUG("LONGI:");
-	for(i = 0; i < 4; i++)
-	{
-		DEBUG("0x%x-", pGpsData->longitude.s[i]);
-	}
-	DEBUG("\n");
+    DEBUG("LONGI:");
+    for(i = 0; i < 4; i++)
+    {
+        DEBUG("0x%x-", pGpsData->longitude.s[i]);
+    }
+    DEBUG("\n");
 #endif
 
-	// 1 knot = 1.85km/h
-	pGpsData->speed = (unsigned char)((atof(rmcInfo.speed))*(1.85));
+    // 1 knot = 1.85km/h
+    pGpsData->speed = (unsigned char)((atof(rmcInfo.speed)) * (1.85));
 
-	pGpsData->course.i = (unsigned short)(atof(rmcInfo.course));
+    pGpsData->course.i = (unsigned short)(atof(rmcInfo.course));
 
-	pGpsData->status = rmcInfo.status;
+    pGpsData->status = rmcInfo.status;
 
 #ifdef DBG_ENABLE_MACRO
-	DEBUG("SPEED: 0x%x\n", pGpsData->speed);
-	DEBUG("COURSE:");
-	for(i = 0; i < 2; i++)
-	{
-		DEBUG("0x%x-", pGpsData->course.s[i]);
-	}
-	DEBUG("\n");
-	DEBUG("STATUS: 0x%x\n", pGpsData->status);
+    DEBUG("SPEED: 0x%x\n", pGpsData->speed);
+    DEBUG("COURSE:");
+    for(i = 0; i < 2; i++)
+    {
+        DEBUG("0x%x-", pGpsData->course.s[i]);
+    }
+    DEBUG("\n");
+    DEBUG("STATUS: 0x%x\n", pGpsData->status);
 #endif
-	
+
 }
 
 

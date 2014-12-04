@@ -72,7 +72,7 @@
 #define EELINK_LANG  0x01  			// English
 #define EELINK_ZONE  0x20  			// east 8
 
-// 每次进入中断服务程序间隔时间为： 
+// 每次进入中断服务程序间隔时间为：
 // ((1+TIM_Prescaler )/72M)*(1+TIM_Period )=((1+35999)/72M)*(1+9999)=5秒
 #define TIM2_PRESCALER_TIMER 35999 // TIM2 Prescaler
 #define TIM2_PRESCALER_HZ 1000    // TIM2 HZ, Not used
@@ -110,29 +110,29 @@
 
 // used for output debug information
 #ifdef DBG_ENABLE_MACRO
-    #define DEBUG(msg, args...) \
+#define DEBUG(msg, args...) \
         (void)printf(msg , ##args)
-    #define DBG_INFO(msg, args...) \
+#define DBG_INFO(msg, args...) \
         (void)printf("[INFO]---" msg "\n", ##args)
-    #define DBG_WARN(msg, args...) \
+#define DBG_WARN(msg, args...) \
         (void)printf("[WARN]---" msg "\n", ##args)
-    #define DBG_ERRO(msg, args...) \
+#define DBG_ERRO(msg, args...) \
         (void)printf("[ERRO]---" msg "\n", ##args)
 #else
-    #define DEBUG
-    #define DBG_INFO
-    #define DBG_WARN
-    #define DBG_ERRO
+#define DEBUG
+#define DBG_INFO
+#define DBG_WARN
+#define DBG_ERRO
 #endif // USE_DEBUG
 
 // BKP register
-typedef enum 
+typedef enum
 {
-  BKP_REMOVE_FLAG = 0,
-  BKP_REMOVE_NOT = 1,
-  BKP_REMOVE_YES = 2,
-  BKP_SLEEP_TIME_LOW = 3,
-  BKP_SLEEP_TIME_HIGH = 4
+    BKP_REMOVE_FLAG = 0,
+    BKP_REMOVE_NOT = 1,
+    BKP_REMOVE_YES = 2,
+    BKP_SLEEP_TIME_LOW = 3,
+    BKP_SLEEP_TIME_HIGH = 4
 } REMOVE_TypeDef;
 
 
