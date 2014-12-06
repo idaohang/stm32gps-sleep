@@ -17,6 +17,8 @@
 #define RETRY_TIMES_CMD_CIPSTART 4
 #define RETRY_TIMES_CMD_CFUN  4
 
+#define RETRY_TIMES_CMD_CIPSEND 10
+
 // 500ms
 #define MAX_RESP_CMD_DEFAULT 4
 #define MAX_RESP_CMD_AT   4  // 2 sec
@@ -33,6 +35,8 @@
 #define MAX_RESP_CMD_CIFSR 20  // 10 sec
 #define MAX_RESP_CMD_CIPSTART 20
 #define MAX_RESP_CMD_CFUN 20 // 10 sec, CFUN max is 10 sec
+
+#define MAX_RESP_CMD_CIPSEND 50  // 500 ms
 
 
 

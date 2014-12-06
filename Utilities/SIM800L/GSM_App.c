@@ -1257,7 +1257,7 @@ unsigned char GPRS_SendData(char *pString, unsigned int len)
     sprintf(pcmdbuf, AT_CIPSEND_SET, len);
     cmdLen = strlen(pcmdbuf);
     //cmdLen = strlen(AT_CIPSEND);
-    if (USART_SUCESS == GSM_SendAT((char *) pcmdbuf, (char *) '>', cmdLen, MAX_RESP_CMD_DEFAULT))
+    if (USART_SUCESS == GSM_SendAT((char *) pcmdbuf, (char *) '>', cmdLen, (MAX_RESP_CMD_DEFAULT*4)))
     {
         //cmdLen = sizeof(pString);
         usart_sendbuffer(STM32_SIM908_GSM_COM, pString, &len);
@@ -1267,14 +1267,14 @@ unsigned char GPRS_SendData(char *pString, unsigned int len)
     }
 
     {
-        uint32_t i = 8;
+        uint32_t i = RETRY_TIMES_CMD_CIPSEND;
         uint32_t len;
         unsigned char retFlag;
 
         while (--i)
         {
             len = USART_GSM_BUFSIZE;
-            delay_10ms(20);
+            delay_10ms(MAX_RESP_CMD_CIPSEND);
 
             //DEBUG("GSM_SendAT before usart_readbuffer len %d\n", len);
 
@@ -1335,7 +1335,7 @@ unsigned char GPRS_SendData_rsp(char *pString, unsigned int len, char **ppRecvBu
     sprintf(pcmdbuf, AT_CIPSEND_SET, len);
     cmdLen = strlen(pcmdbuf);
     //cmdLen = strlen(AT_CIPSEND);
-    if (USART_SUCESS == GSM_SendAT((char *) pcmdbuf, (char *) '>', cmdLen, MAX_RESP_CMD_DEFAULT))
+    if (USART_SUCESS == GSM_SendAT((char *) pcmdbuf, (char *) '>', cmdLen, (MAX_RESP_CMD_DEFAULT*4)))
     {
 
         //cmdLen = sizeof(pString);
@@ -1346,14 +1346,14 @@ unsigned char GPRS_SendData_rsp(char *pString, unsigned int len, char **ppRecvBu
     }
 
     {
-        uint32_t i = 10;
+        uint32_t i = RETRY_TIMES_CMD_CIPSEND;
         uint32_t len;
         unsigned char retFlag;
 
         while (--i)
         {
             len = USART_GSM_BUFSIZE;
-            delay_10ms(20);
+            delay_10ms(MAX_RESP_CMD_CIPSEND);
 
             //DEBUG("GSM_SendAT before usart_readbuffer len %d\n", len);
 

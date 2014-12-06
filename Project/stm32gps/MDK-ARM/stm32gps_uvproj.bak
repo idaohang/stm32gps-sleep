@@ -547,11 +547,6 @@
           <GroupName>SIM28M</GroupName>
           <Files>
             <File>
-              <FileName>GPS_App.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\Utilities\SIM28M\GPS_App.c</FilePath>
-            </File>
-            <File>
               <FileName>gps.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\Utilities\SIM28M\gps.c</FilePath>
@@ -1111,11 +1106,6 @@
           <GroupName>SIM28M</GroupName>
           <Files>
             <File>
-              <FileName>GPS_App.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\Utilities\SIM28M\GPS_App.c</FilePath>
-            </File>
-            <File>
               <FileName>gps.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\Utilities\SIM28M\gps.c</FilePath>
@@ -1674,11 +1664,6 @@
         <Group>
           <GroupName>SIM28M</GroupName>
           <Files>
-            <File>
-              <FileName>GPS_App.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\Utilities\SIM28M\GPS_App.c</FilePath>
-            </File>
             <File>
               <FileName>gps.c</FileName>
               <FileType>1</FileType>
