@@ -111,7 +111,7 @@ typedef struct
 
 typedef struct
 {
-    char num;
+    uint8_t num;
     ST_BASESTATION stStation[7];
 } ST_PACKET_BASESTATION, *pST_PACKET_BASESTATION;
 

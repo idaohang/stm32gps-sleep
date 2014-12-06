@@ -25,7 +25,7 @@ static uint8_t ReciveFlag = 0;             // Êý¾Ý½ÓÊÕÍê³É. ×îºóÒ»Ìõ GPRMC Óï¾ä·
 
 static uint8_t ucTempA = 0;                // ´æ´¢½âÎöÁ½Î»Êý×ÖÓÃµÄµÄÊ®Î»ÁÙÊ±±äÁ¿
 
-uint8_t      g_ucRecvOverTimeFlag = 0;
+volatile uint8_t g_ucRecvOverTimeFlag = 0;
 stru_GPSRMC  g_stGPSRMCData;
 
 static void GPS(unsigned char ucData);
@@ -36,9 +36,9 @@ void ShowGPSTime(void)
     int i = 0;
     for(i = 0; i < 6; i++)
     {
-        printf("g_stGPSRMCData.UTCDateTime[%d] = %d\r\n", i, g_stGPSRMCData.UTCDateTime[i]);
+        DEBUG("g_stGPSRMCData.UTCDateTime[%d] = %d\r\n", i, g_stGPSRMCData.UTCDateTime[i]);
     }
-    printf("Status = %c\r\n", g_stGPSRMCData.Status);
+    DEBUG("Status = %c\r\n", g_stGPSRMCData.Status);
 }
 // N dd'mm'ss.ssss
 void ShowLatitude(void)
@@ -46,7 +46,7 @@ void ShowLatitude(void)
     int i = 0;
     for(i = 0; i < 9; i++)
     {
-        printf("g_stGPSRMCData.Latitude[%d] = %c\r\n", i, g_stGPSRMCData.Latitude[i]);
+        DEBUG("g_stGPSRMCData.Latitude[%d] = %c\r\n", i, g_stGPSRMCData.Latitude[i]);
     }
 }
 
@@ -56,7 +56,7 @@ void ShowLongitude(void)
     int i = 0;
     for(i = 0; i < 9; i++)
     {
-        printf("g_stGPSRMCData.Longitude[%d] = %c\r\n", i, g_stGPSRMCData.Longitude[i]);
+        DEBUG("g_stGPSRMCData.Longitude[%d] = %c\r\n", i, g_stGPSRMCData.Longitude[i]);
     }
 }
 
@@ -65,7 +65,7 @@ void ShowSpeed(void)
     int i = 0;
     for(i = 0; i < 5; i++)
     {
-        printf("g_stGPSRMCData.Speed[%d] = %c\r\n", i, g_stGPSRMCData.Speed[i]);
+        DEBUG("g_stGPSRMCData.Speed[%d] = %c\r\n", i, g_stGPSRMCData.Speed[i]);
     }
 }
 
@@ -74,7 +74,7 @@ void ShowCourse(void)
     int i = 0;
     for(i = 0; i < 5; i++)
     {
-        printf("g_stGPSRMCData.Course[%d] = %c\r\n", i, g_stGPSRMCData.Course[i]);
+        DEBUG("g_stGPSRMCData.Course[%d] = %c\r\n", i, g_stGPSRMCData.Course[i]);
     }
 }
 
@@ -138,6 +138,8 @@ static void ParserGPRMC(unsigned char ucData)
             case 5:
                 g_stGPSRMCData.UTCDateTime[5] = ucTempA * 10 + ucData - '0';
                 break;
+			default:
+				break;
             }
             break;
         case 1:         // <2> ¶¨Î»×´Ì¬ A=ÓÐÐ§¶¨Î», V=ÎÞÐ§¶¨Î»
@@ -178,8 +180,12 @@ static void ParserGPRMC(unsigned char ucData)
             case 5:
                 g_stGPSRMCData.UTCDateTime[0] = ucTempA * 10 + ucData - '0';
                 break;
+			default:
+				break;
             }
             break;
+		default:
+				break;
         }
         NMEA_DAT_BlockIndex++;
     }

@@ -23,9 +23,9 @@
  **
  *********************************************************************************************************/
 #include "at_sim800.h"
-#include "string.h"
-#include "stdio.h"
-#include "stdlib.h"
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "usart.h"
 #include "GSM_App.h"
 
@@ -82,7 +82,7 @@ char *strnchr(char *S, int C, int n)
 char *strstr_len(char *str, char *subStr, uint32_t strlenth)
 {
     uint32_t subStrLen = strlen(subStr);
-    int32_t cmpCnt = strlenth - strlen(subStr) + 1;
+    int32_t cmpCnt = (strlenth - strlen(subStr)) + 1;
 
     char *retPtr = NULL;
     int32_t i;
@@ -170,7 +170,7 @@ char *strnchr_len(char *S, int C, uint32_t n, uint32_t len)
  ** output parameters:
  ** Returned value:      第一个数字的字符位置指针 or NULL
  **************************************************************************************/
-char *strdig_len(char *str, uint32_t strlen, uint32_t diglen)
+char *strdig_len(char *str, uint32_t slen, uint32_t diglen)
 {
 
     char *retPtr = NULL;
@@ -178,9 +178,9 @@ char *strdig_len(char *str, uint32_t strlen, uint32_t diglen)
     int32_t sumlen = 0;
 
 
-    if (strlen > 0 && strlen > diglen)
+    if (strlen > 0 && slen > diglen)
     {
-        for (i = 0; i < strlen; i ++)
+        for (i = 0; i < slen; i ++)
         {
             if((*(str + i) >= '0') && (*(str + i) <= '9'))
             {
@@ -198,7 +198,7 @@ char *strdig_len(char *str, uint32_t strlen, uint32_t diglen)
 
         if (sumlen >= diglen)
         {
-            retPtr = str + i - diglen + 1;
+            retPtr = ((str + i) - diglen) + 1;
         }
     }
 
@@ -214,7 +214,7 @@ char *strdig_len(char *str, uint32_t strlen, uint32_t diglen)
  ** Returned value:      转换后的十六进制数
  ** Example: 比如，字符串是"04"，转换后的值是0x04， 字符串是"2F"，转换后的值是0x2F
  ****************************************************************************************/
-uint32_t strhex_len(char *str, uint32_t len)
+uint32_t strhex_len(char const *str, uint32_t len)
 {
     uint32_t i;
     uint32_t sum = 0;
@@ -684,7 +684,7 @@ uint8_t GSM_Init(void)
             break;
         }
         i++;
-        //if(i > 2)
+        if(i > 2)
         {
             GSM_TurnOnOff();
             i = 0;
@@ -1268,7 +1268,7 @@ unsigned char GPRS_SendData(char *pString, unsigned int len)
 
     {
         uint32_t i = RETRY_TIMES_CMD_CIPSEND;
-        uint32_t len;
+//        uint32_t len;
         unsigned char retFlag;
 
         while (--i)
@@ -1347,7 +1347,7 @@ unsigned char GPRS_SendData_rsp(char *pString, unsigned int len, char **ppRecvBu
 
     {
         uint32_t i = RETRY_TIMES_CMD_CIPSEND;
-        uint32_t len;
+ //       uint32_t len;
         unsigned char retFlag;
 
         while (--i)
