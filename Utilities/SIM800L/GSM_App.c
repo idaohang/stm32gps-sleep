@@ -1174,13 +1174,10 @@ uint8_t GSM_StartUpConnect(void)
 	uint8_t rtn = RST_FAIL;
 
 	sprintf(stNetCfg.TransferMode, "%s", "TCP");
-#ifdef FACTORY_ENABLE_MACRO
-	sprintf(stNetCfg.RemoteIP, "%s", GSM_FACTORY_IP);
-    sprintf(stNetCfg.RemotePort, "%s", GSM_FACTORY_PORT);
-#else
+
     sprintf(stNetCfg.RemoteIP, "%s", GSM_SERVER_IP);
     sprintf(stNetCfg.RemotePort, "%s", GSM_SERVER_PORT);
-#endif // FACTORY_ENABLE_MACRO
+
 
 	while (errNum < RETRY_TIMES_CMD_CIPSTART)
     {
@@ -1566,6 +1563,66 @@ unsigned char GPRS_CPOwd(void)
     return USART_FAIL;
 }
 
+/**
+  * @brief  Set CFUN
+  * @param  None
+  * @retval Status
+  */
+uint8_t GSM_SetCFunMin(void)
+{
+	uint32_t len = 0;
+	uint32_t errNum = 0;
+	uint8_t rst = USART_FAIL;
+	uint8_t rtn = RST_FAIL;
+	
+	len = strlen(AT_CFUN_MIN);
+	GSM_ClearBuffer();
+	while (errNum < RETRY_TIMES_CMD_CFUN)
+    {
+		errNum++;
+		rst = GSM_SendAT((char *) AT_CFUN_MIN, (char *) AT_OK, len, MAX_RESP_CMD_CFUN);
+		if(USART_SUCESS == rst)
+		{
+			rtn = RST_OK;
+			break;
+		}
+
+		delay_10ms(20);
+	}
+
+	return rtn;
+}
+
+/**
+  * @brief  Set CFUN
+  * @param  None
+  * @retval Status
+  */
+uint8_t GSM_SetCFunFull(void)
+{
+	uint32_t len = 0;
+	uint32_t errNum = 0;
+	uint8_t rst = USART_FAIL;
+	uint8_t rtn = RST_FAIL;
+	
+	len = strlen(AT_CFUN_FULL);
+	GSM_ClearBuffer();
+	while (errNum < RETRY_TIMES_CMD_CFUN)
+    {
+		errNum++;
+		rst = GSM_SendAT((char *) AT_CFUN_FULL, (char *) AT_OK, len, MAX_RESP_CMD_CFUN);
+		if(USART_SUCESS == rst)
+		{
+			rtn = RST_OK;
+			break;
+		}
+
+		delay_10ms(20);
+	}
+
+	return rtn;
+}
+
 unsigned char GSM_creg(void)
 {
     static char *pcmdbuf = NULL;
@@ -1725,6 +1782,10 @@ uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
 					{
 						result = strtol((ptmp2+1), &endptr, 16);
 						DEBUG("%d: rxl = 0x%x\n", idx, result);
+						if(result == 0)
+						{
+							break;
+						}
 						pStation->stStation[idx].rxl = result;
 					}
 					ptmp2 = strnchr_len(ptmp, ',', 3 , 29);
@@ -1755,15 +1816,17 @@ uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
 						DEBUG("%d: lac = 0x%x\n", idx, result);
 						pStation->stStation[idx].lac.i = result;
 					}
-					pStation->num = idx+1;
+					
 				}
 			}
-	
+			
+			pStation->num = idx;
 			rtn = RST_OK;
 			break;
 		}
 	}
 
+	DEBUG("number = %d\r\n", idx);
     return rtn;
 }
 

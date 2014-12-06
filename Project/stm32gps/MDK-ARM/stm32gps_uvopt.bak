@@ -535,10 +535,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>2</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>160</TopLine>
-      <CurrentLine>176</CurrentLine>
+      <TopLine>928</TopLine>
+      <CurrentLine>935</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\main.c</PathWithFileName>
       <FilenameWithoutPath>main.c</FilenameWithoutPath>
@@ -957,7 +957,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1601</TopLine>
+      <TopLine>1602</TopLine>
       <CurrentLine>1608</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\..\Utilities\SIM800L\GSM_App.c</PathWithFileName>
@@ -974,14 +974,14 @@
       <Documents>
         <Doc>
           <Name>..\main.c</Name>
-          <ColumnNumber>2</ColumnNumber>
-          <TopLine>160</TopLine>
-          <CurrentLine>176</CurrentLine>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>928</TopLine>
+          <CurrentLine>935</CurrentLine>
         </Doc>
         <Doc>
           <Name>..\..\..\Utilities\SIM800L\GSM_App.c</Name>
           <ColumnNumber>0</ColumnNumber>
-          <TopLine>1601</TopLine>
+          <TopLine>1602</TopLine>
           <CurrentLine>1608</CurrentLine>
         </Doc>
       </Documents>

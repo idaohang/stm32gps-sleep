@@ -30,18 +30,15 @@
 
 #define SYS_TICK_PER_SEC 100u
 
-#define GSM_SUCCESS_TIMES   0  // GSM 成功发送次数 = value+1
-
-#ifdef FACTORY_ENABLE_MACRO
-#define GPS_RETERY_TIMES    1  // GPS 重试次数 
-#elif DBG_ENABLE_MACRO
+#ifdef DBG_ENABLE_MACRO
 #define GPS_RETERY_TIMES    1  // GPS 重试次数 
 #else
 #define GPS_RETERY_TIMES    18  // GPS 重试次数 
 #endif
 
 #define GSM_RETERY_TIMES    4 // GSM 错误重发次数
-#define GPRS_RETRY_TIMES    4
+#define GPRS_RETRY_TIMES    4 // GPRS 连接重连次数
+#define SEND_RETRY_TIMES    4 // GPRS SEND 重发次数
 
 #define STICK_ON_SEC      300  // 3sec stick on times
 
@@ -49,7 +46,7 @@
 #define SLEEP_NOTLOC_SCALE  5  // GPS Not location sleep time scale 
 #define SLEEP_ALARM_SEC    60   // 1min
 #define SLEEP_NORMAL_SEC 	86400 // 24hour SHOULD SET 86400 = 24hour
-#define GPS_STOPMODE_SEC     	10  // GPS STOP mode seconds
+#define GPS_STOPMODE_SEC    10  // GPS STOP mode = 10 seconds
 
 #define SLEEP_TIME_MIN    60     // 1min 最小睡眠间隔
 #define SLEEP_TIME_MAX   172800  // 48hour 最大睡眠间隔
@@ -58,10 +55,6 @@
 #define GSM_SERVER_IP   "lkf.broadnetwork.net"  // server name
 #define GSM_SERVER_PORT "8888"           		// server port
 
-#define GSM_FACTORY_IP   "lkf.broadnetwork.net"  // factory test server name
-#define GSM_FACTORY_PORT "8888"            		// factory test server port
-
-#define AT_RESEND_TIMES  15  // x*100ms, AT Command Resend times
 
 #define EELINK_LOGIN_MSGLEN  17		// login length
 #define EELINK_GPS_MSGLEN    42     // GPS length
@@ -89,8 +82,6 @@
 #define GSM_USART_TIMEOUT_MS 20
 #define GPS_USART_TIMEOUT_MS 20
 
-#define IMEI_BUFSIZE   15
-
 #define STM32_SIM908_GPS_COM COM1
 #define STM32_SIM908_GSM_COM COM2
 
@@ -102,11 +93,6 @@
 #define NULL 0
 #define RST_OK   1
 #define RST_FAIL 0
-
-// bkp register
-#define BKP_FALSE  0x5A5A
-#define BKP_TRUE   0xA5A5
-#define CHECK_REMOVE_TIMES  3  // check removed flag times for changed flag
 
 // used for output debug information
 #ifdef DBG_ENABLE_MACRO
@@ -125,15 +111,6 @@
     #define DBG_ERRO
 #endif // USE_DEBUG
 
-// BKP register
-typedef enum 
-{
-  BKP_REMOVE_FLAG = 0,
-  BKP_REMOVE_NOT = 1,
-  BKP_REMOVE_YES = 2,
-  BKP_SLEEP_TIME_LOW = 3,
-  BKP_SLEEP_TIME_HIGH = 4
-} REMOVE_TypeDef;
 
 
 /* Exported functions ------------------------------------------------------- */

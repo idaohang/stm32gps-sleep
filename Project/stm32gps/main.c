@@ -135,6 +135,18 @@ void ShowStationMsg(void)
     }
     DEBUG("\r\n");
 }
+
+void ShowFactoryMsg(void)
+{
+    uint32_t i;
+    // gps msg
+    DEBUG("\r\nFACTORY MSG:");
+    for(i = 0; i < FACTORY_REPORT_MSGLEN; i++)
+    {
+        DEBUG("0x%x-", stationBuf[i]);
+    }
+    DEBUG("\r\n");
+}
 #endif // DBG_ENABLE_MACRO
 
 /**
@@ -147,9 +159,7 @@ void InitVariables(void)
     uint32_t i;
 
     g_usSequenceNum = 1;
-//    g_successNum = 0;
     ucGPSStatus = GPS_DEVICE_ERR;
-//	g_gpsLocationStatus = 0x55;
     g_uiSetSleepSec = SLEEP_NORMAL_SEC;
     g_uiAlarmFlag = RESET;
 	g_uiAlarmPacketFlag = RESET;
@@ -163,6 +173,10 @@ void InitVariables(void)
     {
         gpsBuf[i] = 0;
     }
+	for(i = 0; i < PROTO_STATION_BUF_LEN; i++)
+    {
+        stationBuf[i] = 0;
+    }
 
     memset(ucIMEIBuf, IMEI_BUF_LEN, 0);
 
@@ -172,10 +186,6 @@ void InitVariables(void)
     }
 
     memset(&stLoginMsg, sizeof(stLoginMsg), 0);
-//    memset(&gpsMsg, sizeof(gpsMsg), 0);
-
-//    memset(&g_simData, sizeof(g_simData), 0);
-//    memset(&g_gpsData, sizeof(g_gpsData), 0);
     memset(&g_deviceData, sizeof(g_deviceData), 0);
 	memset(&stStationInfo, sizeof(stStationInfo), 0);
 
@@ -200,9 +210,7 @@ int main(void)
 	uint8_t gsmRtn = RST_FAIL;
 	uint8_t gprsRtn = RST_FAIL;
     uint8_t gprsSendFlag = RST_FAIL; // GPRS Send Status Flag
-//    ST_GPSRMCINFO rmc;         // GPS RMC packet information
-//    unsigned char gprsSendErrNum = 0;  // GPRS send error number
-//    uint16_t removeNum = 0;    // Remove detect counter
+    
     uint16_t sendLen = 0;      // GPRS send length (used for GPS and ALARM Msg)
     uint32_t sleepSec = 0;
 	uint32_t alarmStickFlag = 0;    // 是否有移开的动作 1- 有 0-无
@@ -300,6 +308,8 @@ int main(void)
 		gsmRtn = RST_FAIL;
 		gprsRtn = RST_FAIL;
 		gprsSendFlag = RST_FAIL;
+		gsmRetyTimes = 0;
+		gpsRecvTimes = 0;
 
         // If Stick On Car or sth
         if(((uint32_t)Bit_RESET == STM_EVAL_PBGetState(BUTTON_KEY))
@@ -316,64 +326,11 @@ int main(void)
 			{
 				alarmStickFlag = 0;
 			}
-            /////////////////////////////////////////////////////////////////
-            // First Power ON GPS
-            /////////////////////////////////////////////////////////////////
-            GPSPowerOn();
-			DEBUG("\r\n GPSPowerOn \r\n");
-			delay_10ms(200);
+
 			/////////////////////////////////////////////////////////////////
-            // Receive GPS Data and Parse, If Recv Success then break
+            // First, Power ON GSM
             /////////////////////////////////////////////////////////////////
-            while(gpsRecvTimes < GPS_RETERY_TIMES)
-			{
-				gpsRecvTimes++;
-				TIM2_Start();
-				gpsRtn = GetGPSData();
-				TIM2_Stop();
-				
-				if(RST_OK == gpsRtn)
-				{
-					ucGPSStatus = GPS_DEVICE_OK;
-					ParseGPSData(&stGPSData);
-					if(1 == stGPSData.status)
-					{
-						GPSPowerOff();
-						DEBUG("GPSData Valid and TurnOFF GPS\r\n");
-						break;
-					}
-				}
-				
-				/////////////////////////////////////////////////////////////////
-                // Set RTC Alarm to wake from STOP mode
-                /////////////////////////////////////////////////////////////////
-                /* Wait till RTC Second event occurs */
-                RTC_ClearFlag(RTC_FLAG_SEC);
-                while(RTC_GetFlagStatus(RTC_FLAG_SEC) == RESET);
-
-                /* Alarm in 10 second */
-                RTC_SetAlarm(RTC_GetCounter() + GPS_STOPMODE_SEC);
-                /* Wait until last write operation on RTC registers has finished */
-                RTC_WaitForLastTask();
-
-                /////////////////////////////////////////////////////////////////
-                // Go Into STOP Mode
-                /////////////////////////////////////////////////////////////////
-                /* Request to enter STOP mode with regulator in low power mode*/
-                PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
-
-                /* Configures system clock after wake-up from STOP: enable HSE, PLL and select
-                	PLL as system clock source (HSE and PLL are disabled in STOP mode) */
-                SYSCLKConfig_STOP();
-				
-				//delay_10ms(500);
-			}
-			gpsRecvTimes = 0;
-
-            /////////////////////////////////////////////////////////////////
-            // Second Power ON GSM
-            /////////////////////////////////////////////////////////////////
-            GSM_PowerOn();
+			GSM_PowerOn();
 			delay_10ms(200);
 
 			while(gsmRetyTimes < GSM_RETERY_TIMES)
@@ -474,7 +431,9 @@ GPRS_CheckLinkStatus(&status);
 					errNum = 0;
 		            loadLoginMsg(ucIMEIBuf, g_usSequenceNum);
 		            PackLoginMsg();
+#ifdef DBG_ENABLE_MACRO
 ShowLoginMsg();
+#endif
 					while(errNum < 5)
 					{
 						errNum++;
@@ -512,27 +471,219 @@ ShowLoginMsg();
 #endif // DBG_ENABLE_MACRO
 						}
 					}
-
-#if 0					
+				
 					errNum = 0;
 					g_usSequenceNum++;
-
-					PackStationMsg();
+					
+					// Factory Test
+					if(1)
+					{
+						PackFactoryMsg();
+						sendLen = FACTORY_REPORT_MSGLEN;
 #ifdef DBG_ENABLE_MACRO
-ShowStationMsg();
+	ShowFactoryMsg();
 #endif
-					sendLen = 8+stStationInfo.num*11;
+					}
+					else  // NOT Factory Test
+					{
+						PackStationMsg();
+						sendLen = 8+stStationInfo.num*11;
+#ifdef DBG_ENABLE_MACRO
+	ShowStationMsg();
+#endif
+					}
 					while(errNum < 5)
 					{
 						errNum++;
 						gprsRtn = GPRS_SendData(stationBuf, sendLen);
 						if(USART_SUCESS == gprsRtn)
 						{
+							gprsSendFlag = RST_OK;
 							break;
 						}
 					}
 
+					// break gprs send process
+					if(RST_OK == gprsSendFlag)
+					{
+						break;
+					}
+				
+				}
+				gprsRetyTimes = 0;
+				// break gprs send process
+				if(RST_OK == gprsSendFlag)
+				{
+					break;
+				}
+
+			}
+			gsmRetyTimes = 0;
+			gprsSendFlag = RST_FAIL;
+			errNum = 0;
+			/////////////////////////////////////////////////////////////////
+            // Set CFUN Min
+            /////////////////////////////////////////////////////////////////
+			GSM_SetCFunMin();
+			
+            /////////////////////////////////////////////////////////////////
+            // Then, Power ON GPS
+            /////////////////////////////////////////////////////////////////
+            GPSPowerOn();
+			DEBUG("\r\n GPSPowerOn \r\n");
+			delay_10ms(200);
+			/////////////////////////////////////////////////////////////////
+            // Receive GPS Data and Parse, If Recv Success then break
+            /////////////////////////////////////////////////////////////////
+            while(gpsRecvTimes < GPS_RETERY_TIMES)
+			{
+				gpsRecvTimes++;
+				TIM2_Start();
+				gpsRtn = GetGPSData();
+				TIM2_Stop();
+				
+				if(RST_OK == gpsRtn)
+				{
+					ucGPSStatus = GPS_DEVICE_OK;
+					ParseGPSData(&stGPSData);
+					if(1 == stGPSData.status)
+					{
+						GPSPowerOff();
+						DEBUG("GPSData Valid and TurnOFF GPS\r\n");
+						break;
+					}
+				}
+				
+				/////////////////////////////////////////////////////////////////
+                // Set RTC Alarm to wake from STOP mode
+                /////////////////////////////////////////////////////////////////
+                /* Wait till RTC Second event occurs */
+                RTC_ClearFlag(RTC_FLAG_SEC);
+                while(RTC_GetFlagStatus(RTC_FLAG_SEC) == RESET);
+
+                /* Alarm in 10 second */
+                RTC_SetAlarm(RTC_GetCounter() + GPS_STOPMODE_SEC);
+                /* Wait until last write operation on RTC registers has finished */
+                RTC_WaitForLastTask();
+
+                /////////////////////////////////////////////////////////////////
+                // Go Into STOP Mode
+                /////////////////////////////////////////////////////////////////
+                /* Request to enter STOP mode with regulator in low power mode*/
+                PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
+
+                /* Configures system clock after wake-up from STOP: enable HSE, PLL and select
+                	PLL as system clock source (HSE and PLL are disabled in STOP mode) */
+                SYSCLKConfig_STOP();
+				
+				//delay_10ms(500);
+			}
+
+			/////////////////////////////////////////////////////////////////
+            // Set CFUN Max
+            /////////////////////////////////////////////////////////////////
+			GSM_SetCFunFull();
+			
+			gsmRetyTimes = 0;
+			gprsRetyTimes = 0;
+			gsmRtn = RST_FAIL;
+			gprsRtn = RST_FAIL;
+
+			while(gsmRetyTimes < GSM_RETERY_TIMES)
+			{
+				gsmRetyTimes++;
+				gsmRtn = GSM_Init();
+				if(RST_FAIL == gsmRtn)
+				{
+					continue;
+				}
+				gsmRtn = GSM_CheckSIMCard();
+				if(RST_FAIL == gsmRtn)
+				{
+					continue;
+				}
+				
+				gsmRtn = GSM_QuerySignal(&ucSignalQuality);
+				if(RST_FAIL == gsmRtn)
+				{
+					continue;
+				}
+
+				
+				gsmRtn = GSM_CheckNetworkReg();
+				if(RST_FAIL == gsmRtn)
+				{
+					continue;
+				}
+
+				GSM_SetNetworkReg(2);
+				if(USART_FAIL == GSM_QueryCreg(&stCREGInfo))
+				{
+					// clear creg info
+				}
+
+				gsmRtn = GSM_QueryImei(ucIMEIBuf);
+				if(RST_FAIL == gsmRtn)
+				{
+					// clear imei buffer
+				}
+
+				gsmRtn = GSM_QueryImsi(&stIMSIInfo);
+				if(RST_FAIL == gsmRtn)
+				{
+					// clear imsi info
+				}
+
+				GSM_SetCIPMode(0);
+
+				gsmRtn = GSM_CheckGPRSService();
+				if(RST_FAIL == gsmRtn)
+				{
+					continue;
+				}
+
+				gsmRtn = GSM_QueryBatVoltage(&stBATInfo);
+				if(RST_FAIL == gsmRtn)
+				{
+					// clear battery info
+				}
+#if 0
+				gsmRtn = GSM_ceng(&stStationInfo);
+				if(RST_FAIL == gsmRtn)
+				{
+					// clear battery info
+				}
 #endif
+				while(gprsRetyTimes < GPRS_RETRY_TIMES)
+				{
+					gprsRetyTimes++;
+					GPRS_CIPShut();
+GPRS_CheckLinkStatus(&status);
+					gsmRtn = GSM_StartTaskAndSetAPN();
+					if(RST_FAIL == gsmRtn)
+					{
+						continue;
+					}
+GPRS_CheckLinkStatus(&status);
+					gsmRtn = GSM_BringUpConnect();
+					if(RST_FAIL == gsmRtn)
+					{
+						//continue;
+					}
+GPRS_CheckLinkStatus(&status);
+					gsmRtn = GSM_GetLocalIP();
+					if(RST_FAIL == gsmRtn)
+					{
+						//continue;
+					}
+GPRS_CheckLinkStatus(&status);
+					gsmRtn = GSM_StartUpConnect();
+					if(RST_FAIL == gsmRtn)
+					{
+						continue;
+					}
+GPRS_CheckLinkStatus(&status);
+
 					errNum = 0;
 					g_usSequenceNum++;
 					// detect remove action and alarm flag is setted then send alarm msg
@@ -551,7 +702,9 @@ ShowStationMsg();
 						g_uiAlarmPacketFlag = RESET;
 						DEBUG("PackGpsMsg\r\n");
 	                }
+#ifdef DBG_ENABLE_MACRO
 ShowGpsMsg();
+#endif
 					while(errNum < 5)
 					{
 						errNum++;
@@ -590,7 +743,6 @@ ShowGpsMsg();
 				}
 
 			}
-			gsmRetyTimes = 0;
 
         }
 
@@ -626,7 +778,7 @@ ShowGpsMsg();
 
         /* Wait until last write operation on RTC registers has finished */
         RTC_WaitForLastTask();
-        DEBUG("GOING INTO STOPMODE %d sec\n", g_uiSetSleepSec);
+
         /* Request to enter STOP mode with regulator in low power mode*/
         PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
 
@@ -1006,102 +1158,102 @@ void PackFactoryMsg(void)
     offset = 0;
     for(i = 0; i < 2; i++)
     {
-        gpsBuf[offset] = PROTO_FACTORY_HEADER;
+        stationBuf[offset] = PROTO_FACTORY_HEADER;
         offset++;
     }
-    gpsBuf[offset] = PACKET_FACTORY_REPORT;  // header type
+    stationBuf[offset] = PACKET_FACTORY_REPORT;  // header type
     offset++;
-    gpsBuf[offset] = 0; // header len
+    stationBuf[offset] = 0; // header len
     offset++;
-    gpsBuf[offset] = (FACTORY_REPORT_MSGLEN - 5); // header len
+    stationBuf[offset] = (FACTORY_REPORT_MSGLEN - 5); // header len
     offset++;
-    gpsBuf[offset] = (uint8_t)((g_usSequenceNum >> 8) & 0x00FF);
+    stationBuf[offset] = (uint8_t)((g_usSequenceNum >> 8) & 0x00FF);
     offset++;
-	gpsBuf[offset] = (uint8_t)((g_usSequenceNum) & 0x00FF);
+	stationBuf[offset] = (uint8_t)((g_usSequenceNum) & 0x00FF);
 	offset++;
 	for(i = 0; i < 4; i++)
     {
-        gpsBuf[offset] = stGPSData.utc.s[3 - i];
+        stationBuf[offset] = stGPSData.utc.s[3 - i];
         offset++;
     }
     for(i = 0; i < 4; i++)
     {
-        gpsBuf[offset] = stGPSData.latitude.s[3 - i];
+        stationBuf[offset] = stGPSData.latitude.s[3 - i];
         offset++;
     }
     for(i = 0; i < 4; i++)
     {
-        gpsBuf[offset] = stGPSData.longitude.s[3 - i];
+        stationBuf[offset] = stGPSData.longitude.s[3 - i];
         offset++;
     }
-    gpsBuf[offset] = stGPSData.speed;
+    stationBuf[offset] = stGPSData.speed;
     offset++;
 
     
     for(i = 0; i < 2; i++)
     {
-        gpsBuf[offset] = stGPSData.course.s[1 - i];
+        stationBuf[offset] = stGPSData.course.s[1 - i];
         offset++;
     }
     for(i = 0; i < 2; i++)
     {
-        gpsBuf[offset] = stIMSIInfo.Mcc[i];
+        stationBuf[offset] = stIMSIInfo.Mcc[i];
         offset++;
     }
 	for(i = 0; i < 2; i++)
     {
-        gpsBuf[offset] = stIMSIInfo.Mnc[i];
+        stationBuf[offset] = stIMSIInfo.Mnc[i];
         offset++;
     }
 	for(i = 0; i < 2; i++)
     {
-        gpsBuf[offset] = stCREGInfo.Lac[i];
+        stationBuf[offset] = stCREGInfo.Lac[i];
         offset++;
     }
-	gpsBuf[offset] = 0;  // 补零
+	stationBuf[offset] = 0;  // 补零
     offset++;
 	for(i = 0; i < 2; i++)
     {
-        gpsBuf[offset] = stCREGInfo.Ci[i];
+        stationBuf[offset] = stCREGInfo.Ci[i];
         offset++;
     }
-    gpsBuf[offset] = stGPSData.status;
+    stationBuf[offset] = stGPSData.status;
     offset++;
-    gpsBuf[offset] = 0;  // device status
+    stationBuf[offset] = 0;  // device status
     offset++;
-    gpsBuf[offset] = STM_EVAL_PBGetState(BUTTON_KEY);  // device status
+    stationBuf[offset] = STM_EVAL_PBGetState(BUTTON_KEY);  // device status
     offset++;
     for(i = 0; i < 2; i++)
     {
-        gpsBuf[offset] = stBATInfo.BatVoltage.s[1 - i];
+        stationBuf[offset] = stBATInfo.BatVoltage.s[1 - i];
         offset++;
     }
 
-	gpsBuf[offset] = 0;  // 补零
+	stationBuf[offset] = 0;  // 补零
     offset++;
-	gpsBuf[offset] = ucSignalQuality; 
+	stationBuf[offset] = ucSignalQuality; 
     offset++;
     for(i = 0; i < IMEI_BUF_LEN; i++)
     {
-        gpsBuf[offset] = ucIMEIBuf[i];
+        stationBuf[offset] = ucIMEIBuf[i];
         offset++;
     }
 
     for(i = 0; i < IMSI_INFO_LEN; i++)
     {
-        gpsBuf[offset] = g_IMSIBuf[i];
+        stationBuf[offset] = g_IMSIBuf[i];
         offset++;
     }
     for(i = 0; i < PHONE_NUMBER_LEN; i++)
     {
-        gpsBuf[offset] = g_phoneNum[i];
+        stationBuf[offset] = g_phoneNum[i];
         offset++;
     }
-    gpsBuf[offset] = ucGPSStatus;  // gps status
+    stationBuf[offset] = ucGPSStatus;  // gps status
     offset++;
-    gpsBuf[offset] = 0x02;  // software version v2.0
+    stationBuf[offset] = 0x02;  // software version v2.0
     offset++;
-    gpsBuf[offset] = 0x00;
+    stationBuf[offset] = 0x00;
     offset++;
 
     if(offset != (FACTORY_REPORT_MSGLEN))

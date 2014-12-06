@@ -161,6 +161,8 @@ unsigned char GPRS_LinkServer(pST_NETWORKCONFIG pnetconfig);
 unsigned char GPRS_CloseLink(void);
 unsigned char GPRS_CIPShut(void);
 unsigned char GPRS_CPOwd(void);
+uint8_t GSM_SetCFunMin(void);
+uint8_t GSM_SetCFunFull(void);
 unsigned char GPRS_SendData(char *pString, unsigned int len);
 unsigned char GPRS_SendData_rsp(char *pString, unsigned int len, char **ppRecvBuf, uint32_t *pRecvLen);
 uint8_t GSM_QueryBatVoltage(pST_BATVOLTAGESTATUS pSig);

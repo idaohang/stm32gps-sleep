@@ -15,6 +15,7 @@
 #define RETRY_TIMES_CMD_CIICR  5
 #define RETRY_TIMES_CMD_CIFSR  5
 #define RETRY_TIMES_CMD_CIPSTART 4
+#define RETRY_TIMES_CMD_CFUN  4
 
 // 500ms
 #define MAX_RESP_CMD_DEFAULT 4
@@ -31,6 +32,7 @@
 #define MAX_RESP_CMD_CIICR 120 // 60 sec, CIICR max is 85 sec
 #define MAX_RESP_CMD_CIFSR 20  // 10 sec
 #define MAX_RESP_CMD_CIPSTART 20
+#define MAX_RESP_CMD_CFUN 20 // 10 sec, CFUN max is 10 sec
 
 
 
@@ -87,6 +89,8 @@ const char AT_CENG_SET[] = "AT+CENG=%d,%d\r";
 const char AT_CENG[] = "AT+CENG?\r";
 const char AT_CNUM[]     =   "AT+CNUM\r";
 const char AT_CPOWD[]     =   "AT+CPOWD=1\r";
+const char AT_CFUN_MIN[]     =   "AT+CFUN=0\r";
+const char AT_CFUN_FULL[]     =   "AT+CFUN=1,1\r";
 
 // gps command
 const char AT_CGPSPWR[] =       "AT+CGPSPWR=1\r";
