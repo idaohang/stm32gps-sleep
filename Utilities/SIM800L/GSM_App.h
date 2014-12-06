@@ -5,68 +5,69 @@
 
 typedef	struct
 {
-	char CMDType;
-	void *pCMDData;
-}ST_GSMCMD, *pST_GSMCMD;
+    char CMDType;
+    void *pCMDData;
+} ST_GSMCMD, *pST_GSMCMD;
 
 typedef struct
 {
-  char PhoneNumber[12];
-  char Name[6];
-}ST_PHONEBOOKS, *pST_PHONEBOOKS;
+    char PhoneNumber[12];
+    char Name[6];
+} ST_PHONEBOOKS, *pST_PHONEBOOKS;
 
 typedef struct
 {
-	char RemoteIP[32];
-	char RemotePort[5];
-	char TransferMode[4];
-	char APN[10];
-}ST_NETWORKCONFIG, *pST_NETWORKCONFIG;
+    char RemoteIP[32];
+    char RemotePort[5];
+    char TransferMode[4];
+    char APN[10];
+} ST_NETWORKCONFIG, *pST_NETWORKCONFIG;
 
 typedef struct
 {
-	unsigned char	BatStatus;		//电池状态，0没充电，1充电中，2已充满
-	unsigned char BatPower;		  //电池电量，0-100
-	union
-	{
-		unsigned char s[2];
-		unsigned short  i;     // 电池电压mV
-	}BatVoltage;
-}ST_BATTERYSTATUS, *pST_BATTERYSTATUS;
+    unsigned char	BatStatus;		//电池状态，0没充电，1充电中，2已充满
+    unsigned char BatPower;		  //电池电量，0-100
+    union
+    {
+        unsigned char s[2];
+        unsigned short  i;     // 电池电压mV
+    } BatVoltage;
+} ST_BATTERYSTATUS, *pST_BATTERYSTATUS;
 
 typedef struct
 {
-	unsigned char	Status;		//是否有效 0无效，1有效
-	union
-	{
-		unsigned char s[2];
-		unsigned short  i;     // 电池电压mV
-	}BatVoltage;
-}ST_BATVOLTAGESTATUS, *pST_BATVOLTAGESTATUS;
+    unsigned char	Status;		//是否有效 0无效，1有效
+    union
+    {
+        unsigned char s[2];
+        unsigned short  i;     // 电池电压mV
+    } BatVoltage;
+} ST_BATVOLTAGESTATUS, *pST_BATVOLTAGESTATUS;
 
 typedef struct
 {
-	char Mcc[2];		// 国家代码
-	char Mnc[2];		// 网络代码
-}ST_IMSIINFO, *pST_IMSIINFO;
+    char Mcc[2];		// 国家代码
+    char Mnc[2];		// 网络代码
+} ST_IMSIINFO, *pST_IMSIINFO;
 
 typedef struct
 {
-	unsigned char n;    // 0 - disable network; 1 - ; 2 - with location
-	unsigned char Stat; // 1 - registered, home network
-	char Lac[2];		// location area code
-	char Ci[2];		// cell ID
-}ST_CREGINFO, *pST_CREGINFO;
+    unsigned char n;    // 0 - disable network; 1 - ; 2 - with location
+    unsigned char Stat; // 1 - registered, home network
+    char Lac[2];		// location area code
+    char Ci[2];		// cell ID
+} ST_CREGINFO, *pST_CREGINFO;
 
 typedef struct
 {
-	unsigned char Station[9];    // base station: MCC MNC LAC CI
-	unsigned char Battery[2]; 	// battery voltage
-	unsigned char Signal[2];		// signal
-}ST_SIMDATA, *pST_SIMDATA;
+    unsigned char Station[9];    // base station: MCC MNC LAC CI
+    unsigned char Battery[2]; 	// battery voltage
+    unsigned char Signal[2];		// signal
+} ST_SIMDATA, *pST_SIMDATA;
 
 typedef     struct
-{       /* date and time components */
+{
+    /* date and time components */
     signed char     Sec;
     signed char     Min;
     signed char     Hour;
@@ -75,44 +76,44 @@ typedef     struct
     signed char     Year;
     signed char     Week;
     signed char     Timezone;
-}ST_RTCTIME, *pST_RTCTIME;
+} ST_RTCTIME, *pST_RTCTIME;
 
 typedef struct
 {
-	char i;
-}stru_GSMDATA;
+    char i;
+} stru_GSMDATA;
 
 typedef struct
 {
-	union 
-	{
-		char s[2];
-		uint16_t i;
-	} mcc;
-	union 
-	{
-		char s[2];
-		uint16_t i;
-	} mnc;
-	union 
-	{
-		char s[2];
-		uint16_t i;
-	} lac;
-	union 
-	{
-		char s[3];
-		uint16_t i;
-	} ci;
-	char rxl;
-	char rxq;
-}ST_BASESTATION;
+    union
+    {
+        char s[2];
+        uint16_t i;
+    } mcc;
+    union
+    {
+        char s[2];
+        uint16_t i;
+    } mnc;
+    union
+    {
+        char s[2];
+        uint16_t i;
+    } lac;
+    union
+    {
+        char s[3];
+        uint16_t i;
+    } ci;
+    char rxl;
+    char rxq;
+} ST_BASESTATION;
 
 typedef struct
 {
-	char num;
-	ST_BASESTATION stStation[7];
-}ST_PACKET_BASESTATION, *pST_PACKET_BASESTATION;
+    char num;
+    ST_BASESTATION stStation[7];
+} ST_PACKET_BASESTATION, *pST_PACKET_BASESTATION;
 
 
 char *strstr_len(char *str, char *subStr, uint32_t strlenth);
@@ -126,7 +127,7 @@ void GSM_ClearBuffer(void);
 void GSM_ClearSendBuffer(void);
 unsigned char GSM_SendAT(char *pCMD, char *pCMDBack, uint32_t CMDLen, uint8_t Count);
 unsigned char GSM_SendAT_rsp(char *pCMD, char *pCMDBack,
-        uint32_t CMDLen, char **ppRecvBuf, uint32_t *pRecvLen, uint8_t Count);
+                             uint32_t CMDLen, char **ppRecvBuf, uint32_t *pRecvLen, uint8_t Count);
 unsigned char GSM_QueryNetType(void);
 unsigned char GSM_QuerySignal(unsigned char *pSig);
 uint8_t GSM_QueryImei(uint8_t *pImei);

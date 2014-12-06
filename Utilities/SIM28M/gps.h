@@ -8,42 +8,42 @@
 
 typedef struct
 {
-uint8_t UTCDateTime[6]; //YMDHMS
-uint8_t Status; //A/V
-uint8_t Latitude[9]; //ddmm.mmmm
-uint8_t NS; //N/S
-uint8_t Longitude[10]; //dddmm.mmmm
-uint8_t EW; //E/W
-uint8_t Speed[8]; // 速率000.0~999.9节
-uint8_t Course[8]; // 航向000.0~359.9度
-}stru_GPSRMC;
+    uint8_t UTCDateTime[6]; //YMDHMS
+    uint8_t Status; //A/V
+    uint8_t Latitude[9]; //ddmm.mmmm
+    uint8_t NS; //N/S
+    uint8_t Longitude[10]; //dddmm.mmmm
+    uint8_t EW; //E/W
+    uint8_t Speed[8]; // 速率000.0~999.9节
+    uint8_t Course[8]; // 航向000.0~359.9度
+} stru_GPSRMC;
 
 
 typedef struct
 {
-	union
-	{
-	unsigned char s[4];
-	int i;
-	}utc;
-  union
-  {
-  	unsigned char s[4];
-    int           i;   
-  }latitude;   // 纬度
-  union
-  {
-  	unsigned char s[4];
-    int           i;    
-  }longitude;  // 经度
-  unsigned char speed;        // 0x00 - 0xFF 0~255km/h
-  union
-  {
-  	unsigned char s[2];
-  	unsigned short i;     
-  }course;  // 0 - 360度 航向
-  unsigned char status;  // 定位状态
-}stru_GPSDATA, *pstru_GPSDATA;
+    union
+    {
+        unsigned char s[4];
+        int i;
+    } utc;
+    union
+    {
+        unsigned char s[4];
+        int           i;
+    } latitude;  // 纬度
+    union
+    {
+        unsigned char s[4];
+        int           i;
+    } longitude; // 经度
+    unsigned char speed;        // 0x00 - 0xFF 0~255km/h
+    union
+    {
+        unsigned char s[2];
+        unsigned short i;
+    } course; // 0 - 360度 航向
+    unsigned char status;  // 定位状态
+} stru_GPSDATA, *pstru_GPSDATA;
 
 #define NMEA_NULL    0x00            // GPS语句类型
 #define NMEA_GPGGA    0x01

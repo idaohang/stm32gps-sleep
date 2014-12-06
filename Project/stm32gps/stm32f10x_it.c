@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    USART/Printf/stm32f10x_it.c 
+  * @file    USART/Printf/stm32f10x_it.c
   * @author  MCD Application Team
   * @version V3.5.0
   * @date    08-April-2011
@@ -19,7 +19,7 @@
   *
   * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
   ******************************************************************************
-  */ 
+  */
 
 /* Includes ------------------------------------------------------------------*/
 #include <stdio.h>
@@ -60,10 +60,10 @@ void NMI_Handler(void)
   */
 void HardFault_Handler(void)
 {
-  /* Go to infinite loop when Hard Fault exception occurs */
-  while (1)
-  {
-  }
+    /* Go to infinite loop when Hard Fault exception occurs */
+    while (1)
+    {
+    }
 }
 
 /**
@@ -73,10 +73,10 @@ void HardFault_Handler(void)
   */
 void MemManage_Handler(void)
 {
-  /* Go to infinite loop when Memory Manage exception occurs */
-  while (1)
-  {
-  }
+    /* Go to infinite loop when Memory Manage exception occurs */
+    while (1)
+    {
+    }
 }
 
 /**
@@ -86,10 +86,10 @@ void MemManage_Handler(void)
   */
 void BusFault_Handler(void)
 {
-  /* Go to infinite loop when Bus Fault exception occurs */
-  while (1)
-  {
-  }
+    /* Go to infinite loop when Bus Fault exception occurs */
+    while (1)
+    {
+    }
 }
 
 /**
@@ -99,10 +99,10 @@ void BusFault_Handler(void)
   */
 void UsageFault_Handler(void)
 {
-  /* Go to infinite loop when Usage Fault exception occurs */
-  while (1)
-  {
-  }
+    /* Go to infinite loop when Usage Fault exception occurs */
+    while (1)
+    {
+    }
 }
 
 /**
@@ -161,7 +161,7 @@ void SysTick_Handler(void)
 
     usart_timeout(0, 0);
     usart_timeout(1, 0);
-	TimingDelay_Decrement();
+    TimingDelay_Decrement();
 }
 
 static UART_INT_HANDLER uart_int_handler[COMn] = {NULL, NULL, NULL};
@@ -181,26 +181,26 @@ void USART_IRQHandler_register(uint32_t com, UART_INT_HANDLER handler, uint32_t 
 void USART2_IRQHandler(void)
 {
     unsigned char RxData;
-//    uint32_t idx = 1;
-if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
-  {
-    /* Read one byte from the receive data register */
-    RxData = USART_ReceiveData(USART2);
-	usart_irq_my(1, RxData);
-  }
-
-/*
-    // 处理接收到的数据 
-    while (USART_GetFlagStatus(USART2, USART_IT_RXNE) != RESET)
+    //    uint32_t idx = 1;
+    if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
     {
-        //STM_EVAL_LEDToggle(LED4);
-
+        /* Read one byte from the receive data register */
         RxData = USART_ReceiveData(USART2);
-		usart_irq_my(1, RxData);
-		
-       
+        usart_irq_my(1, RxData);
     }
-    */
+
+    /*
+        // 处理接收到的数据
+        while (USART_GetFlagStatus(USART2, USART_IT_RXNE) != RESET)
+        {
+            //STM_EVAL_LEDToggle(LED4);
+
+            RxData = USART_ReceiveData(USART2);
+    		usart_irq_my(1, RxData);
+
+
+        }
+        */
 }
 
 void USART3_IRQHandler(void)
@@ -209,7 +209,8 @@ void USART3_IRQHandler(void)
     {
         uart_int_handler[2](2, uart_int_arg[2]);
     }
-    else {
+    else
+    {
         while(1);
     }
 }
@@ -217,13 +218,13 @@ void USART3_IRQHandler(void)
 void RTC_IRQHandler(void)
 {
 
-	RTC_ClearITPendingBit(RTC_IT_SEC|RTC_IT_ALR);  
-	RTC_WaitForLastTask(); 
-	//STM_EVAL_LEDToggle(LED1);
-	/* Set the RTC Alarm after 5s */
-	//RTC_SetAlarm(RTC_GetCounter()+ 5);
-	/* Wait until last write operation on RTC registers has finished */
-	//RTC_WaitForLastTask();
+    RTC_ClearITPendingBit(RTC_IT_SEC | RTC_IT_ALR);
+    RTC_WaitForLastTask();
+    //STM_EVAL_LEDToggle(LED1);
+    /* Set the RTC Alarm after 5s */
+    //RTC_SetAlarm(RTC_GetCounter()+ 5);
+    /* Wait until last write operation on RTC registers has finished */
+    //RTC_WaitForLastTask();
 }
 
 /**
@@ -233,34 +234,34 @@ void RTC_IRQHandler(void)
   */
 void RTCAlarm_IRQHandler(void)
 {
-  if(RTC_GetITStatus(RTC_IT_ALR) != RESET)
-  {
-    /* Clear EXTI line17 pending bit */
-    EXTI_ClearITPendingBit(EXTI_Line17);
-
-    /* Check if the Wake-Up flag is set */
-    if(PWR_GetFlagStatus(PWR_FLAG_WU) != RESET)
+    if(RTC_GetITStatus(RTC_IT_ALR) != RESET)
     {
-      /* Clear Wake Up flag */
-      PWR_ClearFlag(PWR_FLAG_WU);
-    }
+        /* Clear EXTI line17 pending bit */
+        EXTI_ClearITPendingBit(EXTI_Line17);
 
-    /* Wait until last write operation on RTC registers has finished */
-    RTC_WaitForLastTask();   
-    /* Clear RTC Alarm interrupt pending bit */
-    RTC_ClearITPendingBit(RTC_IT_ALR);
-    /* Wait until last write operation on RTC registers has finished */
-    RTC_WaitForLastTask();
-  }
+        /* Check if the Wake-Up flag is set */
+        if(PWR_GetFlagStatus(PWR_FLAG_WU) != RESET)
+        {
+            /* Clear Wake Up flag */
+            PWR_ClearFlag(PWR_FLAG_WU);
+        }
+
+        /* Wait until last write operation on RTC registers has finished */
+        RTC_WaitForLastTask();
+        /* Clear RTC Alarm interrupt pending bit */
+        RTC_ClearITPendingBit(RTC_IT_ALR);
+        /* Wait until last write operation on RTC registers has finished */
+        RTC_WaitForLastTask();
+    }
 }
 
 void TIM2_IRQHandler(void)
 {
-	if ( TIM_GetITStatus(TIM2 , TIM_IT_Update) != RESET ) 
-	{	
-		TIM_ClearITPendingBit(TIM2 , TIM_FLAG_Update);
-		g_ucRecvOverTimeFlag = 1;  // GPS Receive OverTime
-	}		 	
+    if ( TIM_GetITStatus(TIM2 , TIM_IT_Update) != RESET )
+    {
+        TIM_ClearITPendingBit(TIM2 , TIM_FLAG_Update);
+        g_ucRecvOverTimeFlag = 1;  // GPS Receive OverTime
+    }
 }
 
 /**
@@ -270,11 +271,11 @@ void TIM2_IRQHandler(void)
   */
 void EXTI15_10_IRQHandler(void)
 {
-  if(EXTI_GetITStatus(KEY_BUTTON_EXTI_LINE) != RESET)
-  { 
-    /* Clear the Key Button EXTI line pending bit */  
-    EXTI_ClearITPendingBit(KEY_BUTTON_EXTI_LINE);
-  }
+    if(EXTI_GetITStatus(KEY_BUTTON_EXTI_LINE) != RESET)
+    {
+        /* Clear the Key Button EXTI line pending bit */
+        EXTI_ClearITPendingBit(KEY_BUTTON_EXTI_LINE);
+    }
 }
 
 /******************************************************************************/
@@ -295,10 +296,10 @@ void EXTI15_10_IRQHandler(void)
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

@@ -49,108 +49,108 @@
 
 void MX_GPIO_Init(void)
 {
-  GPIO_InitTypeDef GPIO_InitStruct;
+    GPIO_InitTypeDef GPIO_InitStruct;
 
-  /** Configure pins as 
-        * Analog 
-        * Input 
-        * Output
-        * EVENT_OUT
-        * EXTI
-  */
+    /** Configure pins as
+          * Analog
+          * Input
+          * Output
+          * EVENT_OUT
+          * EXTI
+    */
 
-  /*Enable or disable APB2 peripheral clock */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC|RCC_APB2Periph_GPIOB, ENABLE);
+    /*Enable or disable APB2 peripheral clock */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOB, ENABLE);
 
-  /*Configure GPIO pin : PC */
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_2MHz;
-  GPIO_Init(GPIOC, &GPIO_InitStruct);
+    /*Configure GPIO pin : PC */
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_2MHz;
+    GPIO_Init(GPIOC, &GPIO_InitStruct);
 }
 #elif defined USE_STM32_GPS_BOARD_VB
 
 void MX_GPIO_Init(void)
 {
-GPIO_InitTypeDef GPIO_InitStruct;
+    GPIO_InitTypeDef GPIO_InitStruct;
 
-  /** Configure pins as 
-        * Analog 
-        * Input 
-        * Output
-        * EVENT_OUT
-        * EXTI
-  */
+    /** Configure pins as
+          * Analog
+          * Input
+          * Output
+          * EVENT_OUT
+          * EXTI
+    */
 
-  /*Enable or disable APB2 peripheral clock */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOC, ENABLE);
+    /*Enable or disable APB2 peripheral clock */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC, ENABLE);
 
-  /*Configure GPIO pin : PA */
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_1;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOA, &GPIO_InitStruct);
+    /*Configure GPIO pin : PA */
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_1;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PC */
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9|GPIO_Pin_11;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOC, &GPIO_InitStruct);
+    /*Configure GPIO pin : PC */
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_11;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PD */
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_2;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOD, &GPIO_InitStruct);
+    /*Configure GPIO pin : PD */
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_2;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-   /*Configure GPIO pin : PB */
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_5;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOB, &GPIO_InitStruct);
+    /*Configure GPIO pin : PB */
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_5;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PA */
-  // GPIO_InitStruct.GPIO_Pin = GPIO_Pin_15;
-  // GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-  // GPIO_Init(GPIOA, &GPIO_InitStruct);
+    /*Configure GPIO pin : PA */
+    // GPIO_InitStruct.GPIO_Pin = GPIO_Pin_15;
+    // GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    // GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PC */
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPD;
-  GPIO_Init(GPIOC, &GPIO_InitStruct);
+    /*Configure GPIO pin : PC */
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPD;
+    GPIO_Init(GPIOC, &GPIO_InitStruct);
 }
 
 void MX_GPIO_DeInit(void)
 {
-GPIO_InitTypeDef GPIO_InitStruct;
+    GPIO_InitTypeDef GPIO_InitStruct;
 
-  /** Configure pins as 
-        * Analog 
-        * Input 
-        * Output
-        * EVENT_OUT
-        * EXTI
-  */
+    /** Configure pins as
+          * Analog
+          * Input
+          * Output
+          * EVENT_OUT
+          * EXTI
+    */
 
-  /*Enable or disable APB2 peripheral clock */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOC, ENABLE);
+    /*Enable or disable APB2 peripheral clock */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC, ENABLE);
 
-  /*Configure GPIO pin : PA */
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_1;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOA, &GPIO_InitStruct);
+    /*Configure GPIO pin : PA */
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_1;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PC */
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9|GPIO_Pin_11;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOC, &GPIO_InitStruct);
+    /*Configure GPIO pin : PC */
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_11;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOC, &GPIO_InitStruct);
 
 }
-#else 
- #error "Please select first the STM32 GPS board to be used (in stm32_eval.h)"
-#endif  
+#else
+#error "Please select first the STM32 GPS board to be used (in stm32_eval.h)"
+#endif
 /* USER CODE BEGIN 2 */
 
 /* USER CODE END 2 */

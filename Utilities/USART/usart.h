@@ -22,11 +22,11 @@ typedef struct
     uint32_t        ucRLen;         // 接收数据长度
     uint32_t        ucRTime;        // 接收超时时间
     uint32_t        ucRTick;
-}USART_ST;
+} USART_ST;
 
 void usart_irq_my(uint32_t chan, uint8_t data);
 void usart_init(uint32_t chan);
-uint16_t USART_Send(USART_TypeDef* USARTx, uint8_t *Data, uint16_t nBytes);
+uint16_t USART_Send(USART_TypeDef *USARTx, uint8_t *Data, uint16_t nBytes);
 void usart_sendbuffer(uint32_t chan, char *byData, uint32_t *pReqLen);
 unsigned char usart_readbuffer(uint32_t chan, char *byData, uint32_t *pReqLen);
 void usart_irq(uint32_t chan, USART_ST *usart_st);

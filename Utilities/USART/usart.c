@@ -60,15 +60,15 @@ void usart_init(uint32_t chan)
         st_Serial[idx].uiRMaxLen = USART_GSM_BUFSIZE;                 // 上行接收缓冲长度
         st_Serial[idx].ucRTick = (sysTickPerSec() * GSM_USART_TIMEOUT_MS) / 1000 + 1;
     }
-	else
-	{
-		;
-	}
-	
+    else
+    {
+        ;
+    }
+
     st_Serial[idx].RBuffWpt = st_Serial[idx].RStartpt;    // 上行接收缓冲指针，+2留2字节保存包程度
     st_Serial[idx].RBuffRpt = st_Serial[idx].RStartpt;    // 上行接收处理指针
     st_Serial[idx].ucRTime = 0;
-	
+
     if (st_Serial[idx].ucRTick <= 1)
     {
         st_Serial[idx].ucRTick = 2;
@@ -77,18 +77,18 @@ void usart_init(uint32_t chan)
     //DEBUG("idx %d ucRTick %d", idx, st_Serial[idx].ucRTick);
 }
 
-uint16_t USART_Send(USART_TypeDef* USARTx, uint8_t *Data, uint16_t nBytes)
+uint16_t USART_Send(USART_TypeDef *USARTx, uint8_t *Data, uint16_t nBytes)
 {
-	uint16_t i;
-	for (i = 0; i < nBytes; i++) 
-	{
-		USART_SendData(USARTx, *(Data + i));
-		while( USART_GetFlagStatus(USARTx, USART_FLAG_TC) == RESET )
-		{
-			;
-		}
-	}
-	return i;
+    uint16_t i;
+    for (i = 0; i < nBytes; i++)
+    {
+        USART_SendData(USARTx, *(Data + i));
+        while( USART_GetFlagStatus(USARTx, USART_FLAG_TC) == RESET )
+        {
+            ;
+        }
+    }
+    return i;
 }
 
 void usart_sendbuffer(uint32_t chan, char *byData, uint32_t *pReqLen)
@@ -103,9 +103,9 @@ void usart_sendbuffer(uint32_t chan, char *byData, uint32_t *pReqLen)
 
         while (USART_GetFlagStatus(usart_hw_base, USART_FLAG_TXE) == RESET)
         {
-			;
+            ;
         }
-		
+
         USART_ClearFlag(usart_hw_base, USART_FLAG_TXE);
 
         reqLen--;
@@ -121,7 +121,7 @@ unsigned char usart_readbuffer(uint32_t chan, char *byData, unsigned int *pReqLe
     uint32_t idx = usart_chan2st(chan);
 
     curLen = st_Serial[idx].ucRLen;
-	
+
     if (curLen != 0)                   // 缓存区有数据
     {
         if (st_Serial[idx].ucRTime != 0)     // 正在接收数据
@@ -143,7 +143,7 @@ unsigned char usart_readbuffer(uint32_t chan, char *byData, unsigned int *pReqLe
             }
             else
             {
-				;
+                ;
             }
 
 #ifdef DBG_usart_readbuffer
@@ -166,8 +166,8 @@ unsigned char usart_readbuffer(uint32_t chan, char *byData, unsigned int *pReqLe
             {
                 // 读指针在写指针的后面
                 unsigned int backLen = (st_Serial[idx].RStartpt
-                        			    + st_Serial[idx].uiRMaxLen
-                        			    - st_Serial[idx].RBuffRpt); // 缓冲区后半部数据长度
+                                        + st_Serial[idx].uiRMaxLen
+                                        - st_Serial[idx].RBuffRpt); // 缓冲区后半部数据长度
                 unsigned int saveLen = curLen;
 
                 if (saveLen <= backLen) // 只需读后半部就可以完成
@@ -176,12 +176,12 @@ unsigned char usart_readbuffer(uint32_t chan, char *byData, unsigned int *pReqLe
                     memcpy(byData, st_Serial[idx].RBuffRpt, saveLen);
                     st_Serial[idx].RBuffRpt += saveLen;
 
-					// 环形缓冲区到尾部回退
+                    // 环形缓冲区到尾部回退
                     if (st_Serial[idx].RBuffRpt >= st_Serial[idx].RStartpt + st_Serial[idx].uiRMaxLen)
                     {
                         st_Serial[idx].RBuffRpt = st_Serial[idx].RStartpt;
                     }
-					
+
                     st_Serial[idx].ucRLen -= saveLen;
                     *pReqLen = curLen;
                 }
@@ -205,7 +205,7 @@ unsigned char usart_readbuffer(uint32_t chan, char *byData, unsigned int *pReqLe
         }
 #ifdef DBG_usart_readbuffer
         DEBUG("usart_readbuffer[%d],st_reqLen %d, reqLen %d\r\n",
-                chan, st_Serial[idx].ucRLen, *pReqLen);
+              chan, st_Serial[idx].ucRLen, *pReqLen);
 #endif
     }
     else
@@ -223,7 +223,7 @@ void usart_irq(uint32_t chan, USART_ST *pusart)
 {
     unsigned char RxData;
     uint32_t idx = usart_chan2st(chan);
-    USART_TypeDef * usart_hw_base = usart_hw_base_get_from_chan(chan);
+    USART_TypeDef *usart_hw_base = usart_hw_base_get_from_chan(chan);
 
     /* 处理接收到的数据 */
     while (USART_GetFlagStatus(usart_hw_base, USART_IT_RXNE) == SET)
@@ -231,10 +231,10 @@ void usart_irq(uint32_t chan, USART_ST *pusart)
         //STM_EVAL_LEDToggle(LED4);
 
         RxData = USART_ReceiveData(usart_hw_base);
-		
+
         if ((st_Serial[idx].RBuffRpt == (st_Serial[idx].RBuffWpt + 1)) ||  // 写指针即将覆盖读指针
-             ((st_Serial[idx].RBuffRpt == st_Serial[idx].RStartpt) && // 读指针指向缓存第一个位置,写指针指向缓存最后一个位置
-               (st_Serial[idx].RBuffWpt == (st_Serial[idx].RStartpt + st_Serial[idx].uiRMaxLen - 1)))) // 接收缓存满
+                ((st_Serial[idx].RBuffRpt == st_Serial[idx].RStartpt) && // 读指针指向缓存第一个位置,写指针指向缓存最后一个位置
+                 (st_Serial[idx].RBuffWpt == (st_Serial[idx].RStartpt + st_Serial[idx].uiRMaxLen - 1)))) // 接收缓存满
         {
             return;
         }
@@ -242,41 +242,41 @@ void usart_irq(uint32_t chan, USART_ST *pusart)
         *(st_Serial[idx].RBuffWpt++) = RxData;
         st_Serial[idx].ucRLen++;
 
-		// 接收指针到最缓存底部
-        if (st_Serial[idx].RBuffWpt >= (st_Serial[idx].RStartpt + st_Serial[idx].uiRMaxLen)) 
+        // 接收指针到最缓存底部
+        if (st_Serial[idx].RBuffWpt >= (st_Serial[idx].RStartpt + st_Serial[idx].uiRMaxLen))
         {
             st_Serial[idx].RBuffWpt = st_Serial[idx].RStartpt;
         }
-		
+
         st_Serial[idx].ucRTime = st_Serial[idx].ucRTick; // 20ms接收超时
     }
 }
 
 void usart_irq_my(uint32_t chan, uint8_t data)
 {
-//    unsigned char RxData;
+    //    unsigned char RxData;
     uint32_t idx = usart_chan2st(chan);
-    USART_TypeDef * usart_hw_base = usart_hw_base_get_from_chan(chan);
+    USART_TypeDef *usart_hw_base = usart_hw_base_get_from_chan(chan);
 
 
-        if ((st_Serial[idx].RBuffRpt == (st_Serial[idx].RBuffWpt + 1)) ||  // 写指针即将覆盖读指针
-             ((st_Serial[idx].RBuffRpt == st_Serial[idx].RStartpt) && // 读指针指向缓存第一个位置,写指针指向缓存最后一个位置
-               (st_Serial[idx].RBuffWpt == (st_Serial[idx].RStartpt + st_Serial[idx].uiRMaxLen - 1)))) // 接收缓存满
-        {
-            return;
-        }
+    if ((st_Serial[idx].RBuffRpt == (st_Serial[idx].RBuffWpt + 1)) ||  // 写指针即将覆盖读指针
+            ((st_Serial[idx].RBuffRpt == st_Serial[idx].RStartpt) && // 读指针指向缓存第一个位置,写指针指向缓存最后一个位置
+             (st_Serial[idx].RBuffWpt == (st_Serial[idx].RStartpt + st_Serial[idx].uiRMaxLen - 1)))) // 接收缓存满
+    {
+        return;
+    }
 
-        *(st_Serial[idx].RBuffWpt++) = data;
-        st_Serial[idx].ucRLen++;
+    *(st_Serial[idx].RBuffWpt++) = data;
+    st_Serial[idx].ucRLen++;
 
-		// 接收指针到最缓存底部
-        if (st_Serial[idx].RBuffWpt >= (st_Serial[idx].RStartpt + st_Serial[idx].uiRMaxLen)) 
-        {
-            st_Serial[idx].RBuffWpt = st_Serial[idx].RStartpt;
-        }
-		
-        st_Serial[idx].ucRTime = st_Serial[idx].ucRTick; // 20ms接收超时
-    
+    // 接收指针到最缓存底部
+    if (st_Serial[idx].RBuffWpt >= (st_Serial[idx].RStartpt + st_Serial[idx].uiRMaxLen))
+    {
+        st_Serial[idx].RBuffWpt = st_Serial[idx].RStartpt;
+    }
+
+    st_Serial[idx].ucRTime = st_Serial[idx].ucRTick; // 20ms接收超时
+
 }
 
 
@@ -306,33 +306,34 @@ void usart_timeout(uint32_t chan, USART_ST *pusart)
  */
 void USART1_Config(void)
 {
-	GPIO_InitTypeDef GPIO_InitStructure;
-	USART_InitTypeDef USART_InitStructure;
-	
-	/* config USART1 clock */
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA, ENABLE);
-	
-	/* USART1 GPIO config */
-	/* Configure USART1 Tx (PA.09) as alternate function push-pull */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);    
-	/* Configure USART1 Rx (PA.10) as input floating */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	
-	/* USART1 mode config */
-	USART_InitStructure.USART_BaudRate = 115200;
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;
-	USART_InitStructure.USART_Parity = USART_Parity_No ;
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-	USART_Init(USART1, &USART_InitStructure);
-	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
-	
-	USART_Cmd(USART1, ENABLE);
+    GPIO_InitTypeDef GPIO_InitStructure;
+    USART_InitTypeDef USART_InitStructure;
+
+    /* config USART1 clock */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA, ENABLE);
+
+    /* USART1 GPIO config */
+    /* Configure USART1 Tx (PA.09) as alternate function push-pull */
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    /* Configure USART1 Rx (PA.10) as input floating */
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    /* USART1 mode config */
+    USART_InitStructure.USART_BaudRate = 115200;
+    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+    USART_InitStructure.USART_StopBits = USART_StopBits_1;
+    USART_InitStructure.USART_Parity = USART_Parity_No ;
+    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+    USART_Init(USART1, &USART_InitStructure);
+    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+
+    USART_Cmd(USART1, ENABLE);
 }
 
 
