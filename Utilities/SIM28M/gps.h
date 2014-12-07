@@ -43,7 +43,7 @@ typedef struct
         unsigned short i;
     } course; // 0 - 360度 航向
     unsigned char status;  // 定位状态
-} stru_GPSDATA, *pstru_GPSDATA;
+} stru_GPSDATA;
 
 #define NMEA_NULL    0x00            // GPS语句类型
 #define NMEA_GPGGA    0x01
@@ -66,6 +66,6 @@ void GPSPowerOn(void);
 void GPSPowerOff(void);
 
 uint8_t GetGPSData(void);
-void ParseGPSData(pstru_GPSDATA pData);
+void ParseGPSData(stru_GPSDATA *pData);
 
 #endif

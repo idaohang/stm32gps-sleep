@@ -31,7 +31,7 @@
 #define SYS_TICK_PER_SEC 100u
 
 #ifdef DBG_ENABLE_MACRO
-#define GPS_RETERY_TIMES    18  // GPS 重试次数  Should Set 1
+#define GPS_RETERY_TIMES    1  // GPS 重试次数  Should Set 1
 #else
 #define GPS_RETERY_TIMES    18  // GPS 重试次数 
 #endif

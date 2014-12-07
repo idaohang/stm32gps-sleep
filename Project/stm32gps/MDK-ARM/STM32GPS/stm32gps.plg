@@ -1,0 +1,10 @@
+Build target 'Debug'
+compiling main.c...
+..\main.c(807): warning:  #128-D: loop is not reachable from preceding code
+linking...
+Program Size: Code=28220 RO-data=1252 RW-data=240 ZI-data=6072  
+FromELF: creating hex file...
+".\STM32GPS\stm32gps.axf" - 0 Error(s), 1 Warning(s).
+Clean started: Project: 'stm32gps'
+   deleting intermediate output files for target 'Debug'
+   deleting intermediate output files for target 'Release'

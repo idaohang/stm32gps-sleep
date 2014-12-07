@@ -26,9 +26,11 @@ static uint8_t ReciveFlag = 0;             // Êý¾Ý½ÓÊÕÍê³É. ×îºóÒ»Ìõ GPRMC Óï¾ä·
 static uint8_t ucTempA = 0;                // ´æ´¢½âÎöÁ½Î»Êý×ÖÓÃµÄµÄÊ®Î»ÁÙÊ±±äÁ¿
 
 volatile uint8_t g_ucRecvOverTimeFlag = 0;
-stru_GPSRMC  g_stGPSRMCData;
+static stru_GPSRMC  g_stGPSRMCData;
 
-static void GPS(unsigned char ucData);
+
+static void ParserGPRMC(uint8_t ucData);
+static void GPS(uint8_t ucData);
 static uint8_t ReciveOK(void);
 
 void ShowGPSTime(void)
@@ -106,7 +108,7 @@ void GPSPowerOff(void)
   * @param  ucData - Received Data
   * @retval None
   */
-static void ParserGPRMC(unsigned char ucData)
+static void ParserGPRMC(uint8_t ucData)
 {
     switch(ucData)
     {
@@ -196,7 +198,7 @@ static void ParserGPRMC(unsigned char ucData)
   * @param  ucData - Received Data
   * @retval None
   */
-void GPS(unsigned char ucData)
+void GPS(uint8_t ucData)
 {
     if(NMEA_CMD_Start)
     {
@@ -317,7 +319,7 @@ uint8_t GetGPSData(void)
   * @param  pData - struct of GPS Data
   * @retval None
   */
-void ParseGPSData(pstru_GPSDATA pData)
+void ParseGPSData(stru_GPSDATA *pData)
 {
 #ifdef DBG_ENABLE_MACRO
     uint32_t i;

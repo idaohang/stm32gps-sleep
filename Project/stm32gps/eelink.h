@@ -12,13 +12,13 @@ extern "C" {
 #define PROTO_EELINK_HEADER 0x70      // normal protocal header
 #define PROTO_FACTORY_HEADER   0x72    // factory test header
 
-#define PROTO_LOGIN_BUF_LEN 17           // login buffer length
+#define PROTO_LOGIN_BUF_LEN 32           // login buffer length
 #define PROTO_GPS_BUF_LEN  128           // gps buffer length
 #define PROTO_STATION_BUF_LEN 256        // base station buffer length
 
 #define IMEI_BUF_LEN 15             // imei buffer length
-#define IMSI_INFO_LEN 15             // imsi buffer length
-#define PHONE_NUMBER_LEN 15          // phone number buffer length
+#define IMSI_BUF_LEN 15             // imsi buffer length
+#define PHONE_NUM_BUF_LEN 15          // phone number buffer length
 #define GSMBASESTATION_INFO_LEN 9
 
 
@@ -51,14 +51,6 @@ extern "C" {
         uint8_t seq[2];
     } EELINK_PACKET_HEADER;
 
-    typedef struct eelink_sim_packet_login
-    {
-        EELINK_PACKET_HEADER hdr;
-
-        uint8_t imei[IMEI_BUF_LEN];
-        uint8_t lang;
-        uint8_t zone;
-    } EELINK_SIM_PACKET_LOGIN;
 
     typedef struct eelink_packet_gps
     {

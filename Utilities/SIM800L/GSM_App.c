@@ -1736,42 +1736,42 @@ uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
 				if(NULL != ptmp2)
 				{
 					result = strtol((ptmp2+1), &endptr, 16);
-					DEBUG("0: rxl = 0x%x\n", result);
+					//DEBUG("0: rxl = 0x%x\n", result);
 					pStation->stStation[0].rxl = result;
 				}
 				ptmp2 = strnchr_len(ptmp, ',', 2 , 40);
 				if(NULL != ptmp2)
 				{
 					result = strtol((ptmp2+1), &endptr, 16);
-					DEBUG("0: rxq = 0x%x\n", result);
+					//DEBUG("0: rxq = 0x%x\n", result);
 					pStation->stStation[0].rxq = result;
 				}
 				ptmp2 = strnchr_len(ptmp, ',', 3 , 40);
 				if(NULL != ptmp2)
 				{
 					result = strtol((ptmp2+1), &endptr, 16);
-					DEBUG("0: mcc = 0x%x\n", result);
+					//DEBUG("0: mcc = 0x%x\n", result);
 					pStation->stStation[0].mcc.i = result;
 				}
 				ptmp2 = strnchr_len(ptmp, ',', 4 , 40);
 				if(NULL != ptmp2)
 				{
 					result = strtol((ptmp2+1), &endptr, 16);
-					DEBUG("0: mnc = 0x%x\n", result);
+					//DEBUG("0: mnc = 0x%x\n", result);
 					pStation->stStation[0].mnc.i = result;
 				}
 				ptmp2 = strnchr_len(ptmp, ',', 6 , 40);
 				if(NULL != ptmp2)
 				{
 					result = strtol((ptmp2+1), &endptr, 16);
-					DEBUG("0: ci = 0x%x\n", result);
+					//DEBUG("0: ci = 0x%x\n", result);
 					pStation->stStation[0].ci.i = result;
 				}
 				ptmp2 = strnchr_len(ptmp, ',', 9 , 40);
 				if(NULL != ptmp2)
 				{
 					result = strtol((ptmp2+1), &endptr, 16);
-					DEBUG("0: lac = 0x%x\n", result);
+					//DEBUG("0: lac = 0x%x\n", result);
 					pStation->stStation[0].lac.i = result;
 				}
 				pStation->num = 1;
@@ -1787,7 +1787,7 @@ uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
 					if(NULL != ptmp2)
 					{
 						result = strtol((ptmp2+1), &endptr, 16);
-						DEBUG("%d: rxl = 0x%x\n", idx, result);
+						//DEBUG("%d: rxl = 0x%x\n", idx, result);
 						if(result == 0)
 						{
 							break;
@@ -1798,28 +1798,28 @@ uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
 					if(NULL != ptmp2)
 					{
 						result = strtol((ptmp2+1), &endptr, 16);
-						DEBUG("%d: ci = 0x%x\n", idx, result);
+						//DEBUG("%d: ci = 0x%x\n", idx, result);
 						pStation->stStation[idx].rxq = result;
 					}
 					ptmp2 = strnchr_len(ptmp, ',', 4 , 29);
 					if(NULL != ptmp2)
 					{
 						result = strtol((ptmp2+1), &endptr, 16);
-						DEBUG("%d: mcc = 0x%x\n", idx, result);
+						//DEBUG("%d: mcc = 0x%x\n", idx, result);
 						pStation->stStation[idx].mcc.i = result;
 					}
 					ptmp2 = strnchr_len(ptmp, ',', 5 , 29);
 					if(NULL != ptmp2)
 					{
 						result = strtol((ptmp2+1), &endptr, 16);
-						DEBUG("%d: mnc = 0x%x\n", idx, result);
+						//DEBUG("%d: mnc = 0x%x\n", idx, result);
 						pStation->stStation[idx].mnc.i = result;
 					}
 					ptmp2 = strnchr_len(ptmp, ',', 6 , 29);
 					if(NULL != ptmp2)
 					{
 						result = strtol((ptmp2+1), &endptr, 16);
-						DEBUG("%d: lac = 0x%x\n", idx, result);
+						//DEBUG("%d: lac = 0x%x\n", idx, result);
 						pStation->stStation[idx].lac.i = result;
 					}
 					
