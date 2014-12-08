@@ -1794,13 +1794,7 @@ uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
 						}
 						pStation->stStation[idx].rxl = result;
 					}
-					ptmp2 = strnchr_len(ptmp, ',', 3 , 29);
-					if(NULL != ptmp2)
-					{
-						result = strtol((ptmp2+1), &endptr, 16);
-						//DEBUG("%d: ci = 0x%x\n", idx, result);
-						pStation->stStation[idx].rxq = result;
-					}
+					pStation->stStation[idx].rxq = 0;
 					ptmp2 = strnchr_len(ptmp, ',', 4 , 29);
 					if(NULL != ptmp2)
 					{
