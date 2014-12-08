@@ -1670,7 +1670,12 @@ unsigned char GSM_creg(void)
 }
 
 
-
+/**
+  * @brief  Get CENG Information
+  * @param  None
+  * @retval Status
+  * @note   rxl, rxq, mcc, mnc are decimal; lac, ci are hexadecimal.
+  */
 uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
 {
     uint32_t len = 0;
@@ -1735,28 +1740,28 @@ uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
 				ptmp2 = strnchr_len(ptmp, ',', 1 , 40);
 				if(NULL != ptmp2)
 				{
-					result = strtol((ptmp2+1), &endptr, 16);
+					result = strtol((ptmp2+1), &endptr, 10);
 					//DEBUG("0: rxl = 0x%x\n", result);
 					pStation->stStation[0].rxl = result;
 				}
 				ptmp2 = strnchr_len(ptmp, ',', 2 , 40);
 				if(NULL != ptmp2)
 				{
-					result = strtol((ptmp2+1), &endptr, 16);
+					result = strtol((ptmp2+1), &endptr, 10);
 					//DEBUG("0: rxq = 0x%x\n", result);
 					pStation->stStation[0].rxq = result;
 				}
 				ptmp2 = strnchr_len(ptmp, ',', 3 , 40);
 				if(NULL != ptmp2)
 				{
-					result = strtol((ptmp2+1), &endptr, 16);
+					result = strtol((ptmp2+1), &endptr, 10);
 					//DEBUG("0: mcc = 0x%x\n", result);
 					pStation->stStation[0].mcc.i = result;
 				}
 				ptmp2 = strnchr_len(ptmp, ',', 4 , 40);
 				if(NULL != ptmp2)
 				{
-					result = strtol((ptmp2+1), &endptr, 16);
+					result = strtol((ptmp2+1), &endptr, 10);
 					//DEBUG("0: mnc = 0x%x\n", result);
 					pStation->stStation[0].mnc.i = result;
 				}
@@ -1786,7 +1791,7 @@ uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
 					ptmp2 = strnchr_len(ptmp, ',', 1 , 29);
 					if(NULL != ptmp2)
 					{
-						result = strtol((ptmp2+1), &endptr, 16);
+						result = strtol((ptmp2+1), &endptr, 10);
 						//DEBUG("%d: rxl = 0x%x\n", idx, result);
 						if(result == 0)
 						{
@@ -1794,6 +1799,7 @@ uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
 						}
 						pStation->stStation[idx].rxl = result;
 					}
+					// Neighboring cell NOT have rxq, default set to 0.
 					pStation->stStation[idx].rxq = 0;
 					ptmp2 = strnchr_len(ptmp, ',', 3 , 29);
 					if(NULL != ptmp2)
@@ -1805,14 +1811,18 @@ uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
 					ptmp2 = strnchr_len(ptmp, ',', 4 , 29);
 					if(NULL != ptmp2)
 					{
-						result = strtol((ptmp2+1), &endptr, 16);
+						result = strtol((ptmp2+1), &endptr, 10);
 						//DEBUG("%d: mcc = 0x%x\n", idx, result);
+						if(result == 0)
+						{
+							break;
+						}
 						pStation->stStation[idx].mcc.i = result;
 					}
 					ptmp2 = strnchr_len(ptmp, ',', 5 , 29);
 					if(NULL != ptmp2)
 					{
-						result = strtol((ptmp2+1), &endptr, 16);
+						result = strtol((ptmp2+1), &endptr, 10);
 						//DEBUG("%d: mnc = 0x%x\n", idx, result);
 						pStation->stStation[idx].mnc.i = result;
 					}
@@ -1823,7 +1833,6 @@ uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
 						//DEBUG("%d: lac = 0x%x\n", idx, result);
 						pStation->stStation[idx].lac.i = result;
 					}
-					
 				}
 			}
 			
@@ -1833,7 +1842,7 @@ uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
 		}
 	}
 
-	DEBUG("number = %d\r\n", idx);
+	DEBUG("CENG number = %d\r\n", idx);
     return rtn;
 }
 
