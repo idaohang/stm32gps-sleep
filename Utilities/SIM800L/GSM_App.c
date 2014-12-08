@@ -275,9 +275,9 @@ void GSM_PowerOff(void)
 void GSM_TurnOnOff(void)
 {
     GPIO_ResetBits(GSM_PWRKEY_PORT, GSM_PWRKEY_PIN);
-    delay_10ms(300);
+    delay_10ms(200);
     GPIO_SetBits(GSM_PWRKEY_PORT, GSM_PWRKEY_PIN);
-    delay_10ms(300);
+    delay_10ms(200);
 }
 
 
@@ -1702,7 +1702,7 @@ uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
     }
 
     pcmdbuf = sendBuf;
-    sprintf(pcmdbuf, AT_CENG_SET, 1, 1);
+    sprintf(pcmdbuf, AT_CENG_SET, 3, 1);
     len = strlen(pcmdbuf);
 
 	GSM_ClearBuffer();
@@ -1733,62 +1733,48 @@ uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
 				continue;
 			}
 			
-			// The serving Cell
-			ptmp = strnchr_len(pRecvBuf, '"', 1 , recvLen);
-			if((NULL != ptmp) && (NULL != strnchr_len(pRecvBuf, '+', 2 , recvLen)))
-			{
-				ptmp2 = strnchr_len(ptmp, ',', 1 , 40);
-				if(NULL != ptmp2)
-				{
-					result = strtol((ptmp2+1), &endptr, 10);
-					//DEBUG("0: rxl = 0x%x\n", result);
-					pStation->stStation[0].rxl = result;
-				}
-				ptmp2 = strnchr_len(ptmp, ',', 2 , 40);
-				if(NULL != ptmp2)
-				{
-					result = strtol((ptmp2+1), &endptr, 10);
-					//DEBUG("0: rxq = 0x%x\n", result);
-					pStation->stStation[0].rxq = result;
-				}
-				ptmp2 = strnchr_len(ptmp, ',', 3 , 40);
-				if(NULL != ptmp2)
-				{
-					result = strtol((ptmp2+1), &endptr, 10);
-					//DEBUG("0: mcc = 0x%x\n", result);
-					pStation->stStation[0].mcc.i = result;
-				}
-				ptmp2 = strnchr_len(ptmp, ',', 4 , 40);
-				if(NULL != ptmp2)
-				{
-					result = strtol((ptmp2+1), &endptr, 10);
-					//DEBUG("0: mnc = 0x%x\n", result);
-					pStation->stStation[0].mnc.i = result;
-				}
-				ptmp2 = strnchr_len(ptmp, ',', 6 , 40);
-				if(NULL != ptmp2)
-				{
-					result = strtol((ptmp2+1), &endptr, 16);
-					//DEBUG("0: ci = 0x%x\n", result);
-					pStation->stStation[0].ci.i = result;
-				}
-				ptmp2 = strnchr_len(ptmp, ',', 9 , 40);
-				if(NULL != ptmp2)
-				{
-					result = strtol((ptmp2+1), &endptr, 16);
-					//DEBUG("0: lac = 0x%x\n", result);
-					pStation->stStation[0].lac.i = result;
-				}
-				pStation->num = 1;
-			}
-			
-			// Neighboring Cell
-			for(idx = 1; idx < 7; idx++)
+			// Serving and Neighboring Cell
+			for(idx = 0; idx < 7; idx++)
 			{
 				ptmp = strnchr_len(pRecvBuf, '"', (idx*2+1) , recvLen);
 				if((NULL != ptmp) && (NULL != strnchr_len(pRecvBuf, '+', (idx+2) , recvLen)))
 				{
+					// mcc
+					if(NULL != ptmp)
+					{
+						result = strtol((ptmp+1), &endptr, 10);
+						//DEBUG("%d: mcc = 0x%x\n", idx, result);
+						if(result == 0)
+						{
+							break;
+						}
+						pStation->stStation[idx].mcc.i = result;
+					}
+					// mnc
 					ptmp2 = strnchr_len(ptmp, ',', 1 , 29);
+					if(NULL != ptmp2)
+					{
+						result = strtol((ptmp2+1), &endptr, 10);
+						//DEBUG("%d: mnc = 0x%x\n", idx, result);
+						pStation->stStation[idx].mnc.i = result;
+					}
+					// lac
+					ptmp2 = strnchr_len(ptmp, ',', 2 , 29);
+					if(NULL != ptmp2)
+					{
+						result = strtol((ptmp2+1), &endptr, 16);
+						//DEBUG("%d: lac = 0x%x\n", idx, result);
+						pStation->stStation[idx].lac.i = result;
+					}
+					// cell id (ci)
+					ptmp2 = strnchr_len(ptmp, ',', 3 , 29);
+					if(NULL != ptmp2)
+					{
+						result = strtol((ptmp2+1), &endptr, 16);
+						//DEBUG("%d: ci = 0x%x\n", idx, result);
+						pStation->stStation[idx].ci.i = result;
+					}
+					ptmp2 = strnchr_len(ptmp, ',', 5 , 29);
 					if(NULL != ptmp2)
 					{
 						result = strtol((ptmp2+1), &endptr, 10);
@@ -1799,40 +1785,8 @@ uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
 						}
 						pStation->stStation[idx].rxl = result;
 					}
-					// Neighboring cell NOT have rxq, default set to 0.
+					// NOT have rxq, default set to 0.
 					pStation->stStation[idx].rxq = 0;
-					ptmp2 = strnchr_len(ptmp, ',', 3 , 29);
-					if(NULL != ptmp2)
-					{
-						result = strtol((ptmp2+1), &endptr, 16);
-						//DEBUG("%d: ci = 0x%x\n", idx, result);
-						pStation->stStation[idx].ci.i = result;
-					}
-					ptmp2 = strnchr_len(ptmp, ',', 4 , 29);
-					if(NULL != ptmp2)
-					{
-						result = strtol((ptmp2+1), &endptr, 10);
-						//DEBUG("%d: mcc = 0x%x\n", idx, result);
-						if(result == 0)
-						{
-							break;
-						}
-						pStation->stStation[idx].mcc.i = result;
-					}
-					ptmp2 = strnchr_len(ptmp, ',', 5 , 29);
-					if(NULL != ptmp2)
-					{
-						result = strtol((ptmp2+1), &endptr, 10);
-						//DEBUG("%d: mnc = 0x%x\n", idx, result);
-						pStation->stStation[idx].mnc.i = result;
-					}
-					ptmp2 = strnchr_len(ptmp, ',', 6 , 29);
-					if(NULL != ptmp2)
-					{
-						result = strtol((ptmp2+1), &endptr, 16);
-						//DEBUG("%d: lac = 0x%x\n", idx, result);
-						pStation->stStation[idx].lac.i = result;
-					}
 				}
 			}
 			

@@ -299,7 +299,7 @@ int main(void)
 	    // Detect Stick Status
 	    /////////////////////////////////////////////////////////////////
 		delay_10ms(STICK_ON_SEC);
-DEBUG("g_uiAlarmFlag = %d; button = %d\r\n",g_uiAlarmFlag, STM_EVAL_PBGetState(BUTTON_KEY));
+DEBUG("\r\n  g_uiAlarmFlag = %d; button = %d\r\n",g_uiAlarmFlag, STM_EVAL_PBGetState(BUTTON_KEY));
         // If Stick On Car or sth
         if(((uint32_t)Bit_RESET == STM_EVAL_PBGetState(BUTTON_KEY))
                 || (SET == g_uiAlarmFlag))

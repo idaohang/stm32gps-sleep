@@ -24,7 +24,7 @@
 #define MAX_RESP_CMD_AT   4  // 2 sec
 #define MAX_RESP_CMD_ATE0 4
 #define MAX_RESP_CMD_CPIN 10 // 5 sec
-#define MAX_RESP_CMD_CSQ  10
+#define MAX_RESP_CMD_CSQ  20 // 10 sec
 #define MAX_RESP_CMD_CADC  4
 #define MAX_RESP_CMD_CREG 40 // 20 sec
 #define MAX_RESP_CMD_GSN  10
