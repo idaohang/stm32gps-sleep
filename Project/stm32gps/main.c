@@ -107,7 +107,7 @@ void ShowGpsMsg(uint32_t len)
     }
     DEBUG("\r\n");
 }
-
+#if 0
 void ShowStationMsg(void)
 {
     uint32_t i;
@@ -120,6 +120,7 @@ void ShowStationMsg(void)
     DEBUG("\r\n");
 }
 
+
 void ShowFactoryMsg(void)
 {
     uint32_t i;
@@ -131,6 +132,7 @@ void ShowFactoryMsg(void)
     }
     DEBUG("\r\n");
 }
+#endif
 #endif // DBG_ENABLE_MACRO
 
 /**
@@ -160,7 +162,7 @@ void InitVariables(void)
 	
     memset(LoginBuf, 0, PROTO_LOGIN_BUF_LEN);
 	memset(gpsBuf, 0, PROTO_GPS_BUF_LEN);
-	memset(stationBuf, 0, PROTO_STATION_BUF_LEN);
+//	memset(stationBuf, 0, PROTO_STATION_BUF_LEN);
 }
 
 
