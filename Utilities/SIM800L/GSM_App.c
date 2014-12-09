@@ -1300,7 +1300,7 @@ unsigned char GPRS_SendData(char *pString, unsigned int len)
                     DEBUG("GPRS_SendData done\r\n");
                 }
             }
-            DEBUG("%d retFlag = %d len = %d\n\n", i, retFlag, len);
+            //DEBUG("%d retFlag = %d len = %d\n\n", i, retFlag, len);
 #endif
             if (len > 0 && retFlag == USART_ENPROCESS)
             {

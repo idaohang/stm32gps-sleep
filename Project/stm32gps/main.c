@@ -644,8 +644,7 @@ STM_EVAL_LEDToggle(LED1);
             RTC_SetAlarm(RTC_GetCounter() + 120); // 2 min
             DEBUG("DEBUG normalmode sleep %d\n", 120);
 #else
-RTC_SetAlarm(RTC_GetCounter() + 120); // 2 min
-            //RTC_SetAlarm(RTC_GetCounter() + g_uiSetSleepSec);
+            RTC_SetAlarm(RTC_GetCounter() + g_uiSetSleepSec);
             //DEBUG("normalmode sleep %d\n", g_uiSetSleepSec);
 #endif
         }

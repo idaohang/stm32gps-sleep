@@ -445,7 +445,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>181</TopLine>
+      <TopLine>176</TopLine>
       <CurrentLine>196</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\main.c</PathWithFileName>
@@ -823,13 +823,39 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1288</TopLine>
-      <CurrentLine>1288</CurrentLine>
+      <TopLine>1168</TopLine>
+      <CurrentLine>1182</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\..\Utilities\SIM800L\GSM_App.c</PathWithFileName>
       <FilenameWithoutPath>GSM_App.c</FilenameWithoutPath>
     </File>
   </Group>
+
+  <AlienFiles>
+    <PathWithFilename>D:\GitHub\stm32gps-sleep\Project\stm32gps\stm32gps_config.h</PathWithFilename>
+    <TopLine>47</TopLine>
+    <CurrentLine>56</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
 
   <MDIGroups>
     <Orientation>1</Orientation>
@@ -841,8 +867,20 @@
         <Doc>
           <Name>..\main.c</Name>
           <ColumnNumber>0</ColumnNumber>
-          <TopLine>181</TopLine>
+          <TopLine>176</TopLine>
           <CurrentLine>196</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\..\..\Utilities\SIM800L\GSM_App.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>1168</TopLine>
+          <CurrentLine>1182</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\stm32gps_config.h</Name>
+          <ColumnNumber>24</ColumnNumber>
+          <TopLine>47</TopLine>
+          <CurrentLine>56</CurrentLine>
         </Doc>
       </Documents>
     </MDIGroup>
