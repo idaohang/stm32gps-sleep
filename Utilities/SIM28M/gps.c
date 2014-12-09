@@ -397,7 +397,7 @@ void ParseGPSData(stru_GPSDATA *pData)
     }
     pData->course.i = (unsigned short)(atoi(g_stGPSRMCData.Course));
 
-    if('A' == g_stGPSRMCData.Status)
+    if(('A' == g_stGPSRMCData.Status) || ('a' == g_stGPSRMCData.Status))
     {
         pData->status = 1;
     }
