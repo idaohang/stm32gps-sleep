@@ -833,7 +833,7 @@
 
   <AlienFiles>
     <PathWithFilename>D:\GitHub\stm32gps-sleep\Project\stm32gps\stm32gps_config.h</PathWithFilename>
-    <TopLine>41</TopLine>
+    <TopLine>50</TopLine>
     <CurrentLine>56</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
@@ -862,7 +862,7 @@
     <ActiveMDIGroup>0</ActiveMDIGroup>
     <MDIGroup>
       <Size>100</Size>
-      <ActiveTab>2</ActiveTab>
+      <ActiveTab>0</ActiveTab>
       <Documents>
         <Doc>
           <Name>..\main.c</Name>
@@ -879,7 +879,7 @@
         <Doc>
           <Name>..\stm32gps_config.h</Name>
           <ColumnNumber>29</ColumnNumber>
-          <TopLine>41</TopLine>
+          <TopLine>50</TopLine>
           <CurrentLine>56</CurrentLine>
         </Doc>
       </Documents>

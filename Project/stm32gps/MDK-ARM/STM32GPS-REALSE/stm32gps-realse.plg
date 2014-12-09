@@ -1,0 +1,8 @@
+Build target 'Release'
+linking...
+Program Size: Code=24924 RO-data=1252 RW-data=236 ZI-data=5812  
+FromELF: creating hex file...
+".\STM32GPS-REALSE\stm32gps-realse.axf" - 0 Error(s), 0 Warning(s).
+Clean started: Project: 'stm32gps'
+   deleting intermediate output files for target 'Debug'
+   deleting intermediate output files for target 'Release'

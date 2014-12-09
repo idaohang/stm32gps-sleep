@@ -132,13 +132,13 @@ static void ParserGPRMC(uint8_t ucData)
                 ucTempA = ucData - '0';
                 break;
             case 1:
-                g_stGPSRMCData.UTCDateTime[3] = ucTempA * 10 + ucData - '0';
+                g_stGPSRMCData.UTCDateTime[3] = ucTempA * 10 + (ucData - '0');
                 break;
             case 3:
-                g_stGPSRMCData.UTCDateTime[4] = ucTempA * 10 + ucData - '0';
+                g_stGPSRMCData.UTCDateTime[4] = ucTempA * 10 + (ucData - '0');
                 break;
             case 5:
-                g_stGPSRMCData.UTCDateTime[5] = ucTempA * 10 + ucData - '0';
+                g_stGPSRMCData.UTCDateTime[5] = ucTempA * 10 + (ucData - '0');
                 break;
 			default:
 				break;
@@ -174,13 +174,13 @@ static void ParserGPRMC(uint8_t ucData)
                 ucTempA = ucData - '0';
                 break;
             case 1:
-                g_stGPSRMCData.UTCDateTime[2] = ucTempA * 10 + ucData - '0';
+                g_stGPSRMCData.UTCDateTime[2] = ucTempA * 10 + (ucData - '0');
                 break;
             case 3:
-                g_stGPSRMCData.UTCDateTime[1] = ucTempA * 10 + ucData - '0';
+                g_stGPSRMCData.UTCDateTime[1] = ucTempA * 10 + (ucData - '0');
                 break;
             case 5:
-                g_stGPSRMCData.UTCDateTime[0] = ucTempA * 10 + ucData - '0';
+                g_stGPSRMCData.UTCDateTime[0] = ucTempA * 10 + (ucData - '0');
                 break;
 			default:
 				break;
@@ -328,7 +328,7 @@ void ParseGPSData(stru_GPSDATA *pData)
     uint32_t spd = 0;
 
     t.tm_year = g_stGPSRMCData.UTCDateTime[0] + 100;
-    t.tm_mon = g_stGPSRMCData.UTCDateTime[1];
+    t.tm_mon = g_stGPSRMCData.UTCDateTime[1] - 1;
     t.tm_mday = g_stGPSRMCData.UTCDateTime[2];
     t.tm_hour = g_stGPSRMCData.UTCDateTime[3];
     t.tm_min = g_stGPSRMCData.UTCDateTime[4];
@@ -336,7 +336,9 @@ void ParseGPSData(stru_GPSDATA *pData)
     t.tm_isdst = 0;
 
     pData->utc.i = mktime(&t);
-
+#ifdef DBG_ENABLE_MACRO	
+ShowGPSTime();
+#endif
     // 北纬ddmm.mmmm 22 32.7658 (22x60 + 32.7658)*30000 = 40582974 = 0x26B3F3E, 然后转成16进制为: 0x02 0x6B 0x3F 0x3E
     pData->latitude.i = ((((g_stGPSRMCData.Latitude[0]-0x30) * 10 + (g_stGPSRMCData.Latitude[1]-0x30)) * 60
                           + ((g_stGPSRMCData.Latitude[2]-0x30) * 10 + (g_stGPSRMCData.Latitude[3]-0x30))) * 30000
