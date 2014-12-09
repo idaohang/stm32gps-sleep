@@ -64,7 +64,7 @@ static uint8_t g_ucPhoneNumBuf[PHONE_NUM_BUF_LEN];
 
 static char LoginBuf[PROTO_LOGIN_BUF_LEN];
 static char gpsBuf[PROTO_GPS_BUF_LEN];
-static char stationBuf[PROTO_STATION_BUF_LEN];
+//static char stationBuf[PROTO_STATION_BUF_LEN];
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -100,7 +100,7 @@ void ShowGpsMsg(uint32_t len)
 {
     uint32_t i;
     // gps msg
-    DEBUG("\r\nGPS or ALARM MSG:");
+    DEBUG("\r\n GPS,STATION or ALARM MSG:");
     for(i = 0; i < len; i++)
     {
         DEBUG("0x%x-", gpsBuf[i]);
@@ -546,9 +546,6 @@ DEBUG("alarmStickFlag = %d; g_uiAlarmFlag = %d\n",alarmStickFlag, g_uiAlarmFlag)
                         sendLen = EELINK_ALARM_MSGLEN;
                         g_uiAlarmPacketFlag = SET;
                         DEBUG("PackAlarmMsg\r\n");
-#ifdef DBG_ENABLE_MACRO
-ShowGpsMsg(sendLen);
-#endif
                     }
                     else
                     {
@@ -557,21 +554,19 @@ ShowGpsMsg(sendLen);
 	                        PackGpsMsg();
 	                        sendLen = EELINK_GPS_MSGLEN;
 	                        DEBUG("PackGpsMsg\r\n");
-#ifdef DBG_ENABLE_MACRO
-ShowGpsMsg(sendLen);
-#endif
                     	}
                     	else 
                     	{
                     		PackStationMsg();
                         	sendLen = (8 + (g_stStationInfo.num * 11));
-#ifdef DBG_ENABLE_MACRO
-                        	ShowStationMsg();
-#endif
+							DEBUG("PackStationMsg\r\n");
                     	}
                     	
                     	g_uiAlarmPacketFlag = RESET;
                     }
+#ifdef DBG_ENABLE_MACRO
+ShowGpsMsg(sendLen);
+#endif
 
 #if 0
 PackFactoryMsg();
@@ -962,48 +957,48 @@ void PackStationMsg(void)
     offset = 0;
     for(i = 0; i < 2; i++)
     {
-        stationBuf[offset] = PROTO_EELINK_HEADER;
+        gpsBuf[offset] = PROTO_EELINK_HEADER;
         offset++;
     }
-    stationBuf[offset] = PACKET_EELINK_STATION; //gpsMsg.hdr.type;
+    gpsBuf[offset] = PACKET_EELINK_STATION; //gpsMsg.hdr.type;
     offset++;
-    stationBuf[offset] = 0; // header len
+    gpsBuf[offset] = 0; // header len
     offset++;
-    stationBuf[offset] = (3 + (g_stStationInfo.num * 11)); // header len = 7+1+num*11-5
+    gpsBuf[offset] = (3 + (g_stStationInfo.num * 11)); // header len = 7+1+num*11-5
     offset++;
-    stationBuf[offset] = (uint8_t)((g_usSequenceNum >> 8) & 0x00FF);
+    gpsBuf[offset] = (uint8_t)((g_usSequenceNum >> 8) & 0x00FF);
     offset++;
-    stationBuf[offset] = (uint8_t)((g_usSequenceNum) & 0x00FF);
+    gpsBuf[offset] = (uint8_t)((g_usSequenceNum) & 0x00FF);
     offset++;
 
-    stationBuf[offset] = g_stStationInfo.num;
+    gpsBuf[offset] = g_stStationInfo.num;
     offset++;
 
     for(i = 0; i < g_stStationInfo.num; i++)
     {
         for(j = 0; j < 2; j++)
         {
-            stationBuf[offset] = g_stStationInfo.stStation[i].mcc.s[1 - j];
+            gpsBuf[offset] = g_stStationInfo.stStation[i].mcc.s[1 - j];
             offset++;
         }
         for(j = 0; j < 2; j++)
         {
-            stationBuf[offset] = g_stStationInfo.stStation[i].mnc.s[1 - j];
+            gpsBuf[offset] = g_stStationInfo.stStation[i].mnc.s[1 - j];
             offset++;
         }
         for(j = 0; j < 2; j++)
         {
-            stationBuf[offset] = g_stStationInfo.stStation[i].lac.s[1 - j];
+            gpsBuf[offset] = g_stStationInfo.stStation[i].lac.s[1 - j];
             offset++;
         }
         for(j = 0; j < 3; j++)
         {
-            stationBuf[offset] = g_stStationInfo.stStation[i].ci.s[2 - j];
+            gpsBuf[offset] = g_stStationInfo.stStation[i].ci.s[2 - j];
             offset++;
         }
-        stationBuf[offset] = g_stStationInfo.stStation[i].rxl;
+        gpsBuf[offset] = g_stStationInfo.stStation[i].rxl;
         offset++;
-        stationBuf[offset] = g_stStationInfo.stStation[i].rxq;
+        gpsBuf[offset] = g_stStationInfo.stStation[i].rxq;
         offset++;
     }
 
@@ -1025,102 +1020,102 @@ void PackFactoryMsg(void)
     offset = 0;
     for(i = 0; i < 2; i++)
     {
-        stationBuf[offset] = PROTO_FACTORY_HEADER;
+        gpsBuf[offset] = PROTO_FACTORY_HEADER;
         offset++;
     }
-    stationBuf[offset] = PACKET_FACTORY_REPORT;  // header type
+    gpsBuf[offset] = PACKET_FACTORY_REPORT;  // header type
     offset++;
-    stationBuf[offset] = 0; // header len
+    gpsBuf[offset] = 0; // header len
     offset++;
-    stationBuf[offset] = (FACTORY_REPORT_MSGLEN - 5); // header len
+    gpsBuf[offset] = (FACTORY_REPORT_MSGLEN - 5); // header len
     offset++;
-    stationBuf[offset] = (uint8_t)((g_usSequenceNum >> 8) & 0x00FF);
+    gpsBuf[offset] = (uint8_t)((g_usSequenceNum >> 8) & 0x00FF);
     offset++;
-    stationBuf[offset] = (uint8_t)((g_usSequenceNum) & 0x00FF);
+    gpsBuf[offset] = (uint8_t)((g_usSequenceNum) & 0x00FF);
     offset++;
     for(i = 0; i < 4; i++)
     {
-        stationBuf[offset] = g_stGPSData.utc.s[3 - i];
-        offset++;
-    }
-    for(i = 0; i < 4; i++)
-    {
-        stationBuf[offset] = g_stGPSData.latitude.s[3 - i];
+        gpsBuf[offset] = g_stGPSData.utc.s[3 - i];
         offset++;
     }
     for(i = 0; i < 4; i++)
     {
-        stationBuf[offset] = g_stGPSData.longitude.s[3 - i];
+        gpsBuf[offset] = g_stGPSData.latitude.s[3 - i];
         offset++;
     }
-    stationBuf[offset] = g_stGPSData.speed;
+    for(i = 0; i < 4; i++)
+    {
+        gpsBuf[offset] = g_stGPSData.longitude.s[3 - i];
+        offset++;
+    }
+    gpsBuf[offset] = g_stGPSData.speed;
     offset++;
 
 
     for(i = 0; i < 2; i++)
     {
-        stationBuf[offset] = g_stGPSData.course.s[1 - i];
+        gpsBuf[offset] = g_stGPSData.course.s[1 - i];
         offset++;
     }
     for(i = 0; i < 2; i++)
     {
-        stationBuf[offset] = g_stIMSIInfo.Mcc[i];
+        gpsBuf[offset] = g_stIMSIInfo.Mcc[i];
         offset++;
     }
     for(i = 0; i < 2; i++)
     {
-        stationBuf[offset] = g_stIMSIInfo.Mnc[i];
+        gpsBuf[offset] = g_stIMSIInfo.Mnc[i];
         offset++;
     }
     for(i = 0; i < 2; i++)
     {
-        stationBuf[offset] = g_stCREGInfo.Lac[i];
+        gpsBuf[offset] = g_stCREGInfo.Lac[i];
         offset++;
     }
-    stationBuf[offset] = 0;  // ²¹Áã
+    gpsBuf[offset] = 0;  // ²¹Áã
     offset++;
     for(i = 0; i < 2; i++)
     {
-        stationBuf[offset] = g_stCREGInfo.Ci[i];
+        gpsBuf[offset] = g_stCREGInfo.Ci[i];
         offset++;
     }
-    stationBuf[offset] = g_stGPSData.status;
+    gpsBuf[offset] = g_stGPSData.status;
     offset++;
-    stationBuf[offset] = 0;  // device status
+    gpsBuf[offset] = 0;  // device status
     offset++;
-    stationBuf[offset] = STM_EVAL_PBGetState(BUTTON_KEY);  // device status
+    gpsBuf[offset] = STM_EVAL_PBGetState(BUTTON_KEY);  // device status
     offset++;
     for(i = 0; i < 2; i++)
     {
-        stationBuf[offset] = g_stBATInfo.BatVoltage.s[1 - i];
+        gpsBuf[offset] = g_stBATInfo.BatVoltage.s[1 - i];
         offset++;
     }
 
-    stationBuf[offset] = 0;  // ²¹Áã
+    gpsBuf[offset] = 0;  // ²¹Áã
     offset++;
-    stationBuf[offset] = g_ucSignalQuality;
+    gpsBuf[offset] = g_ucSignalQuality;
     offset++;
     for(i = 0; i < IMEI_BUF_LEN; i++)
     {
-        stationBuf[offset] = g_ucIMEIBuf[i];
+        gpsBuf[offset] = g_ucIMEIBuf[i];
         offset++;
     }
 
     for(i = 0; i < IMSI_BUF_LEN; i++)
     {
-        stationBuf[offset] = g_ucIMSIBuf[i];
+        gpsBuf[offset] = g_ucIMSIBuf[i];
         offset++;
     }
     for(i = 0; i < PHONE_NUM_BUF_LEN; i++)
     {
-        stationBuf[offset] = g_ucPhoneNumBuf[i];
+        gpsBuf[offset] = g_ucPhoneNumBuf[i];
         offset++;
     }
-    stationBuf[offset] = g_ucGPSStatus;  // gps status
+    gpsBuf[offset] = g_ucGPSStatus;  // gps status
     offset++;
-    stationBuf[offset] = 0x02;  // software version v2.0
+    gpsBuf[offset] = 0x02;  // software version v2.0
     offset++;
-    stationBuf[offset] = 0x00;
+    gpsBuf[offset] = 0x00;
     offset++;
 
     if(offset != (FACTORY_REPORT_MSGLEN))
