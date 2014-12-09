@@ -107,6 +107,43 @@ void ShowGpsMsg(uint32_t len)
     }
     DEBUG("\r\n");
 }
+
+void ShowGpsData(void)
+{
+    uint32_t i;
+
+    DEBUG("UTC:");
+    for(i = 0; i < 4; i++)
+    {
+        DEBUG("0x%x-", g_stGPSData.utc.s[i]);
+    }
+    DEBUG("\r\n");
+
+    DEBUG("LATI:");
+    for(i = 0; i < 4; i++)
+    {
+        DEBUG("0x%x-", g_stGPSData.latitude.s[i]);
+    }
+    DEBUG("\r\n");
+
+    DEBUG("LONGI:");
+    for(i = 0; i < 4; i++)
+    {
+        DEBUG("0x%x-", g_stGPSData.longitude.s[i]);
+    }
+    DEBUG("\r\n");
+
+    DEBUG("SPEED: %d\r\n", g_stGPSData.speed);
+    DEBUG("COURSE:");
+    for(i = 0; i < 2; i++)
+    {
+        DEBUG("0x%x-", g_stGPSData.course.s[i]);
+    }
+    DEBUG("\r\n");
+    DEBUG("STATUS: %d\r\n", g_stGPSData.status);
+
+}
+
 #if 0
 void ShowStationMsg(void)
 {
@@ -323,6 +360,10 @@ DEBUG("\r\n  g_uiAlarmFlag = %d; button = %d\r\n",g_uiAlarmFlag, STM_EVAL_PBGetS
             /////////////////////////////////////////////////////////////////
             // Receive GPS Data and Parse, If Recv Success then break
             /////////////////////////////////////////////////////////////////
+            memset(&g_stGPSData, 0, sizeof(g_stGPSData));
+#ifdef DBG_ENABLE_MACRO
+ShowGpsData();
+#endif
             while(gpsRecvTimes < GPS_RETERY_TIMES)
             {
                 gpsRecvTimes++;
@@ -333,9 +374,16 @@ DEBUG("\r\n  g_uiAlarmFlag = %d; button = %d\r\n",g_uiAlarmFlag, STM_EVAL_PBGetS
                 if(RST_OK == gpsRtn)
                 {
                     g_ucGPSStatus = GPS_DEVICE_OK;
-                    ParseGPSData(&g_stGPSData);
-                    if(1 == g_stGPSData.status)
+DEBUG("Receive GPS Data\r\n");
+                    //ParseGPSData(&g_stGPSData);
+
+                    //if(1 == g_stGPSData.status)
+                    if('A' == g_stGPSRMCData.Status)
                     {
+						ParseGPSData(&g_stGPSData);
+#ifdef DBG_ENABLE_MACRO
+ShowGpsData();
+#endif
                         GPSPowerOff();
                         DEBUG("GPSData Valid and TurnOFF GPS\r\n");
                         break;

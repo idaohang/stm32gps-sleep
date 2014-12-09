@@ -26,7 +26,7 @@ static uint8_t ReciveFlag = 0;             // Êý¾Ý½ÓÊÕÍê³É. ×îºóÒ»Ìõ GPRMC Óï¾ä·
 static uint8_t ucTempA = 0;                // ´æ´¢½âÎöÁ½Î»Êý×ÖÓÃµÄµÄÊ®Î»ÁÙÊ±±äÁ¿
 
 volatile uint8_t g_ucRecvOverTimeFlag = 0;
-static stru_GPSRMC  g_stGPSRMCData;
+stru_GPSRMC  g_stGPSRMCData;
 
 
 static void ParserGPRMC(uint8_t ucData);
@@ -336,14 +336,6 @@ void ParseGPSData(stru_GPSDATA *pData)
     t.tm_isdst = 0;
 
     pData->utc.i = mktime(&t);
-#ifdef DBG_ENABLE_MACRO
-    printf("UTC:");
-    for(i = 0; i < 4; i++)
-    {
-        printf("0x%x-", pData->utc.s[i]);
-    }
-    printf("\r\n");
-#endif
 
     // ±±Î³ddmm.mmmm 22 32.7658 (22x60 + 32.7658)*30000 = 40582974 = 0x26B3F3E, È»ºó×ª³É16½øÖÆÎª: 0x02 0x6B 0x3F 0x3E
     pData->latitude.i = ((((g_stGPSRMCData.Latitude[0]-0x30) * 10 + (g_stGPSRMCData.Latitude[1]-0x30)) * 60
@@ -356,15 +348,6 @@ void ParseGPSData(stru_GPSDATA *pData)
         pData->latitude.i *= (-1);
     }
 
-#ifdef DBG_ENABLE_MACRO
-    printf("LATI:");
-    for(i = 0; i < 4; i++)
-    {
-        printf("0x%x-", pData->latitude.s[i]);
-    }
-    printf("\r\n");
-#endif
-
     // ¾­¶È dddmm.mmmm
     pData->longitude.i = ((((g_stGPSRMCData.Longitude[0]-0x30) * 100 + (g_stGPSRMCData.Longitude[1]-0x30) * 10 + (g_stGPSRMCData.Longitude[2]-0x30)) * 60
                            + ((g_stGPSRMCData.Longitude[3]-0x30) * 10 + (g_stGPSRMCData.Longitude[4]-0x30))) * 30000
@@ -375,15 +358,6 @@ void ParseGPSData(stru_GPSDATA *pData)
     {
         pData->longitude.i *= (-1);
     }
-
-#ifdef DBG_ENABLE_MACRO
-    printf("LONGI:");
-    for(i = 0; i < 4; i++)
-    {
-        printf("0x%x-", pData->longitude.s[i]);
-    }
-    printf("\r\n");
-#endif
 
     // 1 knot = 1.85km/h
     spd = (uint32_t)((atoi(g_stGPSRMCData.Speed)) * (1.85));
@@ -405,17 +379,6 @@ void ParseGPSData(stru_GPSDATA *pData)
     {
         pData->status = 0;
     }
-
-#ifdef DBG_ENABLE_MACRO
-    printf("SPEED: %d\r\n", pData->speed);
-    printf("COURSE:");
-    for(i = 0; i < 2; i++)
-    {
-        printf("0x%x-", pData->course.s[i]);
-    }
-    printf("\r\n");
-    printf("STATUS: %d\r\n", pData->status);
-#endif
 }
 
 

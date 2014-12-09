@@ -55,6 +55,7 @@ typedef struct
 #define GPS_DEVICE_ERR 0x01
 
 extern volatile uint8_t g_ucRecvOverTimeFlag;
+extern stru_GPSRMC  g_stGPSRMCData;
 
 void ShowLongitude(void);
 void ShowLatitude(void);

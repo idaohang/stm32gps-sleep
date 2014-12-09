@@ -53,7 +53,7 @@
 
 // #define GSM_SERVER_IP   "121.40.200.84"  	// server ip address
 #define GSM_SERVER_IP   "lkf.broadnetwork.net"  // server name
-#define GSM_SERVER_PORT "8888"           		// server port
+#define GSM_SERVER_PORT "9999"           		// server port
 
 
 #define EELINK_LOGIN_MSGLEN  17		// login length

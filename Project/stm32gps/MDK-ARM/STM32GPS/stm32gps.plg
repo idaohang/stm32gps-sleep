@@ -1,23 +1,112 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+D:\GitHub\stm32gps-sleep\Project\stm32gps\MDK-ARM\stm32gps.uvproj
+Project File Date:  12/07/2014
+
+<h2>Output:</h2>
 Build target 'Debug'
 compiling main.c...
-..\main.c(664): warning:  #128-D: loop is not reachable from preceding code
-..\main.c(1017): warning:  #177-D: function "PackFactoryMsg" was declared but never referenced
+..\main.c(665): warning:  #128-D: loop is not reachable from preceding code
+..\main.c(1018): warning:  #177-D: function "PackFactoryMsg" was declared but never referenced
+linking...
+Program Size: Code=27672 RO-data=1252 RW-data=240 ZI-data=5816  
+FromELF: creating hex file...
+".\STM32GPS\stm32gps.axf" - 0 Error(s), 2 Warning(s).
+Load "D:\\GitHub\\stm32gps-sleep\\Project\\stm32gps\\MDK-ARM\\STM32GPS\\stm32gps.AXF" 
+Load "D:\\GitHub\\stm32gps-sleep\\Project\\stm32gps\\MDK-ARM\\STM32GPS\\stm32gps.AXF" 
+* JLink Info: Device "STM32F103RC" selected (256 KB flash, 48 KB RAM).
+Set JLink Project File to "D:\GitHub\stm32gps-sleep\Project\stm32gps\MDK-ARM\JLinkSettings.ini"
+ 
+JLink info:
+------------
+DLL: V4.90d, compiled Aug 29 2014 14:49:16
+Firmware: J-Link ARM V8 compiled Jul 17 2014 12:31:18
+Hardware: V8.00
+S/N : 286370559 
+Feature(s) : RDI,FlashDL,FlashBP,JFlash 
+ 
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: Found Cortex-M3 r1p1, Little endian.
+* JLink Info: FPUnit: 6 code (BP) slots and 2 literal slots
+* JLink Info: TPIU fitted.
+* JLink Info: ETM fitted.
+ROMTableAddr = 0xE00FF003
+ 
+Target info:
+------------
+Device: STM32F103RC
+VTarget = 3.215V
+State of Pins: 
+TCK: 0, TDI: 0, TDO: 0, TMS: 1, TRES: 1, TRST: 1
+Hardware-Breakpoints: 6
+Software-Breakpoints: 8192
+Watchpoints:          4
+JTAG speed: 2000 kHz
+ 
+Erase Done.
+Programming Done.
+Verify OK.
+Build target 'Debug'
+compiling main.c...
+..\main.c(712): warning:  #128-D: loop is not reachable from preceding code
+..\main.c(1065): warning:  #177-D: function "PackFactoryMsg" was declared but never referenced
 compiling stm32f10x_it.c...
-compiling stm32gps_config.c...
-compiling usart.c...
 compiling gps.c...
-..\..\..\Utilities\SIM28M\gps.c(389): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
-..\..\..\Utilities\SIM28M\gps.c(398): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
-compiling GSM_App.c...
-..\..\..\Utilities\SIM800L\GSM_App.c(1288): warning:  #177-D: variable "tmpStart" was declared but never referenced
-..\..\..\Utilities\SIM800L\GSM_App.c(1367): warning:  #177-D: variable "tmpStart" was declared but never referenced
-..\..\..\Utilities\SIM800L\GSM_App.c(1480): warning:  #550-D: variable "pfeed" was set but never used
-..\..\..\Utilities\SIM800L\GSM_App.c(1556): warning:  #177-D: variable "pcmdbuf" was declared but never referenced
-..\..\..\Utilities\SIM800L\GSM_App.c(1685): warning:  #177-D: variable "pfeed" was declared but never referenced
+..\..\..\Utilities\SIM28M\gps.c(363): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+..\..\..\Utilities\SIM28M\gps.c(372): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+..\..\..\Utilities\SIM28M\gps.c(325): warning:  #177-D: variable "i" was declared but never referenced
 linking...
 Program Size: Code=27664 RO-data=1252 RW-data=240 ZI-data=5816  
 FromELF: creating hex file...
-".\STM32GPS\stm32gps.axf" - 0 Error(s), 9 Warning(s).
+".\STM32GPS\stm32gps.axf" - 0 Error(s), 5 Warning(s).
+Load "D:\\GitHub\\stm32gps-sleep\\Project\\stm32gps\\MDK-ARM\\STM32GPS\\stm32gps.AXF" 
+Load "D:\\GitHub\\stm32gps-sleep\\Project\\stm32gps\\MDK-ARM\\STM32GPS\\stm32gps.AXF" 
+Load "D:\\GitHub\\stm32gps-sleep\\Project\\stm32gps\\MDK-ARM\\STM32GPS\\stm32gps.AXF" 
+* JLink Info: Device "STM32F103RC" selected (256 KB flash, 48 KB RAM).
+Set JLink Project File to "D:\GitHub\stm32gps-sleep\Project\stm32gps\MDK-ARM\JLinkSettings.ini"
+ 
+JLink info:
+------------
+DLL: V4.90d, compiled Aug 29 2014 14:49:16
+Firmware: J-Link ARM V8 compiled Jul 17 2014 12:31:18
+Hardware: V8.00
+S/N : 286370559 
+Feature(s) : RDI,FlashDL,FlashBP,JFlash 
+ 
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: Found Cortex-M3 r1p1, Little endian.
+* JLink Info: FPUnit: 6 code (BP) slots and 2 literal slots
+* JLink Info: TPIU fitted.
+* JLink Info: ETM fitted.
+ROMTableAddr = 0xE00FF003
+ 
+Target info:
+------------
+Device: STM32F103RC
+VTarget = 3.215V
+State of Pins: 
+TCK: 0, TDI: 0, TDO: 0, TMS: 1, TRES: 1, TRST: 1
+Hardware-Breakpoints: 6
+Software-Breakpoints: 8192
+Watchpoints:          4
+JTAG speed: 2000 kHz
+ 
+Erase Done.
+Programming Done.
+Verify OK.
+Build target 'Debug'
+compiling main.c...
+..\main.c(712): warning:  #128-D: loop is not reachable from preceding code
+..\main.c(1065): warning:  #177-D: function "PackFactoryMsg" was declared but never referenced
+linking...
+Program Size: Code=27692 RO-data=1252 RW-data=240 ZI-data=5816  
+FromELF: creating hex file...
+".\STM32GPS\stm32gps.axf" - 0 Error(s), 2 Warning(s).
 Clean started: Project: 'stm32gps'
    deleting intermediate output files for target 'Debug'
    deleting intermediate output files for target 'Release'

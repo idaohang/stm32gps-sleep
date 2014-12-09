@@ -445,7 +445,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>176</TopLine>
+      <TopLine>190</TopLine>
       <CurrentLine>196</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\main.c</PathWithFileName>
@@ -821,9 +821,9 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>46</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1168</TopLine>
+      <TopLine>1176</TopLine>
       <CurrentLine>1182</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\..\Utilities\SIM800L\GSM_App.c</PathWithFileName>
@@ -833,7 +833,7 @@
 
   <AlienFiles>
     <PathWithFilename>D:\GitHub\stm32gps-sleep\Project\stm32gps\stm32gps_config.h</PathWithFilename>
-    <TopLine>47</TopLine>
+    <TopLine>50</TopLine>
     <CurrentLine>56</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
@@ -867,19 +867,19 @@
         <Doc>
           <Name>..\main.c</Name>
           <ColumnNumber>0</ColumnNumber>
-          <TopLine>176</TopLine>
+          <TopLine>190</TopLine>
           <CurrentLine>196</CurrentLine>
         </Doc>
         <Doc>
           <Name>..\..\..\Utilities\SIM800L\GSM_App.c</Name>
-          <ColumnNumber>0</ColumnNumber>
-          <TopLine>1168</TopLine>
+          <ColumnNumber>46</ColumnNumber>
+          <TopLine>1176</TopLine>
           <CurrentLine>1182</CurrentLine>
         </Doc>
         <Doc>
           <Name>..\stm32gps_config.h</Name>
-          <ColumnNumber>24</ColumnNumber>
-          <TopLine>47</TopLine>
+          <ColumnNumber>29</ColumnNumber>
+          <TopLine>50</TopLine>
           <CurrentLine>56</CurrentLine>
         </Doc>
       </Documents>
