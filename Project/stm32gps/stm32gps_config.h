@@ -71,9 +71,9 @@
 #define TIM2_PRESCALER_HZ 1000    // TIM2 HZ, Not used
 #define TIM2_PERIOD_TIMER  9999  // 5s  根据需要可修改该定时器的值
 
-#define TIM4_PRESCALER_TIMER 65535
+#define TIM4_PRESCALER_TIMER 35999
 #define TIM4_PRESCALER_HZ 1000
-#define TIM4_PERIOD_TIMER  35534  // 3min
+#define TIM4_PERIOD_TIMER  999  // 500ms
 
 #define USART_GSM_BUFSIZE_SEND 256
 #define USART_GSM_BUFSIZE_RECEIVE 1024
@@ -123,11 +123,15 @@ void SYSCLKConfig_STOP(void);
 void RTC_Configuration(void);
 void EXTI_Configuration(void);
 void TIM2_Configuration(void);
+void TIM4_Configuration(void);
 void RTC_NVIC_Configuration(void);
 void TIM2_NVIC_Configuration(void);
+void TIM4_NVIC_Configuration(void);
 void USART_NVIC_Configuration(void);
 void TIM2_Start(void);
 void TIM2_Stop(void);
+void TIM4_Start(void);
+void TIM4_Stop(void);
 void IWDG_Configuration(void);
 void stm32gps_led_cfg(void);
 void stm32gps_com_debug_cfg(void);

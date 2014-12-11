@@ -321,9 +321,6 @@ uint8_t GetGPSData(void)
   */
 void ParseGPSData(stru_GPSDATA *pData)
 {
-#ifdef DBG_ENABLE_MACRO
-    uint32_t i;
-#endif
     struct tm t;
     uint32_t spd = 0;
 

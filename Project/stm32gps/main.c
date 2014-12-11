@@ -43,10 +43,12 @@
 
 /* Private variables ---------------------------------------------------------*/
 
+volatile uint32_t g_uiAlarmFlag;  // 报警标志 SET-valid; RESET-invalid
+
 static uint16_t g_usSequenceNum;  // GPRS packet's sequence number
 static uint8_t g_ucGPSStatus;    // GPS status 0x55 - error; 0xaa - ok
 static uint32_t g_uiSetSleepSec;  // Server setting sleep seconds
-static FlagStatus g_uiAlarmFlag;  // 报警标志 SET-valid; RESET-invalid
+//static FlagStatus g_uiAlarmFlag;  // 报警标志 SET-valid; RESET-invalid
 static FlagStatus g_uiAlarmPacketFlag; // 报警数据包标志 SET - alarm packet; RESET - not alarm packet
 
 static uint8_t g_ucSignalQuality;
@@ -222,7 +224,7 @@ int main(void)
 
     uint16_t sendLen = 0;      // GPRS send length (used for GPS and ALARM Msg)
     uint32_t sleepSec = 0;
-    uint32_t alarmStickFlag = 0;    // 是否有移开的动作 1- 有 0-无
+    //uint32_t alarmStickFlag = 0;    // 是否有移开的动作 1- 有 0-无
 
     // Used for parse GPRS Received Data Analysis
     char *pRecvBuf = NULL;     // GPRS Received buffer
@@ -275,6 +277,9 @@ int main(void)
     TIM2_Configuration();
     TIM2_NVIC_Configuration();
 
+	TIM4_Configuration();
+    TIM4_NVIC_Configuration();
+
     /////////////////////////////////////////////////////////////////
     // Configure LED, BUTTON and USART(GPS + GSM + DEBUG)
     /////////////////////////////////////////////////////////////////
@@ -326,315 +331,85 @@ int main(void)
 
         sendLen = 0;
         sleepSec = 0;
-        alarmStickFlag = 0;
+//        alarmStickFlag = 0;
 
         /////////////////////////////////////////////////////////////////
         // Detect Stick Status
         /////////////////////////////////////////////////////////////////
         delay_10ms(STICK_ON_SEC);
-        DEBUG("\r\n  g_uiAlarmFlag = %d; button = %d\r\n", g_uiAlarmFlag, STM_EVAL_PBGetState(BUTTON_KEY));
+        //STM_EVAL_LEDOff(LED1);
         // If Stick On Car or sth
         if(((uint32_t)Bit_RESET == STM_EVAL_PBGetState(BUTTON_KEY))
-                || (SET == g_uiAlarmFlag))
+                || (SET == g_uiAlarmFlag) || (SET == g_uiAlarmPacketFlag))
         {
-            /////////////////////////////////////////////////////////////////
-            // Check Stick Action and set flag
-            /////////////////////////////////////////////////////////////////
-            if((uint32_t)Bit_SET == STM_EVAL_PBGetState(BUTTON_KEY))
-            {
-                alarmStickFlag = 1;  // Not Stick
-            }
-            else
-            {
-                alarmStickFlag = 0;
-            }
-
+            
             // GPS ALARM
-            DEBUG("alarmStickFlag = %d; g_uiAlarmFlag = %d\n", alarmStickFlag, g_uiAlarmFlag);
-            if((1 == alarmStickFlag) && (SET == g_uiAlarmFlag))
+            DEBUG("\r g_uiAlarmFlag = %d\n", g_uiAlarmFlag);
+            if(SET != g_uiAlarmFlag)
             {
-                /////////////////////////////////////////////////////////////////
-                // Second, Power ON GSM
-                /////////////////////////////////////////////////////////////////
-                GSM_PowerOn();
-                delay_10ms(200);
-
-                gsmRetyTimes = 0;
-                gsmRtn = RST_FAIL;
-
-                while(gsmRetyTimes < GSM_RETERY_TIMES)
-                {
-                    gsmRetyTimes++;
-                    gsmRtn = GSM_Init();
-                    if(RST_FAIL == gsmRtn)
-                    {
-                        continue;
-                    }
-                    gsmRtn = GSM_CheckSIMCard();
-                    if(RST_FAIL == gsmRtn)
-                    {
-                        continue;
-                    }
-
-                    gsmRtn = GSM_QuerySignal(&g_ucSignalQuality);
-                    if(RST_FAIL == gsmRtn)
-                    {
-                        continue;
-                    }
-
-
-                    gsmRtn = GSM_CheckNetworkReg();
-                    if(RST_FAIL == gsmRtn)
-                    {
-                        continue;
-                    }
-
-                    GSM_SetNetworkReg(2);
-                    if(USART_FAIL == GSM_QueryCreg(&g_stCREGInfo))
-                    {
-                        // clear creg info
-                    }
-
-                    //gsmRtn = GSM_QueryImei(g_ucIMEIBuf);
-                    //if(RST_FAIL == gsmRtn)
-                    //{
-                    // clear imei buffer
-                    //}
-
-                    gsmRtn = GSM_QueryImsi(&g_stIMSIInfo);
-                    if(RST_FAIL == gsmRtn)
-                    {
-                        // clear imsi info
-                    }
-
-                    GSM_SetCIPMode(0);
-
-                    gsmRtn = GSM_CheckGPRSService();
-                    if(RST_FAIL == gsmRtn)
-                    {
-                        continue;
-                    }
-
-                    //gsmRtn = GSM_QueryBatVoltage(&g_stBATInfo);
-                    //if(RST_FAIL == gsmRtn)
-                    //{
-                    // clear battery info
-                    //}
-
-                    //gsmRtn = GSM_ceng(&g_stStationInfo);
-                    //if(RST_FAIL == gsmRtn)
-                    //{
-                    // clear station info
-                    //}
-
-                    gprsRetyTimes = 0;
-                    gsmRtn = RST_FAIL;
-                    while(gprsRetyTimes < GPRS_RETRY_TIMES)
-                    {
-                        gprsRetyTimes++;
-                        GPRS_CIPShut();
+	            /////////////////////////////////////////////////////////////////
+	            // First, Power ON GPS
+	            /////////////////////////////////////////////////////////////////
+	            GPSPowerOn();
+	            DEBUG("\r\n GPSPowerOn \r\n");
+	            delay_10ms(200);
+	            /////////////////////////////////////////////////////////////////
+	            // Receive GPS Data and Parse, If Recv Success then break
+	            /////////////////////////////////////////////////////////////////
+	            memset(&g_stGPSData, 0, sizeof(g_stGPSData));
 #ifdef DBG_ENABLE_MACRO
-                        GPRS_CheckLinkStatus(&status);
+	            ShowGpsData();
 #endif
-                        gsmRtn = GSM_StartTaskAndSetAPN();
-                        if(RST_FAIL == gsmRtn)
-                        {
-                            continue;
-                        }
-#ifdef DBG_ENABLE_MACRO
-                        GPRS_CheckLinkStatus(&status);
-#endif
-                        gsmRtn = GSM_BringUpConnect();
-                        if(RST_FAIL == gsmRtn)
-                        {
-                            //continue;
-                        }
-#ifdef DBG_ENABLE_MACRO
-                        GPRS_CheckLinkStatus(&status);
-#endif
-                        gsmRtn = GSM_GetLocalIP();
-                        if(RST_FAIL == gsmRtn)
-                        {
-                            //continue;
-                        }
-#ifdef DBG_ENABLE_MACRO
-                        GPRS_CheckLinkStatus(&status);
-#endif
-                        gsmRtn = GSM_StartUpConnect();
-                        if(RST_FAIL == gsmRtn)
-                        {
-                            continue;
-                        }
-#ifdef DBG_ENABLE_MACRO
-                        GPRS_CheckLinkStatus(&status);
-#endif
-                        /////////////////////////////////////////////////////////////////
-                        // Send LOGIN Msg
-                        /////////////////////////////////////////////////////////////////
-                        g_usSequenceNum = 1; // Init packet sequence to 1
-                        errNum = 0;
-                        gprsRtn = USART_FAIL;
+	            while(gpsRecvTimes < GPS_RETERY_TIMES)
+	            {
+	                gpsRecvTimes++;
+	                TIM2_Start();
+	                gpsRtn = GetGPSData();
+	                TIM2_Stop();
 
-                        PackLoginMsg();
+	                if(RST_OK == gpsRtn)
+	                {
+	                    g_ucGPSStatus = GPS_DEVICE_OK;
+	                    DEBUG("Receive GPS Data\r\n");
+	                    //ParseGPSData(&g_stGPSData);
+
+	                    //if(1 == g_stGPSData.status)
+	                    if('A' == g_stGPSRMCData.Status)
+	                    {
+	                        ParseGPSData(&g_stGPSData);
 #ifdef DBG_ENABLE_MACRO
-                        ShowLoginMsg();
+	                        ShowGpsData();
 #endif
-                        while(errNum < 5)
-                        {
-                            errNum++;
-                            gprsRtn = GPRS_SendData_rsp(LoginBuf, EELINK_LOGIN_MSGLEN, &pRecvBuf, &recvLen);
-                            if(USART_SUCESS == gprsRtn)
-                            {
+	                        GPSPowerOff();
+	                        DEBUG("GPSData Valid and TurnOFF GPS\r\n");
+	                        break;
+	                    }
+	                }
 #if 0
-                                // parse response data, pp is 0x70 0x70
-                                pfeed = strstr_len(pRecvBuf, "pp", recvLen);
-                                if(pfeed != NULL)
-                                {
-                                    sleepSec = (uint32_t)(((*(pfeed + 7)) << 24)
-                                                          + ((*(pfeed + 8)) << 16)
-                                                          + ((*(pfeed + 9)) << 8)
-                                                          + (*(pfeed + 10)));
-                                    DEBUG("sleepSec = %d\n", sleepSec);
-                                    // Check sleep time setting value
-                                    if((sleepSec > SLEEP_TIME_MIN) && (sleepSec < SLEEP_TIME_MAX))
-                                    {
-                                        g_uiSetSleepSec = sleepSec;
+	                /////////////////////////////////////////////////////////////////
+	                // Set RTC Alarm to wake from STOP mode
+	                /////////////////////////////////////////////////////////////////
+	                /* Wait till RTC Second event occurs */
+	                RTC_ClearFlag(RTC_FLAG_SEC);
+	                while(RTC_GetFlagStatus(RTC_FLAG_SEC) == RESET);
 
-                                    }
-                                    DEBUG("g_uiSetSleepSec = %d\n", g_uiSetSleepSec);
-                                }
-                                else
-                                {
-                                    DEBUG("Server Set Sleep Timer ERROR\n");
-                                }
+	                /* Alarm in 10 second */
+	                RTC_SetAlarm(RTC_GetCounter() + GPS_STOPMODE_SEC);
+	                /* Wait until last write operation on RTC registers has finished */
+	                RTC_WaitForLastTask();
+
+	                /////////////////////////////////////////////////////////////////
+	                // Go Into STOP Mode
+	                /////////////////////////////////////////////////////////////////
+	                /* Request to enter STOP mode with regulator in low power mode*/
+	                PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
+
+	                /* Configures system clock after wake-up from STOP: enable HSE, PLL and select
+	                	PLL as system clock source (HSE and PLL are disabled in STOP mode) */
+	                SYSCLKConfig_STOP();
 #endif
-                                break;
-                            }
-                            else
-                            {
-
-#ifdef DBG_ENABLE_MACRO
-                                STM_EVAL_LEDToggle(LED1);
-                                DEBUG("GPRS_SendData_rsp LOGIN MSG Fail\n");
-#endif // DBG_ENABLE_MACRO
-
-                            }
-                        }
-
-                        /////////////////////////////////////////////////////////////////
-                        // Send GPS/STATION or ALARM Msg
-                        /////////////////////////////////////////////////////////////////
-                        g_usSequenceNum++;
-                        errNum = 0;
-                        gprsRtn = USART_FAIL;
-                        // detect remove action and alarm flag is setted then send alarm msg
-
-                        PackAlarmMsg();
-                        sendLen = EELINK_ALARM_MSGLEN;
-                        //g_uiAlarmPacketFlag = SET;
-                        DEBUG("PackAlarmMsg\r\n");
-
-#ifdef DBG_ENABLE_MACRO
-                        ShowGpsMsg(sendLen);
-#endif
-                        while(errNum < 5)
-                        {
-                            errNum++;
-                            gprsRtn = GPRS_SendData(gpsBuf, sendLen);
-                            if(USART_SUCESS == gprsRtn)
-                            {
-                                gprsSendFlag = RST_OK;
-                                //g_uiAlarmFlag = RESET;
-                                g_uiAlarmPacketFlag = SET;
-
-                                DEBUG("send_ok 1 after g_uiAlarmFlag = %d\n", g_uiAlarmFlag);
-
-                                // POWER OFF GSM
-                                GPRS_CPOwd();
-                                GSM_PowerOff();
-                                break;
-                            }
-                        }
-
-                        // break gprs send process
-                        if(RST_OK == gprsSendFlag)
-                        {
-                            break;
-                        }
-
-                    }
-
-                    // break gprs send process
-                    if(RST_OK == gprsSendFlag)
-                    {
-                        break;
-                    }
-                }
-            }
-
-
-            /////////////////////////////////////////////////////////////////
-            // First, Power ON GPS
-            /////////////////////////////////////////////////////////////////
-            GPSPowerOn();
-            DEBUG("\r\n GPSPowerOn \r\n");
-            delay_10ms(200);
-            /////////////////////////////////////////////////////////////////
-            // Receive GPS Data and Parse, If Recv Success then break
-            /////////////////////////////////////////////////////////////////
-            memset(&g_stGPSData, 0, sizeof(g_stGPSData));
-#ifdef DBG_ENABLE_MACRO
-            ShowGpsData();
-#endif
-            while(gpsRecvTimes < GPS_RETERY_TIMES)
-            {
-                gpsRecvTimes++;
-                TIM2_Start();
-                gpsRtn = GetGPSData();
-                TIM2_Stop();
-
-                if(RST_OK == gpsRtn)
-                {
-                    g_ucGPSStatus = GPS_DEVICE_OK;
-                    DEBUG("Receive GPS Data\r\n");
-                    //ParseGPSData(&g_stGPSData);
-
-                    //if(1 == g_stGPSData.status)
-                    if('A' == g_stGPSRMCData.Status)
-                    {
-                        ParseGPSData(&g_stGPSData);
-#ifdef DBG_ENABLE_MACRO
-                        ShowGpsData();
-#endif
-                        GPSPowerOff();
-                        DEBUG("GPSData Valid and TurnOFF GPS\r\n");
-                        break;
-                    }
-                }
-
-                /////////////////////////////////////////////////////////////////
-                // Set RTC Alarm to wake from STOP mode
-                /////////////////////////////////////////////////////////////////
-                /* Wait till RTC Second event occurs */
-                RTC_ClearFlag(RTC_FLAG_SEC);
-                while(RTC_GetFlagStatus(RTC_FLAG_SEC) == RESET);
-
-                /* Alarm in 10 second */
-                RTC_SetAlarm(RTC_GetCounter() + GPS_STOPMODE_SEC);
-                /* Wait until last write operation on RTC registers has finished */
-                RTC_WaitForLastTask();
-
-                /////////////////////////////////////////////////////////////////
-                // Go Into STOP Mode
-                /////////////////////////////////////////////////////////////////
-                /* Request to enter STOP mode with regulator in low power mode*/
-                PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
-
-                /* Configures system clock after wake-up from STOP: enable HSE, PLL and select
-                	PLL as system clock source (HSE and PLL are disabled in STOP mode) */
-                SYSCLKConfig_STOP();
-
-                //delay_10ms(500);
+	                delay_10ms(1000);
+	            }
             }
 
             /////////////////////////////////////////////////////////////////
@@ -796,7 +571,7 @@ int main(void)
                         {
 
 #ifdef DBG_ENABLE_MACRO
-                            STM_EVAL_LEDToggle(LED1);
+                            //STM_EVAL_LEDToggle(LED1);
                             DEBUG("GPRS_SendData LOGIN MSG Fail\n");
 #endif // DBG_ENABLE_MACRO
 
@@ -810,18 +585,29 @@ int main(void)
                     errNum = 0;
                     gprsRtn = USART_FAIL;
 
-                    if(1 == g_stGPSData.status)
-                    {
-                        PackGpsMsg();
-                        sendLen = EELINK_GPS_MSGLEN;
-                        DEBUG("PackGpsMsg\r\n");
-                    }
-                    else
-                    {
-                        PackStationMsg();
-                        sendLen = (8 + (g_stStationInfo.num * 11));
-                        DEBUG("PackStationMsg\r\n");
-                    }
+					if(SET == g_uiAlarmFlag)
+					{
+						PackAlarmMsg();
+                        sendLen = EELINK_ALARM_MSGLEN;
+						g_uiAlarmPacketFlag = SET;
+						DEBUG("PackAlarmMsg\r\n");
+					}
+					else
+					{
+	                    if(1 == g_stGPSData.status)
+	                    {
+	                        PackGpsMsg();
+	                        sendLen = EELINK_GPS_MSGLEN;
+	                        DEBUG("PackGpsMsg\r\n");
+	                    }
+	                    else
+	                    {
+	                        PackStationMsg();
+	                        sendLen = (8 + (g_stStationInfo.num * 11));
+	                        DEBUG("PackStationMsg\r\n");
+	                    }
+						g_uiAlarmPacketFlag = RESET;
+					}
 
                     //g_uiAlarmPacketFlag = RESET;
 
@@ -843,7 +629,7 @@ int main(void)
                         if(USART_SUCESS == gprsRtn)
                         {
                             gprsSendFlag = RST_OK;
-
+DEBUG("\r\n send_ok 2 before g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n", g_uiAlarmFlag, g_uiAlarmPacketFlag);
                             // Toggle alarm flag
                             if((SET == g_uiAlarmFlag) && (SET == g_uiAlarmPacketFlag))
                             {
@@ -851,10 +637,10 @@ int main(void)
                             }
                             else
                             {
-                                g_uiAlarmFlag = SET;
+                                //g_uiAlarmFlag = SET;
                             }
-                            g_uiAlarmPacketFlag = RESET;
-                            DEBUG("send_ok 2 after g_uiAlarmFlag = %d\n", g_uiAlarmFlag);
+                            
+                            DEBUG("\r\n send_ok 2 after g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n", g_uiAlarmFlag, g_uiAlarmPacketFlag);
                             break;
                         }
                     }
@@ -878,7 +664,7 @@ int main(void)
         /////////////////////////////////////////////////////////////////
         // This Process is Finished, Then goto sleep
         /////////////////////////////////////////////////////////////////
-        STM_EVAL_LEDToggle(LED1);
+        //STM_EVAL_LEDToggle(LED1);
         /////////////////////////////////////////////////////////////////
         // Power OFF GPS and GSM before going into sleep mode
         /////////////////////////////////////////////////////////////////
@@ -892,11 +678,10 @@ int main(void)
         while(RTC_GetFlagStatus(RTC_FLAG_SEC) == RESET);
 
         // NOT Stick and Alarm Flag Valid, Then Sleep Less
-        if(((uint32_t)Bit_SET == STM_EVAL_PBGetState(BUTTON_KEY))
-                && (SET == g_uiAlarmFlag))
+        if( SET == g_uiAlarmPacketFlag)
         {
             RTC_SetAlarm(RTC_GetCounter() + SLEEP_ALARM_SEC);
-            DEBUG("alarmmode sleep %d\n", SLEEP_ALARM_SEC);
+            DEBUG("alarmmode sleep %d sec\n", SLEEP_ALARM_SEC);
         }
         else
         {
@@ -905,7 +690,7 @@ int main(void)
             DEBUG("DEBUG normalmode sleep %d\n", 120);
 #else
             RTC_SetAlarm(RTC_GetCounter() + g_uiSetSleepSec);
-            //DEBUG("normalmode sleep %d\n", g_uiSetSleepSec);
+            //DEBUG("normalmode sleep %d sec\n", g_uiSetSleepSec);
 #endif
         }
 
