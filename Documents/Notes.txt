@@ -1,4 +1,13 @@
 
+
+优先级关系
+RTC group2 pre0 sub0
+TM2 group0 pre0 sub3
+TM4 group0 pre0 sub4
+BUT groupX pre15 sub15
+UART group3 pre7 sub1
+
+
 2014-12-03
 1. 修改GPRS发送操作为CIPSEND=length方式，防止在发送协议中出现0x1A（CTRL+Z）时而导致发送数据不完整。
 2. 修改AT指令函数，增加检查返回值的时间参数（不同的AT指令的最大响应时间不一样），而不是一概而论只使用同一个时间参数。
@@ -33,24 +42,31 @@ main()
 // 主循环
 	while(1)
 	{
+		检查干簧管状态，设置报警
 		if(干簧管有效 || 报警标志有效)
 		{
-			打开GPS电源
-			while(1)
+			if(报警无效)
 			{
-				延时2s
-				读取GPS数据
-				if(数据有效)
+				打开GPS电源
+				while(1)
 				{
-					break;
+					延时2s
+					读取GPS数据
+					if(数据有效)
+					{
+						break;
+					}
+					if(GPS接收次数 > n次)
+					{
+						break;
+					}
+					延时10s
+					#if 0
+					设置RTC ALARM为10s
+					进入STOP模式
+					配置SYSCLK
+					#endif
 				}
-				if(GPS接收次数 > n次)
-				{
-					break;
-				}
-				设置RTC ALARM为10s
-				进入STOP模式
-				配置SYSCLK
 			}
 			打开GSM电源
 			while(1)
@@ -66,14 +82,21 @@ main()
 				
 				读取GPS数据
 				读取GSM相关数据（基站、IMSI等）
-				if(干簧管无效 && 报警标志有效)
+				if(报警标志有效)
 				{
-					发送ALARM数据包
+					发送ALARM报文
 					设置g_alarmPacketFlag有效
 				}
 				else
 				{
-					发送GPS数据包
+					if(GPS有效)
+					{
+						发送GPS报文
+					}
+					else
+					{
+						发送STATION报文
+					}
 					设置g_alarmPacketFlag无效
 				}
 				if(发送错误次数 > 5)
@@ -81,16 +104,13 @@ main()
 					关闭网络连接
 					break;
 				}
-				if(发送成功次数 > 1)
+				if(发送成功)
 				{
 					if(报警标志有效 && g_alarmPacketFlag有效)
 					{
 						设置报警标志无效
 					}
-					else
-					{
-						设置报警标志有效
-					}
+					
 					break;
 				}
 				序列号++
@@ -100,8 +120,9 @@ main()
 	
 		关闭GSM模块
 		关闭GPS、GSM电源
+		检查干簧管状态，设置报警
 		设置RTC ALARM为睡眠间隔
-		进入Standby模式
+		进入STOP模式
 		配置SYSCLK
 	}
 }

@@ -52,8 +52,8 @@
 #define SLEEP_TIME_MAX   172800  // 48hour ×î´óË¯Ãß¼ä¸ô
 
 // #define GSM_SERVER_IP   "121.40.200.84"  	// server ip address
-#define GSM_SERVER_IP   "lkf.broadnetwork.net"  // server name
-#define GSM_SERVER_PORT "8888"           		// server port
+#define GSM_SERVER_IP   	"lkf.broadnetwork.net"  // server name
+#define GSM_SERVER_PORT 	"8888"           		// server port
 
 
 #define EELINK_LOGIN_MSGLEN  17		// login length
@@ -124,6 +124,7 @@ void RTC_Configuration(void);
 void EXTI_Configuration(void);
 void TIM2_Configuration(void);
 void TIM4_Configuration(void);
+void NVIC_Configuration(void);
 void RTC_NVIC_Configuration(void);
 void TIM2_NVIC_Configuration(void);
 void TIM4_NVIC_Configuration(void);

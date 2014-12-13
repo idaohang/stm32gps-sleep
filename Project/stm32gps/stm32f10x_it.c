@@ -260,28 +260,19 @@ void TIM2_IRQHandler(void)
 {
     if ( TIM_GetITStatus(TIM2 , TIM_IT_Update) != RESET )
     {
-        TIM_ClearITPendingBit(TIM2 , TIM_FLAG_Update);
+        
         g_ucRecvOverTimeFlag = 1;  // GPS Receive OverTime
+        TIM_ClearITPendingBit(TIM2 , TIM_FLAG_Update);
     }
 }
 
 void TIM4_IRQHandler(void)
 {
-    if ( TIM_GetITStatus(TIM4 , TIM_IT_Update) != RESET )
-    {
-		// NOT Stick
-		if((uint32_t)Bit_SET == STM_EVAL_PBGetState(BUTTON_KEY))
-		{
-			g_uiAlarmFlag = SET;
-			STM_EVAL_LEDToggle(LED1);
-		}
-        TIM_ClearITPendingBit(TIM4 , TIM_FLAG_Update);   
-    }
-	TIM4_Stop();
+	
 }
 
 /**
-  * @brief  This function handles External lines 9 to 5 interrupt request.
+  * @brief  This function handles External lines 10 to 15 interrupt request.
   * @param  None
   * @retval None
   */
@@ -289,13 +280,7 @@ void EXTI15_10_IRQHandler(void)
 {
     if(EXTI_GetITStatus(KEY_BUTTON_EXTI_LINE) != RESET)
     {
-		//delay_ms(100);
-		// NOT Stick
-		
-		TIM4_Start();
-		STM_EVAL_LEDOn(LED1);
-		
-        /* Clear the Key Button EXTI line pending bit */
+		/* Clear the Key Button EXTI line pending bit */
         EXTI_ClearITPendingBit(KEY_BUTTON_EXTI_LINE);
     }
 }

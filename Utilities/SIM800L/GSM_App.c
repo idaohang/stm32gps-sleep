@@ -29,8 +29,6 @@
 #include "usart.h"
 #include "GSM_App.h"
 
-
-
 static char BackBuf[USART_GSM_BUFSIZE];
 static char sendBuf[USART_GSM_BUFSIZE_SEND];
 static char receiveBuf[USART_GSM_BUFSIZE_RECEIVE];
@@ -761,13 +759,16 @@ uint8_t GSM_QuerySignal(uint8_t *pSig)
 
     len = strlen(AT_CSQ);
     GSM_ClearBuffer();
+
     while(errNum < RETRY_TIMES_CMD_CSQ)
     {
         errNum++;
         rst = GSM_SendAT_rsp((char *) AT_CSQ, (char *) AT_OK, len, &pRecvBuf, &recvLen, MAX_RESP_CMD_CSQ);
-        if(USART_SUCESS == rst)
+
+		if(USART_SUCESS == rst)
         {
             pfeed = strnchr(pRecvBuf, ',', 1);
+
             if (pfeed == NULL)
             {
                 rtn = RST_FAIL;
@@ -1223,7 +1224,7 @@ unsigned char GPRS_LinkServer(pST_NETWORKCONFIG pnetconfig)
     sprintf(pcmdbuf, AT_CIPSTART, netcfg.TransferMode, netcfg.RemoteIP,
             netcfg.RemotePort);
     cmdLen = strlen(pcmdbuf);
-    if (USART_SUCESS == GSM_SendAT_rsp((char *) pcmdbuf, (char *) AT_CONNECTOK, cmdLen, &pRecvBuf, &recvLen, MAX_RESP_CMD_CIPSTART))
+    if (USART_SUCESS == GSM_SendAT_rsp((char *) pcmdbuf, (char *) AT_CONNECT, cmdLen, &pRecvBuf, &recvLen, MAX_RESP_CMD_CIPSTART))
     {
         if(NULL != strstr_len(pRecvBuf, (char *)AT_CONNECTOK, recvLen))
         {

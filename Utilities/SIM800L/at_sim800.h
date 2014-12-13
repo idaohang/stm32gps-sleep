@@ -51,6 +51,7 @@ const char AT_Cmd[]     =   "AT\r";
 const char AT_OK[]      =   "OK";
 const char AT_READY[]   =   "READY";
 const char AT_CONNECTOK[]   =   "CONNECT OK";
+const char AT_CONNECT[]   =   "CONNECT";
 const char ATI_Cmd[]    =   "ATI\r";
 const char ATE0_Cmd[]   =   "ATE0\r";
 const char AT_CSQ[]     =   "AT+CSQ\r";

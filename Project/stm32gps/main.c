@@ -36,20 +36,19 @@
 
 /* Private typedef -----------------------------------------------------------*/
 
-
-
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
 
-volatile uint32_t g_uiAlarmFlag;  // 报警标志 SET-valid; RESET-invalid
+static uint16_t g_usSequenceNum;  		// GPRS packet's sequence number
+static uint8_t g_ucGPSStatus;    		// GPS status 0x55 - error; 0xaa - ok
+static uint32_t g_uiSetSleepSec;  		// Server setting sleep seconds
+static FlagStatus g_uiAlarmFlag;  		// 报警标志 SET-valid; RESET-invalid
+static FlagStatus g_uiAlarmPacketFlag; 	// 报警数据包标志 SET - alarm packet; RESET - not alarm packet
+static FlagStatus g_uiPreStickFlag; 	// 吸合状态 SET - Stick ON; RESET - Stick OFF
+static FlagStatus g_uiCurStickFlag; 	// 吸合状态 SET - Stick ON; RESET - Stick OFF
 
-static uint16_t g_usSequenceNum;  // GPRS packet's sequence number
-static uint8_t g_ucGPSStatus;    // GPS status 0x55 - error; 0xaa - ok
-static uint32_t g_uiSetSleepSec;  // Server setting sleep seconds
-//static FlagStatus g_uiAlarmFlag;  // 报警标志 SET-valid; RESET-invalid
-static FlagStatus g_uiAlarmPacketFlag; // 报警数据包标志 SET - alarm packet; RESET - not alarm packet
 
 static uint8_t g_ucSignalQuality;
 
@@ -70,6 +69,7 @@ static char gpsBuf[PROTO_GPS_BUF_LEN];
 
 
 /* Private function prototypes -----------------------------------------------*/
+FlagStatus GetStickState(void);
 static uint8_t ProcessIMEI(uint8_t *pImei, uint8_t *pRst, int32_t imeilen, int32_t rstlen);
 static void PackLoginMsg(void);
 static void PackGpsMsg(void);
@@ -186,6 +186,9 @@ void InitVariables(void)
     g_uiSetSleepSec = SLEEP_NORMAL_SEC;
     g_uiAlarmFlag = RESET;
     g_uiAlarmPacketFlag = RESET;
+	g_uiPreStickFlag = RESET;
+	g_uiCurStickFlag = RESET;
+	
     g_ucSignalQuality = 0;
 
     memset(&g_stDeviceData, 0, sizeof(g_stDeviceData));
@@ -211,7 +214,6 @@ void InitVariables(void)
  */
 int main(void)
 {
-    //    int i = 0;
     uint32_t errNum = 0;
     uint8_t gpsRecvTimes = 0;  // GPS Received Times
     uint8_t gsmRetyTimes = 0;  // GSM Retry Times
@@ -224,7 +226,6 @@ int main(void)
 
     uint16_t sendLen = 0;      // GPRS send length (used for GPS and ALARM Msg)
     uint32_t sleepSec = 0;
-    //uint32_t alarmStickFlag = 0;    // 是否有移开的动作 1- 有 0-无
 
     // Used for parse GPRS Received Data Analysis
     char *pRecvBuf = NULL;     // GPRS Received buffer
@@ -236,12 +237,16 @@ int main(void)
     uint8_t status = 0;
 #endif
 
+	/* 4 bits for Preemption Priority and 0 bits for Sub Priority */
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+
     /////////////////////////////////////////////////////////////////
     // Configure the GPIO ports and Power OFF GPS and GSM
     /////////////////////////////////////////////////////////////////
     MX_GPIO_Init();
     GPSPowerOff();
     GSM_PowerOff();
+
     /////////////////////////////////////////////////////////////////
     // Configure the SysTick
     /////////////////////////////////////////////////////////////////
@@ -260,8 +265,13 @@ int main(void)
     /////////////////////////////////////////////////////////////////
     //RCC_Configuration();
 
+	/////////////////////////////////////////////////////////////////
+    // Configure NVIC
     /////////////////////////////////////////////////////////////////
-    // Configure EXTI
+    NVIC_Configuration();
+	
+    /////////////////////////////////////////////////////////////////
+    // Configure RTC EXTI
     /////////////////////////////////////////////////////////////////
     EXTI_Configuration();
 
@@ -269,16 +279,13 @@ int main(void)
     // Configure RTC
     /////////////////////////////////////////////////////////////////
     RTC_Configuration();
-    RTC_NVIC_Configuration();
+   // RTC_NVIC_Configuration();
 
     /////////////////////////////////////////////////////////////////
     // Configure TIMER
     /////////////////////////////////////////////////////////////////
     TIM2_Configuration();
-    TIM2_NVIC_Configuration();
-
-	TIM4_Configuration();
-    TIM4_NVIC_Configuration();
+    //TIM2_NVIC_Configuration();
 
     /////////////////////////////////////////////////////////////////
     // Configure LED, BUTTON and USART(GPS + GSM + DEBUG)
@@ -300,8 +307,7 @@ int main(void)
     /* Enable the EVAL_COM2 Receive interrupt: this interrupt is generated when the
      EVAL_COM1 receive data register is not empty */
     USART_ITConfig(EVAL_COM2, USART_IT_RXNE, ENABLE);
-
-    USART_NVIC_Configuration();
+    //USART_NVIC_Configuration();
 
     /////////////////////////////////////////////////////////////////
     // Turn On TIM2
@@ -331,20 +337,23 @@ int main(void)
 
         sendLen = 0;
         sleepSec = 0;
-//        alarmStickFlag = 0;
-
+		
         /////////////////////////////////////////////////////////////////
         // Detect Stick Status
         /////////////////////////////////////////////////////////////////
-        delay_10ms(STICK_ON_SEC);
-        //STM_EVAL_LEDOff(LED1);
-        // If Stick On Car or sth
-        if(((uint32_t)Bit_RESET == STM_EVAL_PBGetState(BUTTON_KEY))
-                || (SET == g_uiAlarmFlag) || (SET == g_uiAlarmPacketFlag))
+        g_uiCurStickFlag = GetStickState();
+		if((RESET == g_uiCurStickFlag) && (g_uiCurStickFlag != g_uiPreStickFlag))
+		{
+			g_uiAlarmFlag = SET;
+		}
+		g_uiPreStickFlag = g_uiCurStickFlag;
+        
+DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n", g_uiCurStickFlag, g_uiAlarmFlag, g_uiAlarmPacketFlag);
+		// If Stick On Car or sth
+		if((SET == g_uiCurStickFlag) || (SET == g_uiAlarmFlag) || (SET == g_uiAlarmPacketFlag))
         {
             
             // GPS ALARM
-            DEBUG("\r g_uiAlarmFlag = %d\n", g_uiAlarmFlag);
             if(SET != g_uiAlarmFlag)
             {
 	            /////////////////////////////////////////////////////////////////
@@ -385,29 +394,7 @@ int main(void)
 	                        break;
 	                    }
 	                }
-#if 0
-	                /////////////////////////////////////////////////////////////////
-	                // Set RTC Alarm to wake from STOP mode
-	                /////////////////////////////////////////////////////////////////
-	                /* Wait till RTC Second event occurs */
-	                RTC_ClearFlag(RTC_FLAG_SEC);
-	                while(RTC_GetFlagStatus(RTC_FLAG_SEC) == RESET);
-
-	                /* Alarm in 10 second */
-	                RTC_SetAlarm(RTC_GetCounter() + GPS_STOPMODE_SEC);
-	                /* Wait until last write operation on RTC registers has finished */
-	                RTC_WaitForLastTask();
-
-	                /////////////////////////////////////////////////////////////////
-	                // Go Into STOP Mode
-	                /////////////////////////////////////////////////////////////////
-	                /* Request to enter STOP mode with regulator in low power mode*/
-	                PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
-
-	                /* Configures system clock after wake-up from STOP: enable HSE, PLL and select
-	                	PLL as system clock source (HSE and PLL are disabled in STOP mode) */
-	                SYSCLKConfig_STOP();
-#endif
+					
 	                delay_10ms(1000);
 	            }
             }
@@ -415,7 +402,9 @@ int main(void)
             /////////////////////////////////////////////////////////////////
             // Second, Power ON GSM
             /////////////////////////////////////////////////////////////////
+			
             GSM_PowerOn();
+			DEBUG("\r\n GSMPowerOn \r\n");
             delay_10ms(200);
 
             gsmRetyTimes = 0;
@@ -424,6 +413,7 @@ int main(void)
             while(gsmRetyTimes < GSM_RETERY_TIMES)
             {
                 gsmRetyTimes++;
+				
                 gsmRtn = GSM_Init();
                 if(RST_FAIL == gsmRtn)
                 {
@@ -438,9 +428,9 @@ int main(void)
                 gsmRtn = GSM_QuerySignal(&g_ucSignalQuality);
                 if(RST_FAIL == gsmRtn)
                 {
+					DEBUG("\r\n GSM_QuerySignal FAIL \r\n");
                     continue;
                 }
-
 
                 gsmRtn = GSM_CheckNetworkReg();
                 if(RST_FAIL == gsmRtn)
@@ -494,7 +484,7 @@ int main(void)
                     GPRS_CIPShut();
 #ifdef DBG_ENABLE_MACRO
                     GPRS_CheckLinkStatus(&status);
-#endif
+#endif									   
                     gsmRtn = GSM_StartTaskAndSetAPN();
                     if(RST_FAIL == gsmRtn)
                     {
@@ -503,6 +493,7 @@ int main(void)
 #ifdef DBG_ENABLE_MACRO
                     GPRS_CheckLinkStatus(&status);
 #endif
+
                     gsmRtn = GSM_BringUpConnect();
                     if(RST_FAIL == gsmRtn)
                     {
@@ -552,7 +543,7 @@ int main(void)
                                                       + ((*(pfeed + 8)) << 16)
                                                       + ((*(pfeed + 9)) << 8)
                                                       + (*(pfeed + 10)));
-                                DEBUG("sleepSec = %d\n", sleepSec);
+                                
                                 // Check sleep time setting value
                                 if((sleepSec > SLEEP_TIME_MIN) && (sleepSec < SLEEP_TIME_MAX))
                                 {
@@ -609,8 +600,6 @@ int main(void)
 						g_uiAlarmPacketFlag = RESET;
 					}
 
-                    //g_uiAlarmPacketFlag = RESET;
-
 #ifdef DBG_ENABLE_MACRO
                     ShowGpsMsg(sendLen);
 #endif
@@ -629,18 +618,15 @@ int main(void)
                         if(USART_SUCESS == gprsRtn)
                         {
                             gprsSendFlag = RST_OK;
-DEBUG("\r\n send_ok 2 before g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n", g_uiAlarmFlag, g_uiAlarmPacketFlag);
+
                             // Toggle alarm flag
                             if((SET == g_uiAlarmFlag) && (SET == g_uiAlarmPacketFlag))
                             {
                                 g_uiAlarmFlag = RESET;
                             }
-                            else
-                            {
-                                //g_uiAlarmFlag = SET;
-                            }
-                            
-                            DEBUG("\r\n send_ok 2 after g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n", g_uiAlarmFlag, g_uiAlarmPacketFlag);
+
+							// If Send OK, Close Link
+                            GPRS_CloseLink();
                             break;
                         }
                     }
@@ -659,6 +645,7 @@ DEBUG("\r\n send_ok 2 before g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n", g_
                     break;
                 }
             }
+			
         }
 
         /////////////////////////////////////////////////////////////////
@@ -669,16 +656,26 @@ DEBUG("\r\n send_ok 2 before g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n", g_
         // Power OFF GPS and GSM before going into sleep mode
         /////////////////////////////////////////////////////////////////
         //STM_EVAL_LEDOff(LED1);
-        GPRS_CPOwd();
+        //GPRS_CPOwd();
         GPSPowerOff();
         GSM_PowerOff();
+
+		/////////////////////////////////////////////////////////////////
+        // Detect Stick Status
+        /////////////////////////////////////////////////////////////////
+        g_uiCurStickFlag = GetStickState();
+		if((RESET == g_uiCurStickFlag) && (g_uiCurStickFlag != g_uiPreStickFlag))
+		{
+			g_uiAlarmFlag = SET;
+		}
+		g_uiPreStickFlag = g_uiCurStickFlag;
 
         /* Wait till RTC Second event occurs */
         RTC_ClearFlag(RTC_FLAG_SEC);
         while(RTC_GetFlagStatus(RTC_FLAG_SEC) == RESET);
 
         // NOT Stick and Alarm Flag Valid, Then Sleep Less
-        if( SET == g_uiAlarmPacketFlag)
+        if( (SET == g_uiAlarmPacketFlag) || (SET == g_uiAlarmFlag))
         {
             RTC_SetAlarm(RTC_GetCounter() + SLEEP_ALARM_SEC);
             DEBUG("alarmmode sleep %d sec\n", SLEEP_ALARM_SEC);
@@ -687,7 +684,7 @@ DEBUG("\r\n send_ok 2 before g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n", g_
         {
 #ifdef DBG_ENABLE_MACRO
             RTC_SetAlarm(RTC_GetCounter() + 120); // 2 min
-            DEBUG("DEBUG normalmode sleep %d\n", 120);
+            DEBUG("DEBUG normalmode sleep %d sec\n", 120);
 #else
             RTC_SetAlarm(RTC_GetCounter() + g_uiSetSleepSec);
             //DEBUG("normalmode sleep %d sec\n", g_uiSetSleepSec);
@@ -708,12 +705,49 @@ DEBUG("\r\n send_ok 2 before g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n", g_
     // SHOULD NOT GO HAERE
     while(1)
     {
+		// Soft RESET
+		__set_FAULTMASK(1);      // Close ALL Interrupts
+		NVIC_SystemReset();
+		
         STM_EVAL_LEDToggle(LED1);
         delay_10ms(50);
     }
 }
 
-/*********************************************************************************************************
+/**
+  * @brief  Check Button State
+  * @param  None
+  * @retval FlagStatus SET - Stick ON; RESET - Stick OFF
+  */
+FlagStatus GetStickState(void)
+{
+	int i = 0;
+	uint32_t cnt = 0;
+	FlagStatus curState = SET;
+
+	for(i = 0; i < 4; i++)
+	{
+		delay_ms(20);
+		// Stick On
+		if((uint32_t)Bit_RESET == STM_EVAL_PBGetState(BUTTON_KEY))
+		{
+			cnt++;
+		}
+	}
+
+	if(cnt > 3)
+	{
+		curState = SET;
+	}
+	else
+	{
+		curState = RESET;
+	}
+
+	return curState;
+}
+
+/***************************************************************************
  ** Function name:       ProcessIMEI()
  ** Descriptions:        将15个字节的IMEI字符串处理成8个字节的EELINK协议格式
  ** input parameters:    pImei 需要处理的15个字节的IMEI字符串
@@ -722,7 +756,7 @@ DEBUG("\r\n send_ok 2 before g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n", g_
  **                      rstlen 返回的字符串的长度
  ** output parameters:
  ** Returned value:      成功RST_OK 失败RST_FAIL
- *********************************************************************************************************/
+ ****************************************************************************/
 uint8_t ProcessIMEI(uint8_t *pImei, uint8_t *pRst, int32_t imeilen, int32_t rstlen)
 {
     uint32_t i;

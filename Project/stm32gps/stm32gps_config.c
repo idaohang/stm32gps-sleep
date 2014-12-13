@@ -171,7 +171,8 @@ void RTC_Configuration(void)
     RTC_WaitForSynchro();
 
     /* Set the RTC time base to 1s */
-    RTC_SetPrescaler(32767);
+    //RTC_SetPrescaler(32767);
+    RTC_SetPrescaler(39999);
     /* Wait until last write operation on RTC registers has finished */
     RTC_WaitForLastTask();
     RTC_ITConfig(RTC_IT_ALR, ENABLE);
@@ -250,6 +251,44 @@ void TIM4_Configuration(void)
     TIM_Cmd(TIM4, ENABLE);																		/* 开启时钟 */
 
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4 , DISABLE); // 先关闭等待使用
+}
+
+/**
+  * @brief  Configures the NVIC.
+  * @param  None
+  * @retval None
+  */
+void NVIC_Configuration(void)
+{
+    NVIC_InitTypeDef NVIC_InitStructure;
+
+    /* 4 bits for Preemption Priority and 0 bits for Sub Priority */
+    //NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+	
+    NVIC_InitStructure.NVIC_IRQChannel = RTCAlarm_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+
+	//NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
+    //NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+    //NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    //NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    //NVIC_Init(&NVIC_InitStructure);
+
+    NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 5;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+
+	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 7;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+
 }
 
 /**
