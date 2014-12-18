@@ -27,7 +27,7 @@ extern "C" {
       */
 #if !defined (USE_STM32_GPS_BOARD_VA) && !defined (USE_STM32_GPS_BOARD_VB)
     //#define USE_STM32_GPS_BOARD_VA
-    #define USE_STM32_GPS_BOARD_VB
+#define USE_STM32_GPS_BOARD_VB
 #endif
 
 #ifdef USE_STM32_GPS_BOARD_VA

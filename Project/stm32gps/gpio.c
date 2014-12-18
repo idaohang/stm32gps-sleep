@@ -64,11 +64,11 @@ void MX_GPIO_Init(void)
     GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PC */
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9|GPIO_Pin_11|GPIO_Pin_12;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOC, &GPIO_InitStruct);
+    /*Configure GPIO pin : PC */
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_11 | GPIO_Pin_12;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOC, &GPIO_InitStruct);
 
     /*Configure GPIO pin : PD */
     GPIO_InitStruct.GPIO_Pin = GPIO_Pin_2;
@@ -83,74 +83,74 @@ void MX_GPIO_Init(void)
     GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     /*Configure GPIO pin : PA */
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_15;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-  GPIO_Init(GPIOA, &GPIO_InitStruct);
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_15;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     /*Configure GPIO pin : PC */
     GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10;
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPD;
     GPIO_Init(GPIOC, &GPIO_InitStruct);
-	
-  /** USART1 GPIO Configuration  
-  PA9   ------> USART1_TX
-  PA10   ------> USART1_RX
-  */
 
-  /*Enable or disable APB2 peripheral clock */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+    /** USART1 GPIO Configuration
+    PA9   ------> USART1_TX
+    PA10   ------> USART1_RX
+    */
 
-  /*Configure GPIO pin : PA */
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
-  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOA, &GPIO_InitStruct);
+    /*Enable or disable APB2 peripheral clock */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
 
-  /*Configure GPIO pin : PA */
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-  GPIO_Init(GPIOA, &GPIO_InitStruct);
+    /*Configure GPIO pin : PA */
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /** USART2 GPIO Configuration  
-  PA2   ------> USART2_TX
-  PA3   ------> USART2_RX
-  */
+    /*Configure GPIO pin : PA */
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Enable or disable APB2 peripheral clock */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
+    /** USART2 GPIO Configuration
+    PA2   ------> USART2_TX
+    PA3   ------> USART2_RX
+    */
 
-  /*Configure GPIO pin : PA */
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_2;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
-  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOA, &GPIO_InitStruct);
+    /*Enable or disable APB2 peripheral clock */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
 
-  /*Configure GPIO pin : PA */
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_3;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-  GPIO_Init(GPIOA, &GPIO_InitStruct);
+    /*Configure GPIO pin : PA */
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_2;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /** USART3 GPIO Configuration  
-  PB10   ------> USART3_TX
-  PB11   ------> USART3_RX
-  */
+    /*Configure GPIO pin : PA */
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_3;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Enable or disable APB2 peripheral clock */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
+    /** USART3 GPIO Configuration
+    PB10   ------> USART3_TX
+    PB11   ------> USART3_RX
+    */
 
-  /*Configure GPIO pin : PB */
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
-  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOB, &GPIO_InitStruct);
+    /*Enable or disable APB2 peripheral clock */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
 
-  /*Configure GPIO pin : PB */
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_11;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-  GPIO_Init(GPIOB, &GPIO_InitStruct);
+    /*Configure GPIO pin : PB */
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    /*Configure GPIO pin : PB */
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_11;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOB, &GPIO_InitStruct);
 }
 
 

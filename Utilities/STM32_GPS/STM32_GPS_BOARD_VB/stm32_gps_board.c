@@ -35,7 +35,7 @@
  */
 void STM_EVAL_LEDOn(void)
 {
-	LED1_GPIO_PORT->BRR = LED1_PIN;
+    LED1_GPIO_PORT->BRR = LED1_PIN;
 }
 
 /**
@@ -45,7 +45,7 @@ void STM_EVAL_LEDOn(void)
  */
 void STM_EVAL_LEDOff(void)
 {
-	LED1_GPIO_PORT->BSRR = LED1_PIN;
+    LED1_GPIO_PORT->BSRR = LED1_PIN;
 }
 
 /**
@@ -55,7 +55,7 @@ void STM_EVAL_LEDOff(void)
  */
 void STM_EVAL_LEDToggle(void)
 {
-	LED1_GPIO_PORT->ODR ^= LED1_PIN;
+    LED1_GPIO_PORT->ODR ^= LED1_PIN;
 }
 
 

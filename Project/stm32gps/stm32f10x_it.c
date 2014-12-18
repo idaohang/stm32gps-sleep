@@ -229,7 +229,7 @@ void TIM2_IRQHandler(void)
 {
     if ( TIM_GetITStatus(TIM2 , TIM_IT_Update) != RESET )
     {
-        
+
         g_ucRecvOverTimeFlag = 1;  // GPS Receive OverTime
         TIM_ClearITPendingBit(TIM2 , TIM_FLAG_Update);
     }
@@ -245,7 +245,7 @@ void EXTI15_10_IRQHandler(void)
 {
     if(EXTI_GetITStatus(KEY_BUTTON_EXTI_LINE) != RESET)
     {
-		/* Clear the Key Button EXTI line pending bit */
+        /* Clear the Key Button EXTI line pending bit */
         EXTI_ClearITPendingBit(KEY_BUTTON_EXTI_LINE);
     }
 }

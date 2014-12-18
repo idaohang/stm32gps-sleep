@@ -16,25 +16,26 @@ extern "C" {
 #define IMSI_BUF_LEN 			15      // imsi buffer length
 #define PHONE_NUM_BUF_LEN 		15      // phone number buffer length
 
-typedef enum protoEelinkPacketType
-{
-    PACKET_EELINK_MIN 				= 0,
-    PACKET_EELINK_MAX 				= 0xFF,
-    PACKET_EELINK_LOGIN 			= 0x1,
-    PACKET_EELINK_GPS 				= 0x2,
-    PACKET_EELINK_HEARTBEAT 		= 0x3,
-    PACKET_EELINK_WARNING 			= 0x4,
-    PACKET_EELINK_TERMSTATUS 		= 0x5,
-    PACKET_EELINK_MESSAGEUPLOAD 	= 0x6,
-    PACKET_EELINK_INTERACTIVE 		= 0x80,
-    PACKET_EELINK_MESSAGEDOWNLOAD 	= 0x81,
-    PACKET_EELINK_PHOTOINFO 		= 0x0E,
-    PACKET_EELINK_PHOTODATA 		= 0x0F,
-    PACKET_EELINK_OBDDATA 			= 0x07,
-    PACKET_EELINK_OBDERR 			= 0x08,
-    PACKET_FACTORY_REPORT 			= 0x77,
-    PACKET_EELINK_STATION 			= 0xA0
-}PROTO_EELINK_PACKET_TYPE;
+    typedef enum protoEelinkPacketType
+    {
+        PACKET_EELINK_MIN 				= 0,
+                  PACKET_EELINK_MAX 				= 0xFF,
+                            PACKET_EELINK_LOGIN 			= 0x1,
+                                     PACKET_EELINK_GPS 				= 0x2,
+                                               PACKET_EELINK_HEARTBEAT 		= 0x3,
+                                                     PACKET_EELINK_WARNING 			= 0x4,
+                                                            PACKET_EELINK_TERMSTATUS 		= 0x5,
+                                                                 PACKET_EELINK_MESSAGEUPLOAD 	= 0x6,
+                                                                    PACKET_EELINK_INTERACTIVE 		= 0x80,
+                                                                        PACKET_EELINK_MESSAGEDOWNLOAD 	= 0x81,
+                                                                         PACKET_EELINK_PHOTOINFO 		= 0x0E,
+                                                                               PACKET_EELINK_PHOTODATA 		= 0x0F,
+                                                                                     PACKET_EELINK_OBDDATA 			= 0x07,
+                                                                                            PACKET_EELINK_OBDERR 			= 0x08,
+                                                                                                    PACKET_FACTORY_REPORT 			= 0x77,
+                                                                                                           PACKET_EELINK_STATION 			= 0xA0
+    }
+                                                                                                               PROTO_EELINK_PACKET_TYPE;
 
 #ifdef __cplusplus
 }

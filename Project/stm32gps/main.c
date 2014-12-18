@@ -1,6 +1,6 @@
 /******************************************************************************
 
-              Copyright (C), 2014, BoraNet Corporation 
+              Copyright (C), 2014, BoraNet Corporation
 
  ******************************************************************************
   File Name     : main.c
@@ -185,9 +185,9 @@ void InitVariables(void)
     g_uiSetSleepSec 	= SLEEP_NORMAL_SEC;
     g_uiAlarmFlag 		= RESET;
     g_uiAlarmPacketFlag = RESET;
-	g_uiPreStickFlag 	= RESET;
-	g_uiCurStickFlag 	= RESET;
-	
+    g_uiPreStickFlag 	= RESET;
+    g_uiCurStickFlag 	= RESET;
+
     g_ucSignalQuality 	= 0;
 
     memset(&g_stDeviceData, 0, sizeof(g_stDeviceData));
@@ -265,7 +265,7 @@ int main(void)
     /////////////////////////////////////////////////////////////////
     EXTI_Configuration();
 
-	/////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////
     // Configure NVIC
     /////////////////////////////////////////////////////////////////
     NVIC_Configuration();
@@ -274,7 +274,7 @@ int main(void)
     // Configure RTC
     /////////////////////////////////////////////////////////////////
     RTC_Configuration();
-	
+
     /////////////////////////////////////////////////////////////////
     // Configure TIMER
     /////////////////////////////////////////////////////////////////
@@ -326,85 +326,85 @@ int main(void)
         sendLen = 0;
         sleepSec = 0;
 #if 0
-		/////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////
         // Check Restart State (A Back Door)
         /////////////////////////////////////////////////////////////////
-		if(SET == CheckRestartState())
-		{
-			// Soft RESET
-			__set_FAULTMASK(1);      // Close ALL Interrupts
-			NVIC_SystemReset();
-		}
+        if(SET == CheckRestartState())
+        {
+            // Soft RESET
+            __set_FAULTMASK(1);      // Close ALL Interrupts
+            NVIC_SystemReset();
+        }
 #endif
-		// Delay 3 Sec
-		delay_10ms(STICK_ON_SEC);
+        // Delay 3 Sec
+        delay_10ms(STICK_ON_SEC);
         /////////////////////////////////////////////////////////////////
         // Detect Stick Status
         /////////////////////////////////////////////////////////////////
         g_uiCurStickFlag = GetStickState();
-		if((RESET == g_uiCurStickFlag) && (g_uiCurStickFlag != g_uiPreStickFlag))
-		{
-			g_uiAlarmFlag = SET;
-		}
-		g_uiPreStickFlag = g_uiCurStickFlag;
-        
-DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n", g_uiCurStickFlag, g_uiAlarmFlag, g_uiAlarmPacketFlag);
-		// If Stick On Car or sth
-		if((SET == g_uiCurStickFlag) || (SET == g_uiAlarmFlag) || (SET == g_uiAlarmPacketFlag))
+        if((RESET == g_uiCurStickFlag) && (g_uiCurStickFlag != g_uiPreStickFlag))
         {
-            
+            g_uiAlarmFlag = SET;
+        }
+        g_uiPreStickFlag = g_uiCurStickFlag;
+
+        DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n", g_uiCurStickFlag, g_uiAlarmFlag, g_uiAlarmPacketFlag);
+        // If Stick On Car or sth
+        if((SET == g_uiCurStickFlag) || (SET == g_uiAlarmFlag) || (SET == g_uiAlarmPacketFlag))
+        {
+
             // GPS ALARM
             if(SET != g_uiAlarmFlag)
             {
-	            /////////////////////////////////////////////////////////////////
-	            // First, Power ON GPS
-	            /////////////////////////////////////////////////////////////////
-	            GPSPowerOn();
-	            DEBUG("\r\n GPSPowerOn \r\n");
-	            delay_10ms(200);
-	            /////////////////////////////////////////////////////////////////
-	            // Receive GPS Data and Parse, If Recv Success then break
-	            /////////////////////////////////////////////////////////////////
-	            memset(&g_stGPSData, 0, sizeof(g_stGPSData));
+                /////////////////////////////////////////////////////////////////
+                // First, Power ON GPS
+                /////////////////////////////////////////////////////////////////
+                GPSPowerOn();
+                DEBUG("\r\n GPSPowerOn \r\n");
+                delay_10ms(200);
+                /////////////////////////////////////////////////////////////////
+                // Receive GPS Data and Parse, If Recv Success then break
+                /////////////////////////////////////////////////////////////////
+                memset(&g_stGPSData, 0, sizeof(g_stGPSData));
 #ifdef DBG_ENABLE_MACRO
-	            ShowGpsData();
+                ShowGpsData();
 #endif
-	            while(gpsRecvTimes < GPS_RETERY_TIMES)
-	            {
-	                gpsRecvTimes++;
-	                TIM2_Start();
-	                gpsRtn = GetGPSData();
-	                TIM2_Stop();
+                while(gpsRecvTimes < GPS_RETERY_TIMES)
+                {
+                    gpsRecvTimes++;
+                    TIM2_Start();
+                    gpsRtn = GetGPSData();
+                    TIM2_Stop();
 
-	                if(RST_OK == gpsRtn)
-	                {
-	                    g_ucGPSStatus = GPS_DEVICE_OK;
-	                    DEBUG("Receive GPS Data\r\n");
-	                    //ParseGPSData(&g_stGPSData);
+                    if(RST_OK == gpsRtn)
+                    {
+                        g_ucGPSStatus = GPS_DEVICE_OK;
+                        DEBUG("Receive GPS Data\r\n");
+                        //ParseGPSData(&g_stGPSData);
 
-	                    //if(1 == g_stGPSData.tmpStatus)
-	                    if('A' == g_stGPSRMCData.Status)
-	                    {
-	                        ParseGPSData(&g_stGPSData);
+                        //if(1 == g_stGPSData.tmpStatus)
+                        if('A' == g_stGPSRMCData.Status)
+                        {
+                            ParseGPSData(&g_stGPSData);
 #ifdef DBG_ENABLE_MACRO
-	                        ShowGpsData();
+                            ShowGpsData();
 #endif
-	                        GPSPowerOff();
-	                        DEBUG("GPSData Valid and TurnOFF GPS\r\n");
-	                        break;
-	                    }
-	                }
-					
-	                delay_10ms(1000);
-	            }
+                            GPSPowerOff();
+                            DEBUG("GPSData Valid and TurnOFF GPS\r\n");
+                            break;
+                        }
+                    }
+
+                    delay_10ms(1000);
+                }
             }
 
             /////////////////////////////////////////////////////////////////
             // Second, Power ON GSM
             /////////////////////////////////////////////////////////////////
-			
+
             GSM_PowerOn();
-			DEBUG("\r\n GSMPowerOn \r\n");
+            DEBUG("\r\n GSMPowerOn \r\n");
             delay_10ms(200);
 
             gsmRetyTimes = 0;
@@ -413,7 +413,7 @@ DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n"
             while(gsmRetyTimes < GSM_RETERY_TIMES)
             {
                 gsmRetyTimes++;
-				
+
                 gsmRtn = GSM_Init();
                 if(RST_FAIL == gsmRtn)
                 {
@@ -428,7 +428,7 @@ DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n"
                 gsmRtn = GSM_QuerySignal(&g_ucSignalQuality);
                 if(RST_FAIL == gsmRtn)
                 {
-					DEBUG("\r\n GSM_QuerySignal FAIL \r\n");
+                    DEBUG("\r\n GSM_QuerySignal FAIL \r\n");
                     continue;
                 }
 
@@ -484,7 +484,7 @@ DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n"
                     GPRS_CIPShut();
 #ifdef DBG_ENABLE_MACRO
                     GPRS_CheckLinkStatus(&tmpStatus);
-#endif									   
+#endif
                     gsmRtn = GSM_StartTaskAndSetAPN();
                     if(RST_FAIL == gsmRtn)
                     {
@@ -543,7 +543,7 @@ DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n"
                                                       + ((*(pfeed + 8)) << 16)
                                                       + ((*(pfeed + 9)) << 8)
                                                       + (*(pfeed + 10)));
-                                
+
                                 // Check sleep time setting value
                                 if((sleepSec > SLEEP_TIME_MIN) && (sleepSec < SLEEP_TIME_MAX))
                                 {
@@ -576,29 +576,29 @@ DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n"
                     errNum = 0;
                     gprsRtn = USART_FAIL;
 
-					if(SET == g_uiAlarmFlag)
-					{
-						PackAlarmMsg();
+                    if(SET == g_uiAlarmFlag)
+                    {
+                        PackAlarmMsg();
                         sendLen = EELINK_ALARM_MSGLEN;
-						g_uiAlarmPacketFlag = SET;
-						DEBUG("PackAlarmMsg\r\n");
-					}
-					else
-					{
-	                    if(1 == g_stGPSData.status)
-	                    {
-	                        PackGpsMsg();
-	                        sendLen = EELINK_GPS_MSGLEN;
-	                        DEBUG("PackGpsMsg\r\n");
-	                    }
-	                    else
-	                    {
-	                        PackStationMsg();
-	                        sendLen = (8 + (g_stStationInfo.num * 11));
-	                        DEBUG("PackStationMsg\r\n");
-	                    }
-						g_uiAlarmPacketFlag = RESET;
-					}
+                        g_uiAlarmPacketFlag = SET;
+                        DEBUG("PackAlarmMsg\r\n");
+                    }
+                    else
+                    {
+                        if(1 == g_stGPSData.status)
+                        {
+                            PackGpsMsg();
+                            sendLen = EELINK_GPS_MSGLEN;
+                            DEBUG("PackGpsMsg\r\n");
+                        }
+                        else
+                        {
+                            PackStationMsg();
+                            sendLen = (8 + (g_stStationInfo.num * 11));
+                            DEBUG("PackStationMsg\r\n");
+                        }
+                        g_uiAlarmPacketFlag = RESET;
+                    }
 
 #ifdef DBG_ENABLE_MACRO
                     ShowGpsMsg(sendLen);
@@ -625,7 +625,7 @@ DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n"
                                 g_uiAlarmFlag = RESET;
                             }
 
-							// If Send OK, Close Link
+                            // If Send OK, Close Link
                             GPRS_CloseLink();
                             break;
                         }
@@ -645,7 +645,7 @@ DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n"
                     break;
                 }
             }
-			
+
         }
 
         /////////////////////////////////////////////////////////////////
@@ -660,15 +660,15 @@ DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n"
         GPSPowerOff();
         GSM_PowerOff();
 
-		/////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////
         // Detect Stick Status
         /////////////////////////////////////////////////////////////////
         g_uiCurStickFlag = GetStickState();
-		if((RESET == g_uiCurStickFlag) && (g_uiCurStickFlag != g_uiPreStickFlag))
-		{
-			g_uiAlarmFlag = SET;
-		}
-		g_uiPreStickFlag = g_uiCurStickFlag;
+        if((RESET == g_uiCurStickFlag) && (g_uiCurStickFlag != g_uiPreStickFlag))
+        {
+            g_uiAlarmFlag = SET;
+        }
+        g_uiPreStickFlag = g_uiCurStickFlag;
 
         /* Wait till RTC Second event occurs */
         RTC_ClearFlag(RTC_FLAG_SEC);
@@ -705,10 +705,10 @@ DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n"
     // SHOULD NOT GO HAERE
     while(1)
     {
-		// Soft RESET
-		__set_FAULTMASK(1);      // Close ALL Interrupts
-		NVIC_SystemReset();
-		
+        // Soft RESET
+        __set_FAULTMASK(1);      // Close ALL Interrupts
+        NVIC_SystemReset();
+
         STM_EVAL_LEDToggle();
         delay_10ms(50);
     }
@@ -721,30 +721,30 @@ DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n"
   */
 FlagStatus GetStickState(void)
 {
-	int i = 0;
-	uint32_t cnt = 0;
-	FlagStatus curState = SET;
+    int i = 0;
+    uint32_t cnt = 0;
+    FlagStatus curState = SET;
 
-	for(i = 0; i < 4; i++)
-	{
-		delay_ms(40);
-		// Stick On
-		if((uint32_t)Bit_RESET == STM_EVAL_PBGetState())
-		{
-			cnt++;
-		}
-	}
+    for(i = 0; i < 4; i++)
+    {
+        delay_ms(40);
+        // Stick On
+        if((uint32_t)Bit_RESET == STM_EVAL_PBGetState())
+        {
+            cnt++;
+        }
+    }
 
-	if(cnt > 3)
-	{
-		curState = SET;
-	}
-	else
-	{
-		curState = RESET;
-	}
+    if(cnt > 3)
+    {
+        curState = SET;
+    }
+    else
+    {
+        curState = RESET;
+    }
 
-	return curState;
+    return curState;
 }
 
 /**
@@ -754,35 +754,35 @@ FlagStatus GetStickState(void)
   */
 FlagStatus CheckRestartState(void)
 {
-	int i = 0;
-	uint8_t lowCnt = 0;
-	uint8_t highCnt = 0;
-	FlagStatus curState = RESET;
+    int i = 0;
+    uint8_t lowCnt = 0;
+    uint8_t highCnt = 0;
+    FlagStatus curState = RESET;
 
-	for(i = 0; i < 5; i++)
-	{
-		delay_ms(2000);
-		// Stick On
-		if((uint32_t)Bit_RESET == STM_EVAL_PBGetState())
-		{
-			lowCnt++;
-		}
-		else
-		{
-			highCnt++;
-		}
-	}
+    for(i = 0; i < 5; i++)
+    {
+        delay_ms(2000);
+        // Stick On
+        if((uint32_t)Bit_RESET == STM_EVAL_PBGetState())
+        {
+            lowCnt++;
+        }
+        else
+        {
+            highCnt++;
+        }
+    }
 
-	if((lowCnt >= 2) && (highCnt >= 2))
-	{
-		curState = SET;
-	}
-	else
-	{
-		curState = RESET;
-	}
+    if((lowCnt >= 2) && (highCnt >= 2))
+    {
+        curState = SET;
+    }
+    else
+    {
+        curState = RESET;
+    }
 
-	return curState;
+    return curState;
 }
 
 /***************************************************************************

@@ -138,8 +138,8 @@ static void ParserGPRMC(uint8_t ucData)
             case 5:
                 g_stGPSRMCData.UTCDateTime[5] = ucTempA * 10 + (ucData - '0');
                 break;
-			default:
-				break;
+            default:
+                break;
             }
             break;
         case 1:         // <2> 定位状态 A=有效定位, V=无效定位
@@ -180,12 +180,12 @@ static void ParserGPRMC(uint8_t ucData)
             case 5:
                 g_stGPSRMCData.UTCDateTime[0] = ucTempA * 10 + (ucData - '0');
                 break;
-			default:
-				break;
+            default:
+                break;
             }
             break;
-		default:
-				break;
+        default:
+            break;
         }
         NMEA_DAT_BlockIndex++;
     }
@@ -330,14 +330,14 @@ void ParseGPSData(stru_GPSDATA *pData)
     t.tm_isdst = 0;
 
     pData->utc.i = mktime(&t);
-#ifdef DBG_ENABLE_MACRO	
-ShowGPSTime();
+#ifdef DBG_ENABLE_MACRO
+    ShowGPSTime();
 #endif
     // 北纬ddmm.mmmm 22 32.7658 (22x60 + 32.7658)*30000 = 40582974 = 0x26B3F3E, 然后转成16进制为: 0x02 0x6B 0x3F 0x3E
-    pData->latitude.i = ((((g_stGPSRMCData.Latitude[0]-0x30) * 10 + (g_stGPSRMCData.Latitude[1]-0x30)) * 60
-                          + ((g_stGPSRMCData.Latitude[2]-0x30) * 10 + (g_stGPSRMCData.Latitude[3]-0x30))) * 30000
-                         + (g_stGPSRMCData.Latitude[5]-0x30) * 3000 + (g_stGPSRMCData.Latitude[6]-0x30) * 300
-                         + (g_stGPSRMCData.Latitude[7]-0x30) * 30 + (g_stGPSRMCData.Latitude[8]-0x30) * 3);
+    pData->latitude.i = ((((g_stGPSRMCData.Latitude[0] - 0x30) * 10 + (g_stGPSRMCData.Latitude[1] - 0x30)) * 60
+                          + ((g_stGPSRMCData.Latitude[2] - 0x30) * 10 + (g_stGPSRMCData.Latitude[3] - 0x30))) * 30000
+                         + (g_stGPSRMCData.Latitude[5] - 0x30) * 3000 + (g_stGPSRMCData.Latitude[6] - 0x30) * 300
+                         + (g_stGPSRMCData.Latitude[7] - 0x30) * 30 + (g_stGPSRMCData.Latitude[8] - 0x30) * 3);
     // latitude
     if(g_stGPSRMCData.NS == 'S')
     {
@@ -345,10 +345,10 @@ ShowGPSTime();
     }
 
     // 经度 dddmm.mmmm
-    pData->longitude.i = ((((g_stGPSRMCData.Longitude[0]-0x30) * 100 + (g_stGPSRMCData.Longitude[1]-0x30) * 10 + (g_stGPSRMCData.Longitude[2]-0x30)) * 60
-                           + ((g_stGPSRMCData.Longitude[3]-0x30) * 10 + (g_stGPSRMCData.Longitude[4]-0x30))) * 30000
-                          + (g_stGPSRMCData.Longitude[6]-0x30) * 3000 + (g_stGPSRMCData.Longitude[7]-0x30) * 300
-                          + (g_stGPSRMCData.Longitude[8]-0x30) * 30 + (g_stGPSRMCData.Longitude[9]-0x30) * 3);
+    pData->longitude.i = ((((g_stGPSRMCData.Longitude[0] - 0x30) * 100 + (g_stGPSRMCData.Longitude[1] - 0x30) * 10 + (g_stGPSRMCData.Longitude[2] - 0x30)) * 60
+                           + ((g_stGPSRMCData.Longitude[3] - 0x30) * 10 + (g_stGPSRMCData.Longitude[4] - 0x30))) * 30000
+                          + (g_stGPSRMCData.Longitude[6] - 0x30) * 3000 + (g_stGPSRMCData.Longitude[7] - 0x30) * 300
+                          + (g_stGPSRMCData.Longitude[8] - 0x30) * 30 + (g_stGPSRMCData.Longitude[9] - 0x30) * 3);
     // longitude
     if(g_stGPSRMCData.EW == 'W')
     {

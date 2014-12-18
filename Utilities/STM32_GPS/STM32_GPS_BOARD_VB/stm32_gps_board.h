@@ -17,7 +17,7 @@
 extern "C" {
 #endif
 
-/* Includes ------------------------------------------------------------------*/
+    /* Includes ------------------------------------------------------------------*/
 #include "stm32gps_board.h"
 
 #define GPS_PWR_CTRL_PORT	GPIOC
@@ -32,7 +32,7 @@ extern "C" {
 #define LED1_PIN                         GPIO_Pin_12
 #define LED1_GPIO_PORT                   GPIOC
 
-// Key Button
+    // Key Button
 #define KEY_BUTTON_PIN                   GPIO_Pin_15
 #define KEY_BUTTON_GPIO_PORT             GPIOA
 #define KEY_BUTTON_EXTI_LINE             EXTI_Line15
@@ -40,17 +40,17 @@ extern "C" {
 #define KEY_BUTTON_EXTI_PIN_SOURCE       GPIO_PinSource15
 #define KEY_BUTTON_EXTI_IRQn             EXTI15_10_IRQn
 
-/**
- * @brief Definition for COM port
- */
+    /**
+     * @brief Definition for COM port
+     */
 #define EVAL_COM1                        USART1
 #define EVAL_COM2                        USART2
 #define EVAL_COM3                        USART3
 
-void STM_EVAL_LEDOn(void);
-void STM_EVAL_LEDOff(void);
-void STM_EVAL_LEDToggle(void);
-uint32_t STM_EVAL_PBGetState(void);
+    void STM_EVAL_LEDOn(void);
+    void STM_EVAL_LEDOff(void);
+    void STM_EVAL_LEDToggle(void);
+    uint32_t STM_EVAL_PBGetState(void);
 
 
 #ifdef __cplusplus

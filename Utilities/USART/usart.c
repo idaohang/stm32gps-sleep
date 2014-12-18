@@ -34,7 +34,7 @@ uint16_t USART_Send(USART_TypeDef *USARTx, uint8_t *Data, uint16_t nBytes)
   */
 void usart_gsm_init(void)
 {
-  
+
     st_SerialGsm.RStartpt = (unsigned char *) USART2_RBuffer;   // 上行接收缓冲起始地址
     st_SerialGsm.uiRMaxLen = USART_GSM_BUFSIZE;                 // 上行接收缓冲长度
     st_SerialGsm.ucRTick = (sysTickPerSec() * GSM_USART_TIMEOUT_MS) / 1000 + 1;

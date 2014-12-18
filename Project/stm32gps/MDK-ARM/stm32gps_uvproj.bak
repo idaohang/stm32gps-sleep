@@ -346,7 +346,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER, STM32F10X_HD, USE_STM32_GPS_BOARD_VB, DBG_ENABLE_MACRO</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\stm32gps;..\..\..\Libraries\CMSIS\CM3\CoreSupport;..\..\..\Libraries\CMSIS\CM3\DeviceSupport\ST\STM32F10x;..\..\..\Libraries\STM32F10x_StdPeriph_Driver\inc;..\..\..\Utilities\STM32_GPS;..\..\..\Utilities\STM32_GPS\STM32_GPS_BOARD_VA;..\..\..\Utilities\STM32_GPS\Common;..\..\..\Utilities\SIM800L;..\..\..\Utilities\SIM28M;..\..\..\Utilities\USART;..\..\..\Utilities</IncludePath>
+              <IncludePath>..\..\stm32gps;..\..\..\Libraries\CMSIS\CM3\CoreSupport;..\..\..\Libraries\CMSIS\CM3\DeviceSupport\ST\STM32F10x;..\..\..\Libraries\STM32F10x_StdPeriph_Driver\inc;..\..\..\Utilities\STM32_GPS;..\..\..\Utilities\STM32_GPS\STM32_GPS_BOARD_VA;..\..\..\Utilities\STM32_GPS\Common;..\..\..\Utilities\SIM800L;..\..\..\Utilities\SIM28M;..\..\..\Utilities\DEVICE;..\..\..\Utilities\USART;..\..\..\Utilities</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -890,7 +890,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER, STM32F10X_HD, USE_STM32_GPS_BOARD_VB</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\stm32gps;..\..\..\Libraries\CMSIS\CM3\CoreSupport;..\..\..\Libraries\CMSIS\CM3\DeviceSupport\ST\STM32F10x;..\..\..\Libraries\STM32F10x_StdPeriph_Driver\inc;..\..\..\Utilities\STM32_GPS;..\..\..\Utilities\STM32_GPS\STM32_GPS_BOARD_VA;..\..\..\Utilities\STM32_GPS\Common;..\..\..\Utilities\SIM800L;..\..\..\Utilities\SIM28M;..\..\..\Utilities\USART;..\..\..\Utilities</IncludePath>
+              <IncludePath>..\..\stm32gps;..\..\..\Libraries\CMSIS\CM3\CoreSupport;..\..\..\Libraries\CMSIS\CM3\DeviceSupport\ST\STM32F10x;..\..\..\Libraries\STM32F10x_StdPeriph_Driver\inc;..\..\..\Utilities\STM32_GPS;..\..\..\Utilities\STM32_GPS\STM32_GPS_BOARD_VA;..\..\..\Utilities\STM32_GPS\Common;..\..\..\Utilities\SIM800L;..\..\..\Utilities\SIM28M;..\..\..\Utilities\DEVICE;..\..\..\Utilities\USART;..\..\..\Utilities</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>

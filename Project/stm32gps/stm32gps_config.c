@@ -193,7 +193,7 @@ void EXTI_Configuration(void)
     EXTI_InitStructure.EXTI_LineCmd = ENABLE;
     EXTI_Init(&EXTI_InitStructure);
 
-	/* Connect Button EXTI Line to Button GPIO Pin */
+    /* Connect Button EXTI Line to Button GPIO Pin */
     GPIO_EXTILineConfig(KEY_BUTTON_EXTI_PORT_SOURCE, KEY_BUTTON_EXTI_PIN_SOURCE);
 
     /* Configure Button EXTI line */
@@ -237,7 +237,7 @@ void TIM2_Configuration(void)
 void TIM4_Configuration(void)
 {
     TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
-	
+
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4 , ENABLE);
     TIM_DeInit(TIM4);
     TIM_TimeBaseStructure.TIM_Period = (uint16_t)TIM4_PERIOD_TIMER;
@@ -264,14 +264,14 @@ void NVIC_Configuration(void)
 
     /* 4 bits for Preemption Priority and 0 bits for Sub Priority */
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
-	
+
     NVIC_InitStructure.NVIC_IRQChannel = RTCAlarm_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
 
-	//NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
+    //NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
     //NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
     //NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
     //NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
@@ -283,13 +283,13 @@ void NVIC_Configuration(void)
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
 
-	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 7;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
 
-	/* Enable and set Button EXTI Interrupt to the lowest priority */
+    /* Enable and set Button EXTI Interrupt to the lowest priority */
     NVIC_InitStructure.NVIC_IRQChannel = KEY_BUTTON_EXTI_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
@@ -382,10 +382,10 @@ void stm32gps_com_debug_cfg(void)
     USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 
     /* USART configuration */
-	USART_Init(EVAL_COM3, &USART_InitStructure);
+    USART_Init(EVAL_COM3, &USART_InitStructure);
 
     /* Enable USART */
-	USART_Cmd(EVAL_COM3, ENABLE);
+    USART_Cmd(EVAL_COM3, ENABLE);
 }
 
 #ifdef DBG_ENABLE_MACRO
@@ -451,11 +451,11 @@ void stm32gps_com_gps_cfg(void)
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 
-	/* USART configuration */
-	USART_Init(EVAL_COM1, &USART_InitStructure);
+    /* USART configuration */
+    USART_Init(EVAL_COM1, &USART_InitStructure);
 
     /* Enable USART */
-	USART_Cmd(EVAL_COM1, ENABLE);
+    USART_Cmd(EVAL_COM1, ENABLE);
 }
 
 void stm32gps_com_gsm_cfg(void)
@@ -470,9 +470,9 @@ void stm32gps_com_gsm_cfg(void)
     USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 
     /* USART configuration */
-	USART_Init(EVAL_COM2, &USART_InitStructure);
+    USART_Init(EVAL_COM2, &USART_InitStructure);
 
     /* Enable USART */
-	USART_Cmd(EVAL_COM2, ENABLE);
+    USART_Cmd(EVAL_COM2, ENABLE);
 }
 

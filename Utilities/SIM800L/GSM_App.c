@@ -765,7 +765,7 @@ uint8_t GSM_QuerySignal(uint8_t *pSig)
         errNum++;
         rst = GSM_SendAT_rsp((char *) AT_CSQ, (char *) AT_OK, len, &pRecvBuf, &recvLen, MAX_RESP_CMD_CSQ);
 
-		if(USART_SUCESS == rst)
+        if(USART_SUCESS == rst)
         {
             pfeed = strnchr(pRecvBuf, ',', 1);
 
@@ -1177,7 +1177,7 @@ uint8_t GSM_StartUpConnect(void)
     uint8_t rst = USART_FAIL;
     uint8_t rtn = RST_FAIL;
 
-	sprintf(stNetCfg.TransferMode, "%s", "TCP");
+    sprintf(stNetCfg.TransferMode, "%s", "TCP");
 
     sprintf(stNetCfg.RemoteIP, "%s", GSM_SERVER_IP);
     sprintf(stNetCfg.RemotePort, "%s", GSM_SERVER_PORT);
@@ -1258,7 +1258,7 @@ unsigned char GPRS_SendData(char *pString, unsigned int len)
     sprintf(pcmdbuf, AT_CIPSEND_SET, len);
     cmdLen = strlen(pcmdbuf);
     //cmdLen = strlen(AT_CIPSEND);
-    if (USART_SUCESS == GSM_SendAT((char *) pcmdbuf, (char *) '>', cmdLen, (MAX_RESP_CMD_DEFAULT*4)))
+    if (USART_SUCESS == GSM_SendAT((char *) pcmdbuf, (char *) '>', cmdLen, (MAX_RESP_CMD_DEFAULT * 4)))
     {
         //cmdLen = sizeof(pString);
         usart_gsm_sendbuffer(pString, &len);
@@ -1269,7 +1269,7 @@ unsigned char GPRS_SendData(char *pString, unsigned int len)
 
     {
         uint32_t i = RETRY_TIMES_CMD_CIPSEND;
-//        uint32_t len;
+        //        uint32_t len;
         unsigned char retFlag;
 
         while (--i)
@@ -1336,7 +1336,7 @@ unsigned char GPRS_SendData_rsp(char *pString, unsigned int len, char **ppRecvBu
     sprintf(pcmdbuf, AT_CIPSEND_SET, len);
     cmdLen = strlen(pcmdbuf);
     //cmdLen = strlen(AT_CIPSEND);
-    if (USART_SUCESS == GSM_SendAT((char *) pcmdbuf, (char *) '>', cmdLen, (MAX_RESP_CMD_DEFAULT*4)))
+    if (USART_SUCESS == GSM_SendAT((char *) pcmdbuf, (char *) '>', cmdLen, (MAX_RESP_CMD_DEFAULT * 4)))
     {
 
         //cmdLen = sizeof(pString);
@@ -1348,7 +1348,7 @@ unsigned char GPRS_SendData_rsp(char *pString, unsigned int len, char **ppRecvBu
 
     {
         uint32_t i = RETRY_TIMES_CMD_CIPSEND;
- //       uint32_t len;
+        //       uint32_t len;
         unsigned char retFlag;
 
         while (--i)
@@ -1356,7 +1356,7 @@ unsigned char GPRS_SendData_rsp(char *pString, unsigned int len, char **ppRecvBu
             len = USART_GSM_BUFSIZE;
             delay_10ms(MAX_RESP_CMD_CIPSEND);
             retFlag = usart_gsm_readbuffer(pBackBuf, &len);
-			
+
 #ifdef DBG_ENABLE_MACRO
             {
                 uint32_t tmpIdx;
@@ -1563,27 +1563,27 @@ unsigned char GPRS_CPOwd(void)
   */
 uint8_t GSM_SetCFunMin(void)
 {
-	uint32_t len = 0;
-	uint32_t errNum = 0;
-	uint8_t rst = USART_FAIL;
-	uint8_t rtn = RST_FAIL;
-	
-	len = strlen(AT_CFUN_MIN);
-	GSM_ClearBuffer();
-	while (errNum < RETRY_TIMES_CMD_CFUN)
+    uint32_t len = 0;
+    uint32_t errNum = 0;
+    uint8_t rst = USART_FAIL;
+    uint8_t rtn = RST_FAIL;
+
+    len = strlen(AT_CFUN_MIN);
+    GSM_ClearBuffer();
+    while (errNum < RETRY_TIMES_CMD_CFUN)
     {
-		errNum++;
-		rst = GSM_SendAT((char *) AT_CFUN_MIN, (char *) AT_OK, len, MAX_RESP_CMD_CFUN);
-		if(USART_SUCESS == rst)
-		{
-			rtn = RST_OK;
-			break;
-		}
+        errNum++;
+        rst = GSM_SendAT((char *) AT_CFUN_MIN, (char *) AT_OK, len, MAX_RESP_CMD_CFUN);
+        if(USART_SUCESS == rst)
+        {
+            rtn = RST_OK;
+            break;
+        }
 
-		delay_10ms(20);
-	}
+        delay_10ms(20);
+    }
 
-	return rtn;
+    return rtn;
 }
 
 /**
@@ -1593,27 +1593,27 @@ uint8_t GSM_SetCFunMin(void)
   */
 uint8_t GSM_SetCFunFull(void)
 {
-	uint32_t len = 0;
-	uint32_t errNum = 0;
-	uint8_t rst = USART_FAIL;
-	uint8_t rtn = RST_FAIL;
-	
-	len = strlen(AT_CFUN_FULL);
-	GSM_ClearBuffer();
-	while (errNum < RETRY_TIMES_CMD_CFUN)
+    uint32_t len = 0;
+    uint32_t errNum = 0;
+    uint8_t rst = USART_FAIL;
+    uint8_t rtn = RST_FAIL;
+
+    len = strlen(AT_CFUN_FULL);
+    GSM_ClearBuffer();
+    while (errNum < RETRY_TIMES_CMD_CFUN)
     {
-		errNum++;
-		rst = GSM_SendAT((char *) AT_CFUN_FULL, (char *) AT_OK, len, MAX_RESP_CMD_CFUN);
-		if(USART_SUCESS == rst)
-		{
-			rtn = RST_OK;
-			break;
-		}
+        errNum++;
+        rst = GSM_SendAT((char *) AT_CFUN_FULL, (char *) AT_OK, len, MAX_RESP_CMD_CFUN);
+        if(USART_SUCESS == rst)
+        {
+            rtn = RST_OK;
+            break;
+        }
 
-		delay_10ms(20);
-	}
+        delay_10ms(20);
+    }
 
-	return rtn;
+    return rtn;
 }
 
 unsigned char GSM_creg(void)
@@ -1693,98 +1693,98 @@ uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
     sprintf(pcmdbuf, AT_CENG_SET, 3, 1);
     len = strlen(pcmdbuf);
 
-	GSM_ClearBuffer();
-	while(errNum < RETRY_TIMES_CMD_DEFAULT)
-	{
-		errNum++;
-		rst = GSM_SendAT((char *) pcmdbuf, (char *) AT_OK, len, MAX_RESP_CMD_DEFAULT);
-		if(USART_SUCESS == rst)
-		{
-			break;
-		}
-		delay_10ms(20);
-	}
-	errNum = 0;
-	len = strlen(AT_CENG);
-	GSM_ClearBuffer();
-	while(errNum < RETRY_TIMES_CMD_DEFAULT)
-	{
-		pStation->num = 0;
-		rst = GSM_SendAT_rsp((char *) AT_CENG, (char *) AT_OK, len, &pRecvBuf, &recvLen, MAX_RESP_CMD_DEFAULT);
-		if(USART_SUCESS == rst)
-		{
-			// analyze CENG rsp
-			// 检查是否有CENG字段
-			ptmp = strstr_len(pRecvBuf, "+CENG", recvLen);
-			if(NULL == ptmp)
-			{
-				continue;
-			}
-			
-			// Serving and Neighboring Cell
-			for(idx = 0; idx < 7; idx++)
-			{
-				ptmp = strnchr_len(pRecvBuf, '"', (idx*2+1) , recvLen);
-				if((NULL != ptmp) && (NULL != strnchr_len(pRecvBuf, '+', (idx+2) , recvLen)))
-				{
-					// mcc
-					if(NULL != ptmp)
-					{
-						result = strtol((ptmp+1), &endptr, 10);
-						//DEBUG("%d: mcc = 0x%x\n", idx, result);
-						if(result == 0)
-						{
-							break;
-						}
-						pStation->stStation[idx].mcc.i = result;
-					}
-					// mnc
-					ptmp2 = strnchr_len(ptmp, ',', 1 , 29);
-					if(NULL != ptmp2)
-					{
-						result = strtol((ptmp2+1), &endptr, 10);
-						//DEBUG("%d: mnc = 0x%x\n", idx, result);
-						pStation->stStation[idx].mnc.i = result;
-					}
-					// lac
-					ptmp2 = strnchr_len(ptmp, ',', 2 , 29);
-					if(NULL != ptmp2)
-					{
-						result = strtol((ptmp2+1), &endptr, 16);
-						//DEBUG("%d: lac = 0x%x\n", idx, result);
-						pStation->stStation[idx].lac.i = result;
-					}
-					// cell id (ci)
-					ptmp2 = strnchr_len(ptmp, ',', 3 , 29);
-					if(NULL != ptmp2)
-					{
-						result = strtol((ptmp2+1), &endptr, 16);
-						//DEBUG("%d: ci = 0x%x\n", idx, result);
-						pStation->stStation[idx].ci.i = result;
-					}
-					ptmp2 = strnchr_len(ptmp, ',', 5 , 29);
-					if(NULL != ptmp2)
-					{
-						result = strtol((ptmp2+1), &endptr, 10);
-						//DEBUG("%d: rxl = 0x%x\n", idx, result);
-						if(result == 0)
-						{
-							break;
-						}
-						pStation->stStation[idx].rxl = result;
-					}
-					// NOT have rxq, default set to 0.
-					pStation->stStation[idx].rxq = 0;
-				}
-			}
-			
-			pStation->num = idx;
-			rtn = RST_OK;
-			break;
-		}
-	}
+    GSM_ClearBuffer();
+    while(errNum < RETRY_TIMES_CMD_DEFAULT)
+    {
+        errNum++;
+        rst = GSM_SendAT((char *) pcmdbuf, (char *) AT_OK, len, MAX_RESP_CMD_DEFAULT);
+        if(USART_SUCESS == rst)
+        {
+            break;
+        }
+        delay_10ms(20);
+    }
+    errNum = 0;
+    len = strlen(AT_CENG);
+    GSM_ClearBuffer();
+    while(errNum < RETRY_TIMES_CMD_DEFAULT)
+    {
+        pStation->num = 0;
+        rst = GSM_SendAT_rsp((char *) AT_CENG, (char *) AT_OK, len, &pRecvBuf, &recvLen, MAX_RESP_CMD_DEFAULT);
+        if(USART_SUCESS == rst)
+        {
+            // analyze CENG rsp
+            // 检查是否有CENG字段
+            ptmp = strstr_len(pRecvBuf, "+CENG", recvLen);
+            if(NULL == ptmp)
+            {
+                continue;
+            }
 
-	DEBUG("CENG number = %d\r\n", idx);
+            // Serving and Neighboring Cell
+            for(idx = 0; idx < 7; idx++)
+            {
+                ptmp = strnchr_len(pRecvBuf, '"', (idx * 2 + 1) , recvLen);
+                if((NULL != ptmp) && (NULL != strnchr_len(pRecvBuf, '+', (idx + 2) , recvLen)))
+                {
+                    // mcc
+                    if(NULL != ptmp)
+                    {
+                        result = strtol((ptmp + 1), &endptr, 10);
+                        //DEBUG("%d: mcc = 0x%x\n", idx, result);
+                        if(result == 0)
+                        {
+                            break;
+                        }
+                        pStation->stStation[idx].mcc.i = result;
+                    }
+                    // mnc
+                    ptmp2 = strnchr_len(ptmp, ',', 1 , 29);
+                    if(NULL != ptmp2)
+                    {
+                        result = strtol((ptmp2 + 1), &endptr, 10);
+                        //DEBUG("%d: mnc = 0x%x\n", idx, result);
+                        pStation->stStation[idx].mnc.i = result;
+                    }
+                    // lac
+                    ptmp2 = strnchr_len(ptmp, ',', 2 , 29);
+                    if(NULL != ptmp2)
+                    {
+                        result = strtol((ptmp2 + 1), &endptr, 16);
+                        //DEBUG("%d: lac = 0x%x\n", idx, result);
+                        pStation->stStation[idx].lac.i = result;
+                    }
+                    // cell id (ci)
+                    ptmp2 = strnchr_len(ptmp, ',', 3 , 29);
+                    if(NULL != ptmp2)
+                    {
+                        result = strtol((ptmp2 + 1), &endptr, 16);
+                        //DEBUG("%d: ci = 0x%x\n", idx, result);
+                        pStation->stStation[idx].ci.i = result;
+                    }
+                    ptmp2 = strnchr_len(ptmp, ',', 5 , 29);
+                    if(NULL != ptmp2)
+                    {
+                        result = strtol((ptmp2 + 1), &endptr, 10);
+                        //DEBUG("%d: rxl = 0x%x\n", idx, result);
+                        if(result == 0)
+                        {
+                            break;
+                        }
+                        pStation->stStation[idx].rxl = result;
+                    }
+                    // NOT have rxq, default set to 0.
+                    pStation->stStation[idx].rxq = 0;
+                }
+            }
+
+            pStation->num = idx;
+            rtn = RST_OK;
+            break;
+        }
+    }
+
+    DEBUG("CENG number = %d\r\n", idx);
     return rtn;
 }
 
