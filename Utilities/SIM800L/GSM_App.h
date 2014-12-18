@@ -3,6 +3,8 @@
 
 #include "stm32gps_config.h"
 
+#define BASE_STATION_NUM_MAX	7	// Base Station Max Number
+
 typedef	struct
 {
     char CMDType;
@@ -25,8 +27,8 @@ typedef struct
 
 typedef struct
 {
-    unsigned char	BatStatus;		//电池状态，0没充电，1充电中，2已充满
-    unsigned char BatPower;		  //电池电量，0-100
+    unsigned char	BatStatus;	//电池状态，0没充电，1充电中，2已充满
+    unsigned char BatPower;		//电池电量，0-100
     union
     {
         unsigned char s[2];
@@ -40,7 +42,7 @@ typedef struct
     union
     {
         unsigned char s[2];
-        unsigned short  i;     // 电池电压mV
+        unsigned short  i;     	// 电池电压mV
     } BatVoltage;
 } ST_BATVOLTAGESTATUS, *pST_BATVOLTAGESTATUS;
 
@@ -55,15 +57,8 @@ typedef struct
     unsigned char n;    // 0 - disable network; 1 - ; 2 - with location
     unsigned char Stat; // 1 - registered, home network
     char Lac[2];		// location area code
-    char Ci[2];		// cell ID
+    char Ci[2];			// cell ID
 } ST_CREGINFO, *pST_CREGINFO;
-
-typedef struct
-{
-    unsigned char Station[9];    // base station: MCC MNC LAC CI
-    unsigned char Battery[2]; 	// battery voltage
-    unsigned char Signal[2];		// signal
-} ST_SIMDATA, *pST_SIMDATA;
 
 typedef     struct
 {
@@ -112,7 +107,7 @@ typedef struct
 typedef struct
 {
     uint8_t num;
-    ST_BASESTATION stStation[7];
+    ST_BASESTATION stStation[BASE_STATION_NUM_MAX];
 } ST_PACKET_BASESTATION, *pST_PACKET_BASESTATION;
 
 

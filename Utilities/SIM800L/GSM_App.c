@@ -1,27 +1,27 @@
-/****************************************Copyright (c)****************************************************
+/****************************************Copyright (c)***************************************
  **                                  		 广州星海科技
  **                                  http://simhi.taobao.com
  **																		 TEL:15018750559
  **																			 QQ:86817447
- **------------------------File Info----------------------------------------------------------------------
+ **------------------------File Info----------------------------------------------------------
  ** File Name:             GSM_App.c
  ** Last modified Date:   	2012.5.15
  ** Last Version:          V1.0
  ** Description:           GPS管理解析
  **
- **--------------------------------------------------------------------------------------------------------
+ **---------------------------------------------------------------------------------------------
  ** Created By:            Chenht
  ** Created date:          2012-5-3
  ** Version:               v1.0
  ** Descriptions:          The original version 初始版本
  **
- **--------------------------------------------------------------------------------------------------------
+ **--------------------------------------------------------------------------------------------
  ** Modified by:
  ** Modified date:
  ** Version:
  ** Description:
  **
- *********************************************************************************************************/
+ ***********************************************************************************************/
 #include "at_sim800.h"
 #include <string.h>
 #include <stdio.h>
@@ -157,7 +157,7 @@ char *strnchr_len(char *S, int C, uint32_t n, uint32_t len)
     return pnchr;
 }
 
-/***************************************************************************************
+/*************************************************************************************
  ** Function name:       strdig_len()
  ** Descriptions:        查找字符串中是否有n个数字，如果有则返回第一个数字位置的指针，
  **						 如果没有则返回NULL。
@@ -167,7 +167,7 @@ char *strnchr_len(char *S, int C, uint32_t n, uint32_t len)
  **                      diglen 需要查找的数字的个数
  ** output parameters:
  ** Returned value:      第一个数字的字符位置指针 or NULL
- **************************************************************************************/
+ ************************************************************************************/
 char *strdig_len(char *str, uint32_t slen, uint32_t diglen)
 {
 
@@ -203,7 +203,7 @@ char *strdig_len(char *str, uint32_t slen, uint32_t diglen)
     return retPtr;
 }
 
-/**************************************************************************************
+/**********************************************************************************
  ** Function name:       strhex_len()
  ** Descriptions:        将十六进制字符串转换为十六进制数
  ** input parameters:    str 需要查找的目标字符串
@@ -211,7 +211,7 @@ char *strdig_len(char *str, uint32_t slen, uint32_t diglen)
  ** output parameters:
  ** Returned value:      转换后的十六进制数
  ** Example: 比如，字符串是"04"，转换后的值是0x04， 字符串是"2F"，转换后的值是0x2F
- ****************************************************************************************/
+ ***********************************************************************************/
 uint32_t strhex_len(char const *str, uint32_t len)
 {
     uint32_t i;
@@ -263,13 +263,13 @@ void GSM_PowerOff(void)
     GPIO_ResetBits(GSM_PWR_CTRL_PORT, GSM_PWR_CTRL_PIN);
 }
 
-/*********************************************************************************************************
+/*********************************************************************
  ** Function name:       GSM_TurnOnOff()
  ** Descriptions:        启动或关闭模块
  ** input parameters:    NONE
  ** output parameters:   NONE
  ** Returned value:
- *********************************************************************************************************/
+ ********************************************************************/
 void GSM_TurnOnOff(void)
 {
     GPIO_ResetBits(GSM_PWRKEY_PORT, GSM_PWRKEY_PIN);
@@ -279,13 +279,13 @@ void GSM_TurnOnOff(void)
 }
 
 
-/*********************************************************************************************************
+/*******************************************************************
  ** Function name:       GSM_ClearBuffer()
  ** Descriptions:        清空接收缓存
  ** input parameters:    NONE
  ** output parameters:   NONE
  ** Returned value:
- *********************************************************************************************************/
+ ******************************************************************/
 void GSM_ClearBuffer(void)
 {
     memset(BackBuf, 0, USART_GSM_BUFSIZE);
@@ -332,7 +332,7 @@ unsigned char GSM_SendAT(char *pCMD, char *pCMDBack, uint32_t CMDLen, uint8_t Co
     }
 #endif
 
-    usart_sendbuffer(STM32_SIM908_GSM_COM, pCMD, (unsigned int *) &len);
+    usart_gsm_sendbuffer(pCMD, (unsigned int *) &len);
 
     if (NULL != pCMDBack)
     {
@@ -342,10 +342,10 @@ unsigned char GSM_SendAT(char *pCMD, char *pCMDBack, uint32_t CMDLen, uint8_t Co
             len = USART_GSM_BUFSIZE;
             delay_10ms(50);
 
-            //DEBUG("GSM_SendAT before usart_readbuffer len %d\n", len);
+            //DEBUG("GSM_SendAT before usart_gsm_readbuffer len %d\n", len);
 
-            retFlag = usart_readbuffer(STM32_SIM908_GSM_COM, pBackBuf, &len);
-            //DEBUG("GSM_SendAT after usart_readbuffer len %d\n", len);
+            retFlag = usart_gsm_readbuffer(pBackBuf, &len);
+            //DEBUG("GSM_SendAT after usart_gsm_readbuffer len %d\n", len);
 
 #ifdef DBG_ENABLE_MACRO
             {
@@ -413,7 +413,7 @@ unsigned char GSM_SendAT_rsp(char *pCMD, char *pCMDBack,
     }
 #endif
 
-    usart_sendbuffer(STM32_SIM908_GSM_COM, pCMD, (unsigned int *) &len);
+    usart_gsm_sendbuffer(pCMD, (unsigned int *) &len);
 
     while (i > 0)
     {
@@ -421,9 +421,9 @@ unsigned char GSM_SendAT_rsp(char *pCMD, char *pCMDBack,
         len = USART_GSM_BUFSIZE;
         delay_10ms(50);
 
-        //DEBUG("GSM_SendAT before usart_readbuffer len %d\n", len);
-        retFlag = usart_readbuffer(STM32_SIM908_GSM_COM, pBackBuf, &len);
-        //DEBUG("GSM_SendAT after usart_readbuffer len %d\n", len);
+        //DEBUG("GSM_SendAT before usart_gsm_readbuffer len %d\n", len);
+        retFlag = usart_gsm_readbuffer(pBackBuf, &len);
+        //DEBUG("GSM_SendAT after usart_gsm_readbuffer len %d\n", len);
 
 #ifdef DBG_ENABLE_MACRO
         {
@@ -479,13 +479,13 @@ unsigned char GSM_SendAT_rsp(char *pCMD, char *pCMDBack,
 }
 
 
-/*********************************************************************************************************
+/**********************************************************************
  ** Function name:       GSM_QueryImsiBuf
  ** Descriptions:        查询IMSI
  ** input parameters:    NONE
  ** output parameters:   pImsiInfo
  ** Returned value:      返回状态结果
- *********************************************************************************************************/
+ **********************************************************************/
 unsigned char GSM_QueryImsiBuf(uint8_t *pImsi)
 {
     unsigned int cmdLen;
@@ -1261,9 +1261,9 @@ unsigned char GPRS_SendData(char *pString, unsigned int len)
     if (USART_SUCESS == GSM_SendAT((char *) pcmdbuf, (char *) '>', cmdLen, (MAX_RESP_CMD_DEFAULT*4)))
     {
         //cmdLen = sizeof(pString);
-        usart_sendbuffer(STM32_SIM908_GSM_COM, pString, &len);
+        usart_gsm_sendbuffer(pString, &len);
         //cmdLen = 1;
-        //usart_sendbuffer(STM32_SIM908_GSM_COM, "\x1A", &cmdLen);
+        //usart_gsm_sendbuffer(STM32_SIM908_GSM_COM, "\x1A", &cmdLen);
         //return USART_SUCESS;
     }
 
@@ -1277,16 +1277,16 @@ unsigned char GPRS_SendData(char *pString, unsigned int len)
             len = USART_GSM_BUFSIZE;
             delay_10ms(MAX_RESP_CMD_CIPSEND);
 
-            //DEBUG("GSM_SendAT before usart_readbuffer len %d\n", len);
+            //DEBUG("GSM_SendAT before usart_gsm_readbuffer len %d\n", len);
 
             retFlag =
-                usart_readbuffer(STM32_SIM908_GSM_COM, BackBuf, &len);
-            //DEBUG("GSM_SendAT after usart_readbuffer len %d\n", len);
+                usart_gsm_readbuffer(BackBuf, &len);
+            //DEBUG("GSM_SendAT after usart_gsm_readbuffer len %d\n", len);
 
 #ifdef DBG_ENABLE_MACRO
             {
                 uint32_t tmpIdx;
-                uint32_t tmpStart;
+                //uint32_t tmpStart;
 
                 if (len > 0 && retFlag == USART_ENPROCESS)
                 {
@@ -1340,9 +1340,9 @@ unsigned char GPRS_SendData_rsp(char *pString, unsigned int len, char **ppRecvBu
     {
 
         //cmdLen = sizeof(pString);
-        usart_sendbuffer(STM32_SIM908_GSM_COM, pString, &len);
+        usart_gsm_sendbuffer(pString, &len);
         //cmdLen = 1;
-        //usart_sendbuffer(STM32_SIM908_GSM_COM, "\x1A", &cmdLen);
+        //usart_gsm_sendbuffer(STM32_SIM908_GSM_COM, "\x1A", &cmdLen);
         //return USART_SUCESS;
     }
 
@@ -1355,17 +1355,12 @@ unsigned char GPRS_SendData_rsp(char *pString, unsigned int len, char **ppRecvBu
         {
             len = USART_GSM_BUFSIZE;
             delay_10ms(MAX_RESP_CMD_CIPSEND);
-
-            //DEBUG("GSM_SendAT before usart_readbuffer len %d\n", len);
-
-            retFlag =
-                usart_readbuffer(STM32_SIM908_GSM_COM, pBackBuf, &len);
-            //DEBUG("GSM_SendAT after usart_readbuffer len %d\n", len);
-
+            retFlag = usart_gsm_readbuffer(pBackBuf, &len);
+			
 #ifdef DBG_ENABLE_MACRO
             {
                 uint32_t tmpIdx;
-                uint32_t tmpStart;
+                //uint32_t tmpStart;
 
                 if (len > 0 && retFlag == USART_ENPROCESS)
                 {
@@ -1374,7 +1369,6 @@ unsigned char GPRS_SendData_rsp(char *pString, unsigned int len, char **ppRecvBu
                     {
                         DEBUG("%c-", pBackBuf[tmpIdx]);
                         //DEBUG(" [%d] 0x%x-",tmpIdx, pBackBuf[tmpIdx]);
-
                     }
                     DEBUG("\r\n");
                     DEBUG("GPRS_SendData_rsp done\r\n");
@@ -1409,13 +1403,13 @@ unsigned char GPRS_SendData_rsp(char *pString, unsigned int len, char **ppRecvBu
     return USART_SUCESS;
 }
 
-/*********************************************************************************************************
+/*************************************************************************
  ** Function name:       GPRS_ReceiveData
  ** Descriptions:      	GPRS接收数据,SIM908直接串口接收,不需要发送指令读取
  ** input parameters:    NONE
  ** output parameters:   NONE
  ** Returned value:      返回状态结果
- *********************************************************************************************************/
+ ************************************************************************/
 unsigned char GPRS_ReceiveData(char *pString)
 {
     uint32_t i = 5;
@@ -1428,16 +1422,11 @@ unsigned char GPRS_ReceiveData(char *pString)
         len = USART_GSM_BUFSIZE_RECEIVE;
         delay_10ms(20);
 
-        //DEBUG("GSM_SendAT before usart_readbuffer len %d\n", len);
-
-        retFlag =
-            usart_readbuffer(STM32_SIM908_GSM_COM, receiveBuf, &len);
-        //DEBUG("GSM_SendAT after usart_readbuffer len %d\n", len);
+        retFlag = usart_gsm_readbuffer(receiveBuf, &len);
 
 #ifdef DBG_ENABLE_MACRO
         {
             uint32_t tmpIdx;
-
 
             if (len > 0 && retFlag == USART_ENPROCESS)
             {
@@ -1468,13 +1457,13 @@ unsigned char GPRS_ReceiveData(char *pString)
 
     return USART_FAIL;
 }
-/*********************************************************************************************************
+/***************************************************************
  ** Function name:       GPRS_CheckLinkStatus
- ** Descriptions:      	查询GPRS链接状态
+ ** Descriptions:      	 查询GPRS链接状态
  ** input parameters:    NONE
  ** output parameters:   NONE
  ** Returned value:      返回GPRS链接状态结果
- *********************************************************************************************************/
+ ***************************************************************/
 unsigned char GPRS_CheckLinkStatus(unsigned char *pStatus)
 {
     unsigned int cmdLen;
@@ -1487,7 +1476,7 @@ unsigned char GPRS_CheckLinkStatus(unsigned char *pStatus)
     if (USART_SUCESS == GSM_SendAT_rsp((char *) AT_CIPSTATUS, (char *) AT_OK, cmdLen, &pRecvBuf, &recvLen, MAX_RESP_CMD_DEFAULT))
     {
         pfeed = strstr_len(pRecvBuf, "CONNECT OK", recvLen);
-        if (NULL != strstr_len(pRecvBuf, "CONNECT OK", recvLen))
+        if (NULL != pfeed)
         {
             *pStatus = 6;
             return USART_SUCESS;
@@ -1532,13 +1521,13 @@ unsigned char GPRS_CloseLink(void)
     }
     return USART_FAIL;
 }
-/*********************************************************************************************************
- ** Function name:       GPRS_CIPShut
- ** Descriptions:      	退出GPRS链接
- ** input parameters:    NONE
- ** output parameters:   NONE
- ** Returned value:      返回状态结果
- *********************************************************************************************************/
+
+/**
+  * @brief  退出GPRS链接
+  * 1 Quick close
+  * @param  None
+  * @retval Status
+  */
 unsigned char GPRS_CIPShut(void)
 {
     unsigned int cmdLen;
@@ -1554,7 +1543,7 @@ unsigned char GPRS_CIPShut(void)
 
 unsigned char GPRS_CPOwd(void)
 {
-    char *pcmdbuf = NULL;
+    //char *pcmdbuf = NULL;
     unsigned int cmdLen;
 
     //sprintf(pcmdbuf, AT_CPOWD, 1);
@@ -1666,13 +1655,11 @@ unsigned char GSM_creg(void)
 
     // analyze AT_CREG rsp
 
-
     return USART_SUCESS;
 }
 
-
 /**
-  * @brief  Get CENG Information
+  * @brief  Get Base Station (+CENG) Information
   * @param  None
   * @retval Status
   * @note   rxl, rxq, mcc, mnc are decimal; lac, ci are hexadecimal.
@@ -1683,7 +1670,7 @@ uint8_t GSM_ceng(pST_PACKET_BASESTATION pStation)
     uint32_t errNum = 0;
     uint8_t rst = USART_FAIL;
     uint8_t rtn = RST_FAIL;
-    static char *pfeed = NULL;
+    //static char *pfeed = NULL;
     char *pRecvBuf = NULL;
     uint32_t recvLen = 0;
     static char *pcmdbuf = NULL;

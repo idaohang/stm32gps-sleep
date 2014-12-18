@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    USART/Printf/stm32f10x_it.c
+  * @file    USART/stm32f10x_it.c
   * @author  MCD Application Team
   * @version V3.5.0
   * @date    08-April-2011
@@ -22,17 +22,13 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include <stdio.h>
+
 #include "stm32f10x_it.h"
 #include "stm32f10x_it_api.h"
-#include "stm32gps_config.h"
-#include "stm32gps_board.h"
 #include "usart.h"
-#include "GSM_App.h"
-//#include "GPS_App.h"
 #include "gps.h"
-#include "main.h"
 
+static volatile uint32_t mSysTick = 0;
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -138,7 +134,6 @@ void PendSV_Handler(void)
   * @param  None
   * @retval None
   */
-static volatile uint32_t mSysTick = 0;
 uint32_t sysTickGet(void)
 {
     return mSysTick;
@@ -160,62 +155,31 @@ void SysTick_Handler(void)
 {
     mSysTick ++;
 
-    usart_timeout(0, 0);
-    usart_timeout(1, 0);
+    usart_gsm_timeout(0);
     TimingDelay_Decrement();
 }
 
-static UART_INT_HANDLER uart_int_handler[COMn] = {NULL, NULL, NULL};
-static uint32_t uart_int_arg[COMn] = {0, 0, 0};
-
-void USART_IRQHandler_register(uint32_t com, UART_INT_HANDLER handler, uint32_t arg)
-{
-    if (com >= COMn)
-    {
-        return;
-    }
-    uart_int_handler[com] = handler;
-    uart_int_arg[com] = arg;
-}
-
-
+/**
+  * @brief  This function handles USART2 RX.
+  * @param  None
+  * @retval None
+  */
 void USART2_IRQHandler(void)
 {
     unsigned char RxData;
-    //    uint32_t idx = 1;
     if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
     {
         /* Read one byte from the receive data register */
         RxData = USART_ReceiveData(USART2);
-        usart_irq_my(1, RxData);
-    }
-
-    /*
-        // 处理接收到的数据
-        while (USART_GetFlagStatus(USART2, USART_IT_RXNE) != RESET)
-        {
-            //STM_EVAL_LEDToggle(LED4);
-
-            RxData = USART_ReceiveData(USART2);
-    		usart_irq_my(1, RxData);
-
-
-        }
-        */
-}
-
-void USART3_IRQHandler(void)
-{
-    if (uart_int_handler[2] != NULL)
-    {
-        uart_int_handler[2](2, uart_int_arg[2]);
-    }
-    else
-    {
-        while(1);
+        usart_gsm_irq(RxData);
     }
 }
 
+/**
+  * @brief  This function handles RTC IRQ.
+  * @param  None
+  * @retval None
+  */
 void RTC_IRQHandler(void)
 {
 
@@ -256,6 +220,11 @@ void RTCAlarm_IRQHandler(void)
     }
 }
 
+/**
+  * @brief  This function handles Timer2 IRQ.
+  * @param  None
+  * @retval None
+  */
 void TIM2_IRQHandler(void)
 {
     if ( TIM_GetITStatus(TIM2 , TIM_IT_Update) != RESET )
@@ -266,10 +235,6 @@ void TIM2_IRQHandler(void)
     }
 }
 
-void TIM4_IRQHandler(void)
-{
-	
-}
 
 /**
   * @brief  This function handles External lines 10 to 15 interrupt request.

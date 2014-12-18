@@ -11,23 +11,21 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-
 #include "gps.h"
 
-static uint8_t NMEA_CMD = NMEA_NULL;       // NMEA 语句
+static uint8_t NMEA_CMD = NMEA_NULL;       	// NMEA 语句
 static uint8_t NMEA_CMD_Buff[] = "$GPxxx,"; // NMEA 语句类型缓存
-static uint8_t NMEA_CMD_Index = 0;         // 读取 CMD字符的个数
-static uint8_t NMEA_CMD_Parsered = 0;      // CMD类型解析完毕
-static uint8_t NMEA_DAT_Block = 0;         // NMEA 数据字段号 从0开始
-static uint8_t NMEA_DAT_BlockIndex = 0;    // NMEA 数据每个字段内字符索引 从0开始
-static uint8_t NMEA_CMD_Start = 0;         // NMEA 语句开始. 检测到 $ 时置1
-static uint8_t ReciveFlag = 0;             // 数据接收完成. 最后一条 GPRMC 语句发送完毕置1,
+static uint8_t NMEA_CMD_Index = 0;         	// 读取 CMD字符的个数
+static uint8_t NMEA_CMD_Parsered = 0;      	// CMD类型解析完毕
+static uint8_t NMEA_DAT_Block = 0;         	// NMEA 数据字段号 从0开始
+static uint8_t NMEA_DAT_BlockIndex = 0;    	// NMEA 数据每个字段内字符索引 从0开始
+static uint8_t NMEA_CMD_Start = 0;         	// NMEA 语句开始. 检测到 $ 时置1
+static uint8_t ReciveFlag = 0;             	// 数据接收完成. 最后一条 GPRMC 语句发送完毕置1,
 
-static uint8_t ucTempA = 0;                // 存储解析两位数字用的的十位临时变量
+static uint8_t ucTempA = 0;                	// 存储解析两位数字用的的十位临时变量
 
 volatile uint8_t g_ucRecvOverTimeFlag = 0;
 stru_GPSRMC  g_stGPSRMCData;
-
 
 static void ParserGPRMC(uint8_t ucData);
 static void GPS(uint8_t ucData);
@@ -266,7 +264,6 @@ void GPS(uint8_t ucData)
             NMEA_DAT_BlockIndex = 0;
         }
     }
-    //LED_G=1;
 }
 
 /**
@@ -359,7 +356,7 @@ ShowGPSTime();
     }
 
     // 1 knot = 1.85km/h
-    spd = (uint32_t)((atoi(g_stGPSRMCData.Speed)) * (1.85));
+    spd = (uint32_t)((atoi((const char *)g_stGPSRMCData.Speed)) * (1.85));
     if(spd > 255)
     {
         pData->speed = 255;
@@ -368,7 +365,7 @@ ShowGPSTime();
     {
         pData->speed = spd;
     }
-    pData->course.i = (unsigned short)(atoi(g_stGPSRMCData.Course));
+    pData->course.i = (unsigned short)(atoi((const char *)g_stGPSRMCData.Course));
 
     if(('A' == g_stGPSRMCData.Status) || ('a' == g_stGPSRMCData.Status))
     {

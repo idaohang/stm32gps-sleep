@@ -1,24 +1,33 @@
-/**
- ******************************************************************************
- * @file    USART/Printf/main.c
- * @author  MCD Application Team
- * @version V3.5.0
- * @date    08-April-2011
- * @brief   Main program body
- ******************************************************************************
- * @attention
- *
- * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
- * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
- * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
- * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
- * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
- * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
- *
- * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
- ******************************************************************************
- */
+/******************************************************************************
 
+              Copyright (C), 2014, BoraNet Corporation 
+
+ ******************************************************************************
+  File Name     : main.c
+  Version       : Initial Draft
+  Author        : Qixb
+  Created       : 2014/12/16
+  Last Modified :
+  Description   : Main program body
+  Function List :
+              GetStickState
+              InitVariables
+              main
+              PackAlarmMsg
+              PackFactoryMsg
+              PackGpsMsg
+              PackLoginMsg
+              PackStationMsg
+              ProcessIMEI
+              ShowGpsData
+              ShowGpsMsg
+              ShowLoginMsg
+  History       :
+  1.Date        : 2014/12/16
+    Author      : Qixb
+    Modification: Created file
+
+******************************************************************************/
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
 #include "stm32f10x_it_api.h"
@@ -33,50 +42,66 @@
 #include "gpio.h"
 #include "gps.h"
 
+/*----------------------------------------------*
+ * external variables                           *
+ *----------------------------------------------*/
 
-/* Private typedef -----------------------------------------------------------*/
+/*----------------------------------------------*
+ * external routine prototypes                  *
+ *----------------------------------------------*/
 
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-
-/* Private variables ---------------------------------------------------------*/
-
-static uint16_t g_usSequenceNum;  		// GPRS packet's sequence number
-static uint8_t g_ucGPSStatus;    		// GPS status 0x55 - error; 0xaa - ok
-static uint32_t g_uiSetSleepSec;  		// Server setting sleep seconds
-static FlagStatus g_uiAlarmFlag;  		// 报警标志 SET-valid; RESET-invalid
-static FlagStatus g_uiAlarmPacketFlag; 	// 报警数据包标志 SET - alarm packet; RESET - not alarm packet
-static FlagStatus g_uiPreStickFlag; 	// 吸合状态 SET - Stick ON; RESET - Stick OFF
-static FlagStatus g_uiCurStickFlag; 	// 吸合状态 SET - Stick ON; RESET - Stick OFF
-
-
-static uint8_t g_ucSignalQuality;
-
-static ST_DEVICEDATA g_stDeviceData;
-static ST_BATVOLTAGESTATUS g_stBATInfo;
-static ST_CREGINFO g_stCREGInfo;
-static ST_IMSIINFO g_stIMSIInfo;
-static stru_GPSDATA g_stGPSData;
-static ST_PACKET_BASESTATION g_stStationInfo;
-
-static uint8_t g_ucIMEIBuf[IMEI_BUF_LEN];
-static uint8_t g_ucIMSIBuf[IMSI_BUF_LEN];
-static uint8_t g_ucPhoneNumBuf[PHONE_NUM_BUF_LEN];
-
-static char LoginBuf[PROTO_LOGIN_BUF_LEN];
-static char gpsBuf[PROTO_GPS_BUF_LEN];
-//static char stationBuf[PROTO_STATION_BUF_LEN];
-
-
-/* Private function prototypes -----------------------------------------------*/
+/*----------------------------------------------*
+ * internal routine prototypes                  *
+ *----------------------------------------------*/
 FlagStatus GetStickState(void);
+FlagStatus CheckRestartState(void);
 static uint8_t ProcessIMEI(uint8_t *pImei, uint8_t *pRst, int32_t imeilen, int32_t rstlen);
 static void PackLoginMsg(void);
 static void PackGpsMsg(void);
 static void PackAlarmMsg(void);
 static void PackStationMsg(void);
 static void PackFactoryMsg(void);
-/* Private functions ---------------------------------------------------------*/
+/*----------------------------------------------*
+ * project-wide global variables                *
+ *----------------------------------------------*/
+
+/*----------------------------------------------*
+ * module-wide global variables                 *
+ *----------------------------------------------*/
+static uint16_t g_usSequenceNum;  		// Packet's sequence number
+static uint8_t g_ucGPSStatus;    		// GPS UART's status 0x55 - error; 0xaa - ok
+static uint32_t g_uiSetSleepSec;  		// Sleepy seconds from server's reply
+static FlagStatus g_uiAlarmFlag;  		// 报警标志 SET - valid; RESET - invalid
+static FlagStatus g_uiAlarmPacketFlag; 	// 报警数据包标志 SET - alarm packet; RESET - not alarm packet
+static FlagStatus g_uiPreStickFlag; 	// 吸合状态 SET - Stick ON; RESET - Stick OFF
+static FlagStatus g_uiCurStickFlag; 	// 吸合状态 SET - Stick ON; RESET - Stick OFF
+
+static uint8_t g_ucSignalQuality;		// Signal Quality
+
+static ST_DEVICEDATA g_stDeviceData;	// Device Status
+static ST_BATVOLTAGESTATUS g_stBATInfo;	// Battery Info
+static ST_CREGINFO g_stCREGInfo;		// Network Registeration Info
+static ST_IMSIINFO g_stIMSIInfo;		// IMSI Info
+static stru_GPSDATA g_stGPSData;		// GPS Received Data
+static ST_PACKET_BASESTATION g_stStationInfo;		// Station Info Received from CENG
+
+static uint8_t g_ucIMEIBuf[IMEI_BUF_LEN];			// IMSI Buffer
+static uint8_t g_ucIMSIBuf[IMSI_BUF_LEN];			// IMSI Buffer
+static uint8_t g_ucPhoneNumBuf[PHONE_NUM_BUF_LEN];	// Phone Number Buffer
+
+static char LoginBuf[PROTO_LOGIN_BUF_LEN];			// LOGIN Packet Buffer
+static char gpsBuf[PROTO_GPS_BUF_LEN];				// GPS / STATIN / ALARM Packet Buffer
+/*----------------------------------------------*
+ * constants                                    *
+ *----------------------------------------------*/
+
+/*----------------------------------------------*
+ * macros                                       *
+ *----------------------------------------------*/
+
+/*----------------------------------------------*
+ * routines' implementations                    *
+ *----------------------------------------------*/
 
 #ifdef DBG_ENABLE_MACRO
 void ShowLoginMsg(void)
@@ -146,32 +171,6 @@ void ShowGpsData(void)
 
 }
 
-#if 0
-void ShowStationMsg(void)
-{
-    uint32_t i;
-    // gps msg
-    DEBUG("\r\nSTATION MSG:");
-    for(i = 0; i < (8 + g_stStationInfo.num * 11); i++)
-    {
-        DEBUG("0x%x-", stationBuf[i]);
-    }
-    DEBUG("\r\n");
-}
-
-
-void ShowFactoryMsg(void)
-{
-    uint32_t i;
-    // gps msg
-    DEBUG("\r\nFACTORY MSG:");
-    for(i = 0; i < FACTORY_REPORT_MSGLEN; i++)
-    {
-        DEBUG("0x%x-", stationBuf[i]);
-    }
-    DEBUG("\r\n");
-}
-#endif
 #endif // DBG_ENABLE_MACRO
 
 /**
@@ -181,15 +180,15 @@ void ShowFactoryMsg(void)
   */
 void InitVariables(void)
 {
-    g_usSequenceNum = 1;
-    g_ucGPSStatus = GPS_DEVICE_ERR;
-    g_uiSetSleepSec = SLEEP_NORMAL_SEC;
-    g_uiAlarmFlag = RESET;
+    g_usSequenceNum 	= 1;
+    g_ucGPSStatus 		= GPS_DEVICE_ERR;
+    g_uiSetSleepSec 	= SLEEP_NORMAL_SEC;
+    g_uiAlarmFlag 		= RESET;
     g_uiAlarmPacketFlag = RESET;
-	g_uiPreStickFlag = RESET;
-	g_uiCurStickFlag = RESET;
+	g_uiPreStickFlag 	= RESET;
+	g_uiCurStickFlag 	= RESET;
 	
-    g_ucSignalQuality = 0;
+    g_ucSignalQuality 	= 0;
 
     memset(&g_stDeviceData, 0, sizeof(g_stDeviceData));
     memset(&g_stBATInfo, 0, sizeof(g_stBATInfo));
@@ -206,7 +205,6 @@ void InitVariables(void)
     memset(gpsBuf, 0, PROTO_GPS_BUF_LEN);
 }
 
-
 /**
  * @brief  Main program
  * @param  None
@@ -214,31 +212,28 @@ void InitVariables(void)
  */
 int main(void)
 {
-    uint32_t errNum = 0;
-    uint8_t gpsRecvTimes = 0;  // GPS Received Times
-    uint8_t gsmRetyTimes = 0;  // GSM Retry Times
-    uint8_t gprsRetyTimes = 0; // GPRS Retry Times
+    uint32_t errNum 		= 0;	// Error Num
+    uint8_t gpsRecvTimes 	= 0;  	// GPS Received Times
+    uint8_t gsmRetyTimes 	= 0;  	// GSM Retry Times
+    uint8_t gprsRetyTimes 	= 0; 	// GPRS Retry Times
 
-    uint8_t gpsRtn = RST_FAIL;    // GPS function return result
-    uint8_t gsmRtn = RST_FAIL;
-    uint8_t gprsRtn = USART_FAIL;
-    uint8_t gprsSendFlag = RST_FAIL; // GPRS Send Status Flag
+    uint8_t gpsRtn 			= RST_FAIL;    	// GPS Function return result
+    uint8_t gsmRtn 			= RST_FAIL;		// GSM Function return result
+    uint8_t gprsRtn 		= USART_FAIL;	// GPRS Function return result
+    uint8_t gprsSendFlag 	= RST_FAIL; 	// GPRS Send Status Flag
 
-    uint16_t sendLen = 0;      // GPRS send length (used for GPS and ALARM Msg)
-    uint32_t sleepSec = 0;
+    uint16_t sendLen 		= 0;    // GPRS send length (used for GPS and ALARM Msg)
+    uint32_t sleepSec 		= 0;	// Sleep Seconds from server's reply
 
     // Used for parse GPRS Received Data Analysis
-    char *pRecvBuf = NULL;     // GPRS Received buffer
-    uint32_t recvLen = 0;      // GPRS Received length
-    char *pfeed = NULL;        // Used for parse
+    char *pRecvBuf 			= NULL;  	// GPRS Received buffer
+    uint32_t recvLen 		= 0;      	// GPRS Received length
+    char *pfeed 			= NULL;     // Used for parse
 
     // Used for CheckLinkStatus
 #ifdef DBG_ENABLE_MACRO
-    uint8_t status = 0;
+    uint8_t tmpStatus = 0;		// temp variable
 #endif
-
-	/* 4 bits for Preemption Priority and 0 bits for Sub Priority */
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
     /////////////////////////////////////////////////////////////////
     // Configure the GPIO ports and Power OFF GPS and GSM
@@ -250,7 +245,7 @@ int main(void)
     /////////////////////////////////////////////////////////////////
     // Configure the SysTick
     /////////////////////////////////////////////////////////////////
-    stm32gps_sys_tick_cfg();
+    SYSTICK_Configuration();
 
     /////////////////////////////////////////////////////////////////
     // Configure PWR and BKP
@@ -261,53 +256,46 @@ int main(void)
     //    PWR_WakeUpPinCmd(ENABLE);
 
     /////////////////////////////////////////////////////////////////
-    // Configure RCC
+    // Configure RCC (NOT IN NEED)
     /////////////////////////////////////////////////////////////////
     //RCC_Configuration();
 
-	/////////////////////////////////////////////////////////////////
-    // Configure NVIC
-    /////////////////////////////////////////////////////////////////
-    NVIC_Configuration();
-	
     /////////////////////////////////////////////////////////////////
     // Configure RTC EXTI
     /////////////////////////////////////////////////////////////////
     EXTI_Configuration();
 
+	/////////////////////////////////////////////////////////////////
+    // Configure NVIC
+    /////////////////////////////////////////////////////////////////
+    NVIC_Configuration();
+
     /////////////////////////////////////////////////////////////////
     // Configure RTC
     /////////////////////////////////////////////////////////////////
     RTC_Configuration();
-   // RTC_NVIC_Configuration();
-
+	
     /////////////////////////////////////////////////////////////////
     // Configure TIMER
     /////////////////////////////////////////////////////////////////
     TIM2_Configuration();
-    //TIM2_NVIC_Configuration();
 
     /////////////////////////////////////////////////////////////////
     // Configure LED, BUTTON and USART(GPS + GSM + DEBUG)
     /////////////////////////////////////////////////////////////////
 
-    stm32gps_led_cfg();
-    STM_EVAL_LEDOff(LED1);
+    STM_EVAL_LEDOff();
 #ifdef DBG_ENABLE_MACRO
     stm32gps_com_debug_cfg();
 #endif // DBG_ENABLE_MACRO
 
-    STM_EVAL_PBInit(BUTTON_KEY, BUTTON_MODE_EXTI);
-
-    //usart_init(STM32_SIM908_GPS_COM);
     stm32gps_com_gps_cfg();
 
-    usart_init(STM32_SIM908_GSM_COM);
+    usart_gsm_init();
     stm32gps_com_gsm_cfg();
     /* Enable the EVAL_COM2 Receive interrupt: this interrupt is generated when the
      EVAL_COM1 receive data register is not empty */
     USART_ITConfig(EVAL_COM2, USART_IT_RXNE, ENABLE);
-    //USART_NVIC_Configuration();
 
     /////////////////////////////////////////////////////////////////
     // Turn On TIM2
@@ -337,7 +325,19 @@ int main(void)
 
         sendLen = 0;
         sleepSec = 0;
-		
+#if 0
+		/////////////////////////////////////////////////////////////////
+        // Check Restart State (A Back Door)
+        /////////////////////////////////////////////////////////////////
+		if(SET == CheckRestartState())
+		{
+			// Soft RESET
+			__set_FAULTMASK(1);      // Close ALL Interrupts
+			NVIC_SystemReset();
+		}
+#endif
+		// Delay 3 Sec
+		delay_10ms(STICK_ON_SEC);
         /////////////////////////////////////////////////////////////////
         // Detect Stick Status
         /////////////////////////////////////////////////////////////////
@@ -382,7 +382,7 @@ DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n"
 	                    DEBUG("Receive GPS Data\r\n");
 	                    //ParseGPSData(&g_stGPSData);
 
-	                    //if(1 == g_stGPSData.status)
+	                    //if(1 == g_stGPSData.tmpStatus)
 	                    if('A' == g_stGPSRMCData.Status)
 	                    {
 	                        ParseGPSData(&g_stGPSData);
@@ -483,7 +483,7 @@ DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n"
                     gprsRetyTimes++;
                     GPRS_CIPShut();
 #ifdef DBG_ENABLE_MACRO
-                    GPRS_CheckLinkStatus(&status);
+                    GPRS_CheckLinkStatus(&tmpStatus);
 #endif									   
                     gsmRtn = GSM_StartTaskAndSetAPN();
                     if(RST_FAIL == gsmRtn)
@@ -491,7 +491,7 @@ DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n"
                         continue;
                     }
 #ifdef DBG_ENABLE_MACRO
-                    GPRS_CheckLinkStatus(&status);
+                    GPRS_CheckLinkStatus(&tmpStatus);
 #endif
 
                     gsmRtn = GSM_BringUpConnect();
@@ -500,7 +500,7 @@ DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n"
                         //continue;
                     }
 #ifdef DBG_ENABLE_MACRO
-                    GPRS_CheckLinkStatus(&status);
+                    GPRS_CheckLinkStatus(&tmpStatus);
 #endif
                     gsmRtn = GSM_GetLocalIP();
                     if(RST_FAIL == gsmRtn)
@@ -508,7 +508,7 @@ DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n"
                         //continue;
                     }
 #ifdef DBG_ENABLE_MACRO
-                    GPRS_CheckLinkStatus(&status);
+                    GPRS_CheckLinkStatus(&tmpStatus);
 #endif
                     gsmRtn = GSM_StartUpConnect();
                     if(RST_FAIL == gsmRtn)
@@ -516,7 +516,7 @@ DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n"
                         continue;
                     }
 #ifdef DBG_ENABLE_MACRO
-                    GPRS_CheckLinkStatus(&status);
+                    GPRS_CheckLinkStatus(&tmpStatus);
 #endif
                     /////////////////////////////////////////////////////////////////
                     // Send LOGIN Msg
@@ -709,7 +709,7 @@ DEBUG("\r g_uiCurStickFlag = %d; g_uiAlarmFlag = %d; g_uiAlarmPacketFlag = %d\n"
 		__set_FAULTMASK(1);      // Close ALL Interrupts
 		NVIC_SystemReset();
 		
-        STM_EVAL_LEDToggle(LED1);
+        STM_EVAL_LEDToggle();
         delay_10ms(50);
     }
 }
@@ -727,15 +727,53 @@ FlagStatus GetStickState(void)
 
 	for(i = 0; i < 4; i++)
 	{
-		delay_ms(20);
+		delay_ms(40);
 		// Stick On
-		if((uint32_t)Bit_RESET == STM_EVAL_PBGetState(BUTTON_KEY))
+		if((uint32_t)Bit_RESET == STM_EVAL_PBGetState())
 		{
 			cnt++;
 		}
 	}
 
 	if(cnt > 3)
+	{
+		curState = SET;
+	}
+	else
+	{
+		curState = RESET;
+	}
+
+	return curState;
+}
+
+/**
+  * @brief  Check Soft Resart State
+  * @param  None
+  * @retval FlagStatus SET - Should Restart; RESET - Not Restart
+  */
+FlagStatus CheckRestartState(void)
+{
+	int i = 0;
+	uint8_t lowCnt = 0;
+	uint8_t highCnt = 0;
+	FlagStatus curState = RESET;
+
+	for(i = 0; i < 5; i++)
+	{
+		delay_ms(2000);
+		// Stick On
+		if((uint32_t)Bit_RESET == STM_EVAL_PBGetState())
+		{
+			lowCnt++;
+		}
+		else
+		{
+			highCnt++;
+		}
+	}
+
+	if((lowCnt >= 2) && (highCnt >= 2))
 	{
 		curState = SET;
 	}
@@ -1163,7 +1201,7 @@ void PackFactoryMsg(void)
     offset++;
     gpsBuf[offset] = 0;  // device status
     offset++;
-    gpsBuf[offset] = STM_EVAL_PBGetState(BUTTON_KEY);  // device status
+    gpsBuf[offset] = STM_EVAL_PBGetState();  // device status
     offset++;
     for(i = 0; i < 2; i++)
     {

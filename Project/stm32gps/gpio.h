@@ -41,10 +41,9 @@ extern "C" {
 
     /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
-#include "stm32f10x_gpio.h"
-#include "stm32f10x_rcc.h"
+
     void MX_GPIO_Init(void);
-    void MX_GPIO_DeInit(void);
+
 #ifdef __cplusplus
 }
 #endif

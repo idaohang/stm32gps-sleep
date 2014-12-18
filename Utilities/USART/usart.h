@@ -24,14 +24,12 @@ typedef struct
     uint32_t        ucRTick;
 } USART_ST;
 
-void usart_irq_my(uint32_t chan, uint8_t data);
-void usart_init(uint32_t chan);
 uint16_t USART_Send(USART_TypeDef *USARTx, uint8_t *Data, uint16_t nBytes);
-void usart_sendbuffer(uint32_t chan, char *byData, uint32_t *pReqLen);
-unsigned char usart_readbuffer(uint32_t chan, char *byData, uint32_t *pReqLen);
-void usart_irq(uint32_t chan, USART_ST *usart_st);
-void usart_timeout(uint32_t chan, USART_ST *pusart);
-
-void USART1_Config(void);
+void usart_gsm_init(void);
+void usart_gsm_sendbuffer(char *byData, uint32_t *pReqLen);
+uint8_t usart_gsm_readbuffer(char *byData, uint32_t *pReqLen);
+void usart_gsm_irq(uint8_t data);
+void usart_gsm_timeout(USART_ST *pusart);
 
 #endif /* USART_H */
+

@@ -5,12 +5,10 @@
 #include <stdio.h>
 #include <string.h>
 
-ErrorStatus HSEStartUpStatus;
-
 
 /* Private variables ---------------------------------------------------------*/
+static ErrorStatus HSEStartUpStatus;
 static __IO uint32_t TimingDelay;
-
 
 /**
   * @brief  Inserts a delay time.
@@ -60,7 +58,7 @@ void delay_ms(uint32_t Timer)
   * @param  None
   * @retval None
   */
-void stm32gps_sys_tick_cfg(void)
+void SYSTICK_Configuration(void)
 {
     /* SysTick interrupt each 10 ms */
     if (SysTick_Config(SystemCoreClock / SYS_TICK_PER_SEC))
@@ -156,9 +154,7 @@ void RTC_Configuration(void)
     /* Enable LSE OSC */
     RCC_LSICmd(ENABLE);
     /* Wait till LSE is ready */
-    while(RCC_GetFlagStatus(RCC_FLAG_LSIRDY) == RESET)
-    {
-    }
+    while(RCC_GetFlagStatus(RCC_FLAG_LSIRDY) == RESET) ;
 
     /* Select the RTC Clock Source */
     RCC_RTCCLKConfig(RCC_RTCCLKSource_LSI);
@@ -196,11 +192,20 @@ void EXTI_Configuration(void)
     EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
     EXTI_InitStructure.EXTI_LineCmd = ENABLE;
     EXTI_Init(&EXTI_InitStructure);
+
+	/* Connect Button EXTI Line to Button GPIO Pin */
+    GPIO_EXTILineConfig(KEY_BUTTON_EXTI_PORT_SOURCE, KEY_BUTTON_EXTI_PIN_SOURCE);
+
+    /* Configure Button EXTI line */
+    EXTI_InitStructure.EXTI_Line = KEY_BUTTON_EXTI_LINE;
+    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+    EXTI_Init(&EXTI_InitStructure);
 }
 
 /**
-  * @brief  Configures the TIM2.
-  * TIM_Prescaler = 1KHz; TIM_Period = 60s
+  * @brief  Configure the TIM2
   * @param  None
   * @retval None
   */
@@ -212,9 +217,7 @@ void TIM2_Configuration(void)
     TIM_DeInit(TIM2);
     // 累计 TIM_Period个频率后产生一个更新或者中断
     TIM_TimeBaseStructure.TIM_Period = (uint16_t)TIM2_PERIOD_TIMER;
-
     TIM_TimeBaseStructure.TIM_Prescaler = (uint16_t)TIM2_PRESCALER_TIMER;
-    //TIM_TimeBaseStructure.TIM_Prescaler= PrescalerValue;
     TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
     TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
@@ -233,16 +236,13 @@ void TIM2_Configuration(void)
   */
 void TIM4_Configuration(void)
 {
-    //	uint16_t PrescalerValue = 0;
     TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
-    //	PrescalerValue = (uint16_t) (SystemCoreClock / TIM4_PRESCALER_HZ) - 1;
-
+	
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4 , ENABLE);
     TIM_DeInit(TIM4);
     TIM_TimeBaseStructure.TIM_Period = (uint16_t)TIM4_PERIOD_TIMER;
     // 累计 TIM_Period个频率后产生一个更新或者中断
     TIM_TimeBaseStructure.TIM_Prescaler = (uint16_t)TIM4_PRESCALER_TIMER;
-    //TIM_TimeBaseStructure.TIM_Prescaler= PrescalerValue;
     TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
     TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
@@ -263,7 +263,7 @@ void NVIC_Configuration(void)
     NVIC_InitTypeDef NVIC_InitStructure;
 
     /* 4 bits for Preemption Priority and 0 bits for Sub Priority */
-    //NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 	
     NVIC_InitStructure.NVIC_IRQChannel = RTCAlarm_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
@@ -289,78 +289,13 @@ void NVIC_Configuration(void)
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
 
-}
-
-/**
-  * @brief  Configures the NVIC.
-  * @param  None
-  * @retval None
-  */
-void RTC_NVIC_Configuration(void)
-{
-    NVIC_InitTypeDef NVIC_InitStructure;
-
-    /* 2 bits for Preemption Priority and 2 bits for Sub Priority */
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-    NVIC_InitStructure.NVIC_IRQChannel = RTCAlarm_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	/* Enable and set Button EXTI Interrupt to the lowest priority */
+    NVIC_InitStructure.NVIC_IRQChannel = KEY_BUTTON_EXTI_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
 
-}
-
-/**
-  * @brief  Configures the NVIC.
-  * @param  None
-  * @retval None
-  */
-void USART_NVIC_Configuration(void)
-{
-    NVIC_InitTypeDef NVIC_InitStructure;
-
-    NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 7;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&NVIC_InitStructure);
-
-}
-
-/*
- * 函数名：TIM2_NVIC_Configuration
- * 描述  ：TIM2中断优先级配置
- * 输入  ：无
- * 输出  ：无
- */
-void TIM2_NVIC_Configuration(void)
-{
-    NVIC_InitTypeDef NVIC_InitStructure;
-
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
-    NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&NVIC_InitStructure);
-}
-
-/*
- * 函数名：TIM4_NVIC_Configuration
- * 描述  ：TIM4中断优先级配置
- * 输入  ：无
- * 输出  ：无
- */
-void TIM4_NVIC_Configuration(void)
-{
-    NVIC_InitTypeDef NVIC_InitStructure;
-
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
-    NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 4;
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&NVIC_InitStructure);
 }
 
 /**
@@ -428,24 +363,6 @@ void IWDG_Configuration(void)
     IWDG_SetReload(1562);
 }
 
-/**
-  * @brief  Configures the SysTick to generate an interrupt each 250 ms.
-  * @param  None
-  * @retval None
-  */
-void stm32gps_led_cfg(void)
-{
-    STM_EVAL_LEDInit(LED1);
-    //STM_EVAL_LEDInit(LED2);
-    //STM_EVAL_LEDInit(LED3);
-    //STM_EVAL_LEDInit(LED4);
-
-    //STM_EVAL_LEDOn(LED1);
-    //STM_EVAL_LEDOff(LED2);
-    //STM_EVAL_LEDOff(LED3);
-    //STM_EVAL_LEDOn(LED4);
-}
-
 void stm32gps_com_debug_cfg(void)
 {
     USART_InitTypeDef USART_InitStructure;
@@ -464,7 +381,11 @@ void stm32gps_com_debug_cfg(void)
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 
-    STM_EVAL_COMInit(COM3, &USART_InitStructure);
+    /* USART configuration */
+	USART_Init(EVAL_COM3, &USART_InitStructure);
+
+    /* Enable USART */
+	USART_Cmd(EVAL_COM3, ENABLE);
 }
 
 #ifdef DBG_ENABLE_MACRO
@@ -523,26 +444,35 @@ void stm32gps_com_gps_cfg(void)
 {
     USART_InitTypeDef USART_InitStructure;
 
-    USART_InitStructure.USART_BaudRate = 9600;
+    USART_InitStructure.USART_BaudRate = USART_GPS_BAUD;
     USART_InitStructure.USART_WordLength = USART_WordLength_8b;
     USART_InitStructure.USART_StopBits = USART_StopBits_1;
     USART_InitStructure.USART_Parity = USART_Parity_No;
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 
-    STM_EVAL_COMInit(COM1, &USART_InitStructure);
+	/* USART configuration */
+	USART_Init(EVAL_COM1, &USART_InitStructure);
+
+    /* Enable USART */
+	USART_Cmd(EVAL_COM1, ENABLE);
 }
 
 void stm32gps_com_gsm_cfg(void)
 {
     USART_InitTypeDef USART_InitStructure;
 
-    USART_InitStructure.USART_BaudRate = 9600;
+    USART_InitStructure.USART_BaudRate = USART_GSM_BAUD;
     USART_InitStructure.USART_WordLength = USART_WordLength_8b;
     USART_InitStructure.USART_StopBits = USART_StopBits_1;
     USART_InitStructure.USART_Parity = USART_Parity_No;
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 
-    STM_EVAL_COMInit(COM2, &USART_InitStructure);
+    /* USART configuration */
+	USART_Init(EVAL_COM2, &USART_InitStructure);
+
+    /* Enable USART */
+	USART_Cmd(EVAL_COM2, ENABLE);
 }
+
