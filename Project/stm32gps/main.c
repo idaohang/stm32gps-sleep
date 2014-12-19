@@ -585,18 +585,18 @@ int main(void)
                     }
                     else
                     {
-                        if(1 == g_stGPSData.status)
+                        //if(1 == g_stGPSData.status)
                         {
                             PackGpsMsg();
                             sendLen = EELINK_GPS_MSGLEN;
                             DEBUG("PackGpsMsg\r\n");
                         }
-                        else
-                        {
-                            PackStationMsg();
-                            sendLen = (8 + (g_stStationInfo.num * 11));
-                            DEBUG("PackStationMsg\r\n");
-                        }
+                        //else
+                        //{
+                        //    PackStationMsg();
+                        //    sendLen = (8 + (g_stStationInfo.num * 11));
+                        //   DEBUG("PackStationMsg\r\n");
+                        //}
                         g_uiAlarmPacketFlag = RESET;
                     }
 
@@ -949,7 +949,15 @@ void PackGpsMsg(void)
     // 设备状态
     gpsBuf[offset] = 0x00;  // 补零
     offset++;
-    gpsBuf[offset] = g_stGPSData.status;
+	if(SET == g_uiCurStickFlag)
+	{
+		// 吸合
+    	gpsBuf[offset] = g_stGPSData.status;
+	}
+	else
+	{
+		gpsBuf[offset] = g_stGPSData.status + 2;
+	}
     offset++;
     // 电池电压
     for(i = 0; i < 2; i++)
